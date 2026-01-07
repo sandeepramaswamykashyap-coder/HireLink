@@ -1,0 +1,110 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+/* Global Reset & Base Styles */
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+    color: #E0E0E0;
+}
+
+/* Background gradient */
+.stApp {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+/* Sidebar Styling */
+[data-testid="stSidebar"] {
+    background-color: #0B1120;
+    border-right: 1px solid #1E293B;
+}
+
+/* Custom Card Styling */
+.job-card {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    backdrop-filter: blur(10px);
+}
+
+.job-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    border-color: #3B82F6;
+}
+
+.job-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #F8FAFC;
+    margin-bottom: 4px;
+}
+
+.job-company {
+    font-size: 0.95rem;
+    color: #94A3B8;
+    margin-bottom: 8px;
+}
+
+.job-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: #64748B;
+}
+
+.match-score {
+    background: #10B981;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Metrics Cards */
+[data-testid="stMetricValue"] {
+    font-size: 2rem !important;
+    color: #3B82F6 !important;
+}
+
+[data-testid="stMetricLabel"] {
+    color: #94A3B8 !important;
+}
+
+/* Buttons */
+.stButton button {
+    background: linear-gradient(90deg, #3B82F6 0%, #2563EB 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.stButton button:hover {
+    background: linear-gradient(90deg, #2563EB 0%, #1D4ED8 100%);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Success/Info Messages */
+.stSuccess, .stInfo {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+    border: 1px solid rgba(16, 185, 129, 0.2) !important;
+    color: #D1FAE5 !important;
+}
+
+/* Header */
+h1 {
+    background: linear-gradient(90deg, #60A5FA 0%, #A78BFA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800 !important;
+}
+
+h2, h3 {
+    color: #F1F5F9 !important;
+}

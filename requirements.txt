@@ -1,0 +1,16 @@
+streamlit
+flask
+selenium
+beautifulsoup4
+webdriver_manager
+spacy
+scikit-learn
+pandas
+pymupdf
+transformers
+torch
+tesseract
+pytesseract
+fake-useragent
+requests
+sqlalchemy
