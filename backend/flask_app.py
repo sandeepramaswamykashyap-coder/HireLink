@@ -11,7 +11,7 @@ with app.app_context():
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return jsonify({"status": "healthy", "service": "IndianSmartApplier-Backend"})
+    return jsonify({"status": "healthy", "service": "HireLink-Backend"})
 
 @app.route('/api/jobs', methods=['GET'])
 def get_jobs():

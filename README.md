@@ -1,4 +1,4 @@
-# IndianSmartApplier
+# HireLink
 
 A complete, local-only job application automation system that runs entirely on your laptop with ZERO cloud costs.
 

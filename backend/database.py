@@ -64,6 +64,13 @@ class AppUser(Base):
     is_onboarded = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+class QuestionAnswer(Base):
+    __tablename__ = 'question_answers'
+    id = Column(Integer, primary_key=True)
+    question = Column(String, unique=True) # Normalized text or keyword
+    answer = Column(String)
+    category = Column(String) # e.g., 'experience', 'personal', 'legal'
+
 class PortalStatus(Base):
     __tablename__ = 'portal_status'
     
@@ -80,6 +87,77 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def init_db():
     logger.info(f"Initializing database at {DB_PATH}")
     Base.metadata.create_all(bind=engine)
+    
+    # SEED DEFAULT QUESTIONS if empty
+    db = SessionLocal()
+    try:
+        if db.query(QuestionAnswer).count() == 0:
+            defaults = [
+                # --- PERSONAL ---
+                {"question": "Gender", "answer": "Male", "category": "personal"},
+                {"question": "What is your gender", "answer": "Male", "category": "personal"},
+                {"question": "Marital Status", "answer": "Single", "category": "personal"},
+                {"question": "Are you a veteran", "answer": "No", "category": "personal"},
+                {"question": "Do you have a disability", "answer": "No", "category": "personal"},
+                {"question": "Hispanic/Latino", "answer": "No", "category": "personal"},
+                {"question": "Race", "answer": "Asian", "category": "personal"},
+
+                # --- EMPLOYMENT & NOTICE ---
+                {"question": "Notice Period", "answer": "15 Days", "category": "employment"},
+                {"question": "How soon can you join", "answer": "Immediately", "category": "employment"},
+                {"question": "Current CTC", "answer": "1000000", "category": "employment"},
+                {"question": "Current Salary", "answer": "1000000", "category": "employment"},
+                {"question": "Expected CTC", "answer": "1500000", "category": "employment"},
+                {"question": "Expected Salary", "answer": "1500000", "category": "employment"},
+                {"question": "Are you currently employed", "answer": "Yes", "category": "employment"},
+                {"question": "Current Company", "answer": "Tech Solutions Inc", "category": "employment"},
+
+                # --- EXPERIENCE ---
+                {"question": "Total Experience", "answer": "5", "category": "experience"},
+                {"question": "Years of Experience", "answer": "5", "category": "experience"},
+                {"question": "Relevant Experience", "answer": "5", "category": "experience"},
+                {"question": "Management Experience", "answer": "No", "category": "experience"},
+                {"question": "work experience", "answer": "5", "category": "experience"},
+
+                # --- EDUCATION ---
+                {"question": "Highest Degree", "answer": "Bachelor's Degree", "category": "education"},
+                {"question": "Education Level", "answer": "Bachelor's Degree", "category": "education"},
+                {"question": "Have you completed a bachelor's decree", "answer": "Yes", "category": "education"},
+                {"question": "Have you completed a master's degree", "answer": "No", "category": "education"},
+                {"question": "Graduation Year", "answer": "2020", "category": "education"},
+                {"question": "GPA", "answer": "3.8", "category": "education"},
+
+                # --- LEGAL & COMPLIANCE ---
+                {"question": "Are you legally authorized to work in", "answer": "Yes", "category": "legal"},
+                {"question": "Do you require sponsorship", "answer": "No", "category": "legal"},
+                {"question": "Will you now or in the future require sponsorship", "answer": "No", "category": "legal"},
+                {"question": "US Citizen", "answer": "No", "category": "legal"},
+                {"question": "Background Check", "answer": "Yes", "category": "legal"},
+                {"question": "Drug Test", "answer": "Yes", "category": "legal"},
+                {"question": "Felony", "answer": "No", "category": "legal"},
+
+                # --- LOGISTICS ---
+                {"question": "Are you willing to relocate", "answer": "Yes", "category": "logistics"},
+                {"question": "Remote work", "answer": "Yes", "category": "logistics"},
+                {"question": "Hybrid work", "answer": "Yes", "category": "logistics"},
+                {"question": "When can you start", "answer": "Immediately", "category": "logistics"},
+                {"question": "Shift", "answer": "Day", "category": "logistics"},
+                
+                # --- SKILLS (General) ---
+                {"question": "Python", "answer": "5", "category": "skills"},
+                {"question": "Java", "answer": "3", "category": "skills"},
+                {"question": "SQL", "answer": "4", "category": "skills"},
+                {"question": "AWS", "answer": "3", "category": "skills"}
+            ]
+            for q in defaults:
+                db.add(QuestionAnswer(question=q['question'], answer=q['answer'], category=q['category']))
+            db.commit()
+            logger.info("Seeded default smart answers.")
+    except Exception as e:
+        logger.error(f"Error seeding defaults: {e}")
+    finally:
+        db.close()
+            
     logger.info("Database initialized successfully.")
 
 def get_db():

@@ -29,4 +29,4 @@ def setup_logger(name, log_file=None, level=logging.INFO):
     return logger
 
 # Create main application logger
-logger = setup_logger('IndianSmartApplier', 'logs/app.log')
+logger = setup_logger('HireLink', 'logs/app.log')

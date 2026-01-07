@@ -2,9 +2,10 @@ import streamlit as st
 import pandas as pd
 import threading
 import backend.database # Import module directly
-import importlib
-importlib.reload(backend.database) # Force reload
-from backend.database import get_db, Job, Resume, Application, PortalStatus # AppUser is accessed dynamically
+# importlib.reload logic removed for stability
+from backend.database import init_db, get_db, Job, Resume, Application, PortalStatus, QuestionAnswer
+# FORCE DB INIT to create new tables
+init_db()
 from backend.scrapers.naukri import NaukriScraper
 from backend.scrapers.linkedin import LinkedInScraper
 from backend.scrapers.indeed import IndeedScraper
@@ -13,8 +14,7 @@ from backend.scrapers.others import (
     IntershalaScraper, IIMJobsScraper, FreshersworldScraper, WellfoundScraper
 )
 import backend.agents.resume_parser
-import importlib
-importlib.reload(backend.agents.resume_parser)
+import backend.agents.auto_applier
 from backend.agents.resume_parser import ResumeParser
 from backend.agents.job_matcher import JobMatcher
 from backend.agents.auto_applier import AutoApplier
@@ -162,7 +162,7 @@ else:
     # Sidebar
     st.sidebar.header("Navigation")
     st.sidebar.markdown(f"**👤 {user.name}**")
-    menu = st.sidebar.radio("Go to", ["Dashboard", "Job Search", "Resumes", "Auto-Apply", "Login & Sessions"])
+    menu = st.sidebar.radio("Go to", ["Dashboard", "Job Search", "Resumes", "Auto-Apply", "Smart Answers", "Login & Sessions"])
 
     if menu == "Dashboard":
         st.header("📊 Dashboard")
@@ -277,18 +277,21 @@ else:
                     success_count = 0
                     
                     applier = AutoApplier()
-                    for i, m in enumerate(st.session_state['matches']):
-                        job = m['job']
-                        score = m['score']
-                        status_text.text(f"Applying to {job.company} ({i+1}/{len(st.session_state['matches'])})...")
+                    try:
+                        for i, m in enumerate(st.session_state['matches']):
+                            job = m['job']
+                            score = m['score']
+                            status_text.text(f"Applying to {job.company} ({i+1}/{len(st.session_state['matches'])})...")
+                            
+                            if applier.apply_to_job(job.id, selected_resume_id):
+                                success_count += 1
+                            
+                            progress_bar.progress((i + 1) / len(st.session_state['matches']))
                         
-                        if applier.apply_to_job(job.id, selected_resume_id):
-                            success_count += 1
-                        
-                        progress_bar.progress((i + 1) / len(st.session_state['matches']))
-                    
-                    status_text.text(f"Completed! Successfully applied to {success_count} jobs.")
-                    st.balloons()
+                        status_text.text(f"Completed! Successfully applied to {success_count} jobs.")
+                        st.balloons()
+                    finally:
+                        applier.close_browser()
                 
                 st.markdown("---")
                 st.subheader("Individual Matches")
@@ -318,11 +321,50 @@ else:
                     col1, col2 = st.columns([1, 4])
                     if col1.button("Apply Now", key=f"apply_{job.id}"):
                         applier = AutoApplier()
-                        if applier.apply_to_job(job.id, selected_resume_id):
-                            st.balloons()
-                            st.success(f"Successfully applied to {job.company}!")
-                        else:
-                            st.error("Application failed.")
+                        try:
+                            if applier.apply_to_job(job.id, selected_resume_id):
+                                st.balloons()
+                                st.success(f"Successfully applied to {job.company}!")
+                            else:
+                                st.error("Application failed.")
+                        finally:
+                            applier.close_browser()
+
+    elif menu == "Login & Sessions":
+        st.header("🔑 Session Manager")
+        # ... (keep existing login code logic if you were copying full file, but here we append new menu)
+        # This approach is hard with replace_file if I don't see the context.
+        # I will replace the MENU definitions first to include "Smart Answers".
+        
+    elif menu == "Smart Answers":
+        st.header("🧠 Smart Answer Memory")
+        st.info("Train your bot! Fill these out so it can answer questions for you.")
+        
+        # Group by Category
+        qa_list = db.query(QuestionAnswer).all()
+        categories = set([q.category for q in qa_list])
+        
+        for cat in categories:
+            with st.expander(f"{cat.title()} Questions", expanded=True):
+                cat_qs = [q for q in qa_list if q.category == cat]
+                for q in cat_qs:
+                    new_ans = st.text_input(f"{q.question}", value=q.answer, key=f"qa_{q.id}")
+                    if new_ans != q.answer:
+                        q.answer = new_ans
+                        db.commit()
+                        st.toast(f"Updated answer for {q.question}")
+                        
+        st.subheader("Add New Question Rule")
+        with st.form("add_qa"):
+            new_q = st.text_input("Question contains text (e.g., 'Python Experience')")
+            new_a = st.text_input("Answer to give (e.g., '5')")
+            new_c = st.selectbox("Category", ["experience", "personal", "legal", "education"])
+            if st.form_submit_button("Add Rule"):
+                if new_q and new_a:
+                    db.add(QuestionAnswer(question=new_q, answer=new_a, category=new_c))
+                    db.commit()
+                    st.success("Added new rule!")
+                    st.rerun()
 
     elif menu == "Login & Sessions":
         st.header("🔑 Session Manager")
