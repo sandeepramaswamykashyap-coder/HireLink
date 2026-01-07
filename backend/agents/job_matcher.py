@@ -8,8 +8,10 @@ class JobMatcher:
     def __init__(self):
         self.vectorizer = TfidfVectorizer(stop_words='english')
 
-    def match_jobs(self, resume_id, limit=50):
+    def match_jobs(self, resume_id, limit=50, days_lookback=30):
         db = next(get_db())
+        from datetime import datetime, timedelta
+        from backend.database import Application # Ensure imported
         
         # Get Resume
         resume = db.query(Resume).filter_by(id=resume_id).first()
@@ -17,8 +19,20 @@ class JobMatcher:
             logger.error(f"Resume {resume_id} not found")
             return []
             
-        # Get Jobs
-        jobs = db.query(Job).all()
+        # 1. Get IDs of jobs already applied to
+        applied_job_ids = [app.job_id for app in db.query(Application.job_id).all()]
+        
+        # 2. Query Jobs: Not Applied AND Recent
+        cutoff_date = datetime.utcnow() - timedelta(days=days_lookback)
+        jobs_query = db.query(Job).filter(
+            Job.scraped_date >= cutoff_date
+        )
+        
+        if applied_job_ids:
+            jobs_query = jobs_query.filter(~Job.id.in_(applied_job_ids))
+            
+        jobs = jobs_query.all()
+        
         if not jobs:
             return []
             

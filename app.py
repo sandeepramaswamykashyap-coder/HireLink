@@ -39,8 +39,7 @@ db = next(get_db())
 
 def launch_login_browser():
     from backend.utils import selenium_utils
-    import importlib
-    importlib.reload(selenium_utils) # Force reload
+    # Reload removed
     from backend.utils.selenium_utils import setup_driver
     
     st.info("Launching browser... Please login to Naukri, LinkedIn, Indeed manually in the popped-up window.")
@@ -165,66 +164,150 @@ else:
     menu = st.sidebar.radio("Go to", ["Dashboard", "Job Search", "Resumes", "Auto-Apply", "Smart Answers", "Login & Sessions"])
 
     if menu == "Dashboard":
-        st.header("📊 Dashboard")
+        # HERO SECTION
+        st.markdown(f"""
+        <div style="padding: 2rem 0; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <h1 style="margin:0; font-size: 3rem;">Hello, {user.name.split()[0]} 👋</h1>
+            <p style="color: #94a3b8; font-size: 1.2rem; margin-top: 10px;">
+                Your AI Recruiter is active. Here is your mission status.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
         
+        # 1. METRICS (Auto-styled by CSS)
         col1, col2, col3 = st.columns(3)
-        
         total_jobs = db.query(Job).count()
         total_resumes = db.query(Resume).count()
-        total_apps = db.query(Application).count()
+        total_apps = db.query(Application).filter(Application.status == "Applied").count() 
         
-        col1.metric("Total Jobs", total_jobs)
-        col2.metric("Resumes", total_resumes)
-        col3.metric("Applications Sent", total_apps)
+        col1.metric("Opportunities Found", total_jobs, delta="Total Scraped")
+        col2.metric("Talent Profiles", total_resumes, delta="Active Resumes")
+        col3.metric("Applications Fire", total_apps, delta=f"{round((total_apps/total_jobs)*100 if total_jobs else 0, 1)}% Conversion")
         
-        st.subheader("Portal Status")
+        st.markdown("---")
+        
+        # 2. CHARTS & HISTORY
+        c1, c2 = st.columns([2, 1])
+        
+        with c1:
+            st.subheader("Application History")
+            # Get successful applications
+            apps = db.query(Application, Job).join(Job, Application.job_id == Job.id).filter(Application.status == "Applied").limit(50).all()
+            
+            if apps:
+                data = []
+                for app, job in apps:
+                    data.append({
+                        "Date": app.applied_at.strftime("%Y-%m-%d"),
+                        "Company": job.company,
+                        "Job Title": job.title,
+                        "Portal": job.source
+                    })
+                df = pd.DataFrame(data)
+                st.dataframe(df, use_container_width=True)
+            else:
+                st.info("No successful applications yet. Go to Auto-Apply!")
+                
+        with c2:
+            st.subheader("Success Rate")
+            # Simple placeholder chart logic
+            if apps:
+                st.bar_chart(df["Date"].value_counts())
+            else:
+                st.write("Start applying to see analytics.")
+
+        st.subheader("Portal System Status")
         statuses = db.query(PortalStatus).all()
         if statuses:
-            status_data = [{"Portal": s.portal_name, "Status": s.status, "Last Scraped": s.last_scraped, "Jobs Found": s.total_jobs_found} for s in statuses]
-            st.dataframe(pd.DataFrame(status_data), use_container_width=True)
-        else:
-            st.info("No scraper activity yet.")
+            st.dataframe(pd.DataFrame([{"Portal": s.portal_name, "Status": s.status, "Last Scraped": s.last_scraped} for s in statuses]), use_container_width=True)
 
     elif menu == "Job Search":
         st.header("🔍 Job Search Agent")
         
         with st.form("search_form"):
             col1, col2 = st.columns(2)
-            keywords = col1.text_input("Keywords (e.g., Python Developer)")
-            location = col2.text_input("Location (e.g., Bangalore)")
-            portals = st.multiselect(
-                "Select Portals", 
-                ["Naukri", "LinkedIn", "Indeed", "Shine", "Glassdoor", "Foundit", "Intershala", "IIMJobs", "Freshersworld", "Wellfound"], 
-                default=["Naukri"]
-            )
-            submitted = st.form_submit_button("Start Scraping")
+            keywords = col1.text_input("Keywords", placeholder="e.g. Python Developer")
+            location = col2.text_input("Location", placeholder="e.g. Bangalore")
+            
+            st.markdown("**Select Portals:**")
+            # Custom 'Pills' Layout using Checkboxes in Columns
+            p1, p2, p3, p4 = st.columns(4)
+            naukri = p1.checkbox("Naukri", value=True)
+            linkedin = p2.checkbox("LinkedIn", value=True)
+            indeed = p3.checkbox("Indeed")
+            glassdoor = p4.checkbox("Glassdoor")
+            
+            p5, p6, p7, p8 = st.columns(4)
+            shine = p5.checkbox("Shine")
+            foundit = p6.checkbox("Foundit")
+            instahala = p7.checkbox("Intershala")
+            freshers = p8.checkbox("Freshersworld")
+            
+            p9, p10, p11, p12 = st.columns(4)
+            wellfound = p9.checkbox("Wellfound")
+            iimjobs = p10.checkbox("IIMJobs")
+            
+            submitted = st.form_submit_button("Start Scraping", type="primary")
             
         if submitted:
+            active_portals = []
+            if naukri: active_portals.append("Naukri")
+            if linkedin: active_portals.append("LinkedIn")
+            if indeed: active_portals.append("Indeed")
+            if glassdoor: active_portals.append("Glassdoor")
+            if shine: active_portals.append("Shine")
+            if foundit: active_portals.append("Foundit")
+            if instahala: active_portals.append("Intershala")
+            if freshers: active_portals.append("Freshersworld")
+            if wellfound: active_portals.append("Wellfound")
+            if iimjobs: active_portals.append("IIMJobs")
+            
             st.success(f"Started scraping for '{keywords}' in '{location}'...")
-            # Run in threads
-            for p in portals:
+            st.toast("Scraping started! Results will appear below shortly.")
+            
+            for p in active_portals:
                 t = threading.Thread(target=run_scraper, args=(p, keywords, location))
                 t.start()
-                st.info(f"Launched {p} scraper in background...")
+                st.toast(f"Launched {p} scraper...")
+            
+            time.sleep(1)
+            st.rerun()
                 
-        st.subheader("Latest Jobs")
-        jobs = db.query(Job).order_by(Job.scraped_date.desc()).limit(20).all()
+        st.markdown("---")
+        st.subheader("Latest Scraped Jobs")
+        
+        # PROCEED BUTTON
+        if st.button("✅ I have enough jobs -> Go to Auto-Apply", type="primary", use_container_width=True):
+             st.info("Switch to the 'Auto-Apply' tab in the sidebar to start applying!")
+        
+        # INCREASED LIMIT TO 100
+        jobs = db.query(Job).order_by(Job.scraped_date.desc()).limit(100).all()
+        
         if jobs:
-            for job in jobs:
-                st.markdown(f"""
-                <div class="job-card">
-                    <div class="job-title">{job.title}</div>
-                    <div class="job-company">{job.company}</div>
-                    <div class="job-meta">
-                        <span>📍 {job.location}</span>
-                        <span>🔗 {job.source}</span>
-                        <span>💰 {job.salary}</span>
+            tab1, tab2 = st.tabs(["Duplicate Card View", "Compact List View"])
+            
+            with tab1:
+                for job in jobs:
+                    st.markdown(f"""
+                    <div class="job-card">
+                        <div class="job-title">{job.title}</div>
+                        <div class="job-company">🏢 {job.company}</div>
+                        <div class="job-meta">
+                            <div class="job-pill">📍 {job.location}</div>
+                            <div class="job-pill">🔗 {job.source}</div>
+                            <div class="job-pill">💰 {job.salary}</div>
+                            <div class="job-pill">📅 {job.posted_date.strftime('%Y-%m-%d') if job.posted_date else 'Recent'}</div>
+                        </div>
                     </div>
-                </div>
-                """, unsafe_allow_html=True)
-                if st.button("Link", key=f"link_{job.id}"):
-                    # We can't open tabs easily from streamlit python, so we just show url
-                    st.write(f"URL: {job.url}")
+                    """, unsafe_allow_html=True)
+                    if st.button("Link", key=f"link_{job.id}"):
+                        st.write(f"URL: {job.url}")
+            
+            with tab2:
+                # DataFrame View
+                data = [{"Title": j.title, "Company": j.company, "Location": j.location, "Source": j.source, "Date": j.posted_date.strftime('%Y-%m-%d') if j.posted_date else 'Recent', "URL": j.url} for j in jobs]
+                st.dataframe(pd.DataFrame(data), use_container_width=True)
+                st.caption("Showing last 100 scraped jobs.")
         else:
             st.info("No jobs found yet.")
 
@@ -252,26 +335,39 @@ else:
     elif menu == "Auto-Apply":
         st.header("🤖 Auto-Apply Agent")
         
-        # Select Resume
-        resumes = db.query(Resume).all()
-        if not resumes:
-            st.warning("Please upload a resume first.")
-        else:
-            resume_options = {f"{r.name} ({r.id})": r.id for r in resumes}
-            selected_resume_name = st.selectbox("Select Resume", list(resume_options.keys()))
-            selected_resume_id = resume_options[selected_resume_name]
+        # 1. Control Panel
+        c1, c2 = st.columns([3, 1])
+        with c1:
+            resumes = db.query(Resume).all()
+            if not resumes:
+                st.warning("Please upload a resume first.")
+            else:
+                resume_options = {f"{r.name} ({r.id})": r.id for r in resumes}
+                selected_resume_name = st.selectbox("Select Resume", list(resume_options.keys()))
+                selected_resume_id = resume_options[selected_resume_name]
+        
+        with c2:
+            st.write("") # Spacer
+            st.write("")
+            find_btn = st.button("Find Matches", use_container_width=True)
+
+        if find_btn and resumes:
+            matcher = JobMatcher()
+            # INCREASED MATCH LIMIT TO 50
+            matches = matcher.match_jobs(selected_resume_id, limit=50)
+            st.session_state['matches'] = matches
+            st.success(f"Found {len(matches)} matches!")
             
-            if st.button("Find Matches"):
-                matcher = JobMatcher()
-                matches = matcher.match_jobs(selected_resume_id, limit=20)
-                st.session_state['matches'] = matches
-                st.success(f"Found {len(matches)} matches!")
-                
-            if 'matches' in st.session_state:
-                st.subheader("Results")
-                
-                # Bulk Apply Section
-                if st.button(f"🚀 Auto-Apply to All {len(st.session_state['matches'])} Top Matches"):
+        if 'matches' in st.session_state:
+            
+            # 2. BULK ACTION AREA (Top Right Prominent)
+            st.markdown("---")
+            col_info, col_btn = st.columns([2, 2])
+            with col_info:
+                st.subheader(f"Ready to Apply: {len(st.session_state['matches'])} Jobs")
+            with col_btn:
+                # BIG PRIMARY BUTTON
+                if st.button(f"🚀 START AUTO-APPLY ({len(st.session_state['matches'])})", type="primary", use_container_width=True):
                     progress_bar = st.progress(0)
                     status_text = st.empty()
                     success_count = 0
@@ -280,39 +376,35 @@ else:
                     try:
                         for i, m in enumerate(st.session_state['matches']):
                             job = m['job']
-                            score = m['score']
                             status_text.text(f"Applying to {job.company} ({i+1}/{len(st.session_state['matches'])})...")
-                            
                             if applier.apply_to_job(job.id, selected_resume_id):
                                 success_count += 1
-                            
                             progress_bar.progress((i + 1) / len(st.session_state['matches']))
                         
-                        status_text.text(f"Completed! Successfully applied to {success_count} jobs.")
+                        status_text.text(f"Completed! Applied to {success_count} jobs.")
                         st.balloons()
                     finally:
                         applier.close_browser()
+
+            st.markdown("---")
+            st.subheader("Match Breakdown")
                 
-                st.markdown("---")
-                st.subheader("Individual Matches")
-                
-                for m in st.session_state['matches']:
+            for m in st.session_state['matches']:
                     job = m['job']
                     score = m['score']
                     
-                    # Custom Card View
+                    # PREMIUM CARD VIEW
                     st.markdown(f"""
                     <div class="job-card">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div>
-                                <div class="job-title">{job.title}</div>
-                                <div class="job-company">{job.company}</div>
-                            </div>
-                            <div class="match-score">{score}% Match</div>
+                        <div class="match-score-badge">{score}% Match</div>
+                        <div class="job-title">{job.title}</div>
+                        <div class="job-company">
+                            <span>🏢 {job.company}</span>
                         </div>
                         <div class="job-meta">
-                            <span>📍 {job.location}</span>
-                            <span>🔗 {job.source}</span>
+                            <div class="job-pill">📍 {job.location}</div>
+                            <div class="job-pill">💰 {job.salary}</div>
+                            <div class="job-pill">🔗 {job.source}</div>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
@@ -330,12 +422,6 @@ else:
                         finally:
                             applier.close_browser()
 
-    elif menu == "Login & Sessions":
-        st.header("🔑 Session Manager")
-        # ... (keep existing login code logic if you were copying full file, but here we append new menu)
-        # This approach is hard with replace_file if I don't see the context.
-        # I will replace the MENU definitions first to include "Smart Answers".
-        
     elif menu == "Smart Answers":
         st.header("🧠 Smart Answer Memory")
         st.info("Train your bot! Fill these out so it can answer questions for you.")
