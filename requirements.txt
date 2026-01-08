@@ -14,3 +14,4 @@ pytesseract
 fake-useragent
 requests
 sqlalchemy
+google-generativeai

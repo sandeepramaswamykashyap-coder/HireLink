@@ -3,6 +3,14 @@ import pandas as pd
 import threading
 import backend.database # Import module directly
 # importlib.reload logic removed for stability
+import sys
+import importlib
+# FORCE RELOAD of LLM Client to pick up model fix
+if 'backend.utils.llm_client' in sys.modules:
+    del sys.modules['backend.utils.llm_client']
+if 'backend.agents.job_analyzer' in sys.modules:
+    del sys.modules['backend.agents.job_analyzer']
+
 from backend.database import init_db, get_db, Job, Resume, Application, PortalStatus, QuestionAnswer
 # FORCE DB INIT to create new tables
 init_db()
@@ -18,6 +26,7 @@ import backend.agents.auto_applier
 from backend.agents.resume_parser import ResumeParser
 from backend.agents.job_matcher import JobMatcher
 from backend.agents.auto_applier import AutoApplier
+from backend.agents.job_analyzer import JobAnalyzer
 import os
 import time
 
@@ -59,98 +68,282 @@ def launch_login_browser():
 def render_onboarding():
     st.markdown("""
     <style>
-        .onboarding-container { max-width: 600px; margin: auto; padding: 2rem; }
-        .step-title { font-size: 2rem; font-weight: 800; color: #3B82F6; margin-bottom: 1rem; }
-        .step-desc { font-size: 1.1rem; color: #94A3B8; margin-bottom: 2rem; }
+        /* Container Polish - Lighter & Elevated */
+        [data-testid="stVerticalBlockBorderWrapper"] {
+            background-color: #383a47 !important; /* SIGNIFICANTLY LIGHTER */
+            border: 1px solid #5a5a5a !important;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+            padding: 2.5rem !important;
+        }
+        .step-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .step-kicker {
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .step-desc {
+            color: #94a3b8;
+            font-size: 1rem;
+            line-height: 1.5;
+            max-width: 500px;
+            margin: auto;
+        }
+        .stTextInput > label, .stSelectbox > label {
+            color: #e2e8f0 !important;
+            font-weight: 600;
+        }
+        div[data-testid="stForm"] {
+            border: none;
+            padding: 0;
+        }
     </style>
     """, unsafe_allow_html=True)
     
-    # Step 1: Create Profile
     if 'onboarding_step' not in st.session_state:
         st.session_state['onboarding_step'] = 1
-
-    if st.session_state['onboarding_step'] == 1:
-        st.markdown('<div class="onboarding-container">', unsafe_allow_html=True)
-        st.markdown('<div class="step-title">Welcome to Hire Link</div>', unsafe_allow_html=True)
-        st.markdown('<div class="step-desc">Let\'s get you set up with your personal local AI recruiter.</div>', unsafe_allow_html=True)
-        
-        with st.form("profile_setup"):
-            name = st.text_input("What is your name?")
-            email = st.text_input("Your Email (for applications)")
-            submitted = st.form_submit_button("Next: Upload Resume ➔")
-            
-            if submitted and name and email:
-                # Create Profile
-                # Access AppUser dynamically to avoid caching issues
-                user = backend.database.AppUser(name=name, email=email)
-                db.add(user)
-                db.commit()
-                st.session_state['user_id'] = user.id
-                st.session_state['onboarding_step'] = 2
-                st.rerun() # Use standard rerun
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # Step 2: Upload Resume
-    elif st.session_state['onboarding_step'] == 2:
-        st.markdown('<div class="onboarding-container">', unsafe_allow_html=True)
-        st.markdown('<div class="step-title">Upload your Resume</div>', unsafe_allow_html=True)
-        st.markdown('<div class="step-desc">The AI will parse this to match you with jobs.</div>', unsafe_allow_html=True)
-        
-        uploaded_file = st.file_uploader("Upload PDF Resume", type="pdf")
-        if uploaded_file:
-            file_path = os.path.join("data/resumes", uploaded_file.name)
-            with open(file_path, "wb") as f:
-                f.write(uploaded_file.getbuffer())
-            
-            with st.spinner("Analyzing your resume..."):
-                parser = ResumeParser()
-                resume = parser.parse_and_save(file_path)
-                if resume:
-                    st.success(f"Great! We extracted keys skills: {', '.join(resume.parsed_data.get('skills', [])[:5])}")
-                    time.sleep(2)
-                    st.session_state['onboarding_step'] = 3
-                    st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # Step 3: Connect Accounts
-    elif st.session_state['onboarding_step'] == 3:
-        st.markdown('<div class="onboarding-container">', unsafe_allow_html=True)
-        st.markdown('<div class="step-title">Connect Your Accounts</div>', unsafe_allow_html=True)
-        st.markdown('<div class="step-desc">Launch the secure browser to login to your job portals once. We save the session cookies locally.</div>', unsafe_allow_html=True)
-        
-        if st.button("🚀 Launch Secure Login Browser"):
-            launch_login_browser()
-            
-        st.markdown("---")
-        if st.button("I'm Logged In - Finish Setup 🎉"):
-             user = db.query(backend.database.AppUser).first() # Assuming single user for now
-             if user:
-                 user.is_onboarded = True
-                 db.commit()
-                 st.balloons()
-                 time.sleep(2)
-                 st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
-def run_scraper(scraper_name, keywords, location):
-    scraper = None
-    if scraper_name == "Naukri": scraper = NaukriScraper()
-    elif scraper_name == "LinkedIn": scraper = LinkedInScraper()
-    elif scraper_name == "Indeed": scraper = IndeedScraper()
-    elif scraper_name == "Shine": scraper = ShineScraper()
-    elif scraper_name == "Glassdoor": scraper = GlassdoorScraper()
-    elif scraper_name == "Foundit": scraper = FounditScraper()
-    elif scraper_name == "Intershala": scraper = IntershalaScraper()
-    elif scraper_name == "IIMJobs": scraper = IIMJobsScraper()
-    elif scraper_name == "Freshersworld": scraper = FreshersworldScraper()
-    elif scraper_name == "Wellfound": scraper = WellfoundScraper()
     
-    if scraper:
-        scraper.search_jobs(keywords, location)
+    step = st.session_state['onboarding_step']
+    total_steps = 5
+    progress = step / total_steps
+    
+    # Progress Bar (Centered above card)
+    c1, c2, c3 = st.columns([1, 2, 1])
+    with c2:
+        st.progress(progress)
+        st.caption(f"Step {step} of {total_steps}")
+    
+    # Layout: [Spacer] [Card] [Spacer]
+    # To mimic a 500px card, we use strict column ratios.
+    main_col1, main_col2, main_col3 = st.columns([1, 2, 1])
+    
+    with main_col2:
+        st.markdown('<div class="onboarding-card">', unsafe_allow_html=True)
+        
+        # --- STEP 1: PROFILE ---
+        if step == 1:
+            st.markdown("""
+            <div class="step-header">
+                <div class="step-kicker">PROFILE</div>
+                <div class="step-title">Lock in your personal details once</div>
+                <div class="step-desc">We reuse these links when the agent applies, so you never have to paste them again.</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            with st.form("step1_form"):
+                name = st.text_input("FULL NAME *", placeholder="e.g. Sandeep Kashyap")
+                email = st.text_input("EMAIL *", placeholder="e.g. sandeep@example.com")
+                loc = st.text_input("CURRENT LOCATION *", placeholder="e.g. Bangalore, India")
+                linkedin = st.text_input("LINKEDIN PROFILE *", placeholder="https://www.linkedin.com/in/username")
+                website = st.text_input("PERSONAL WEBSITE", placeholder="https://yourportfolio.com")
+                github = st.text_input("GITHUB PROFILE", placeholder="https://github.com/username")
+                
+                st.write("")
+                if st.form_submit_button("NEXT STEP", type="primary", use_container_width=True):
+                    if name and email and loc and linkedin:
+                        # Save to Session State Temp
+                        st.session_state['ob_name'] = name
+                        st.session_state['ob_email'] = email
+                        st.session_state['ob_loc'] = loc
+                        st.session_state['ob_linkedin'] = linkedin
+                        st.session_state['ob_website'] = website
+                        st.session_state['ob_github'] = github
+                        st.session_state['onboarding_step'] = 2
+                        st.rerun()
+                    else:
+                        st.error("Please fill in all required fields marked with *")
+
+        # --- STEP 2: RESUME ---
+        elif step == 2:
+            st.markdown("""
+            <div class="step-header">
+                <div class="step-kicker">RESUME</div>
+                <div class="step-title">Upload your resume to get started</div>
+                <div class="step-desc">Drop your resume once and we will reuse it for every application our AI submits.</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            uploaded_file = st.file_uploader("Upload PDF", type="pdf")
+            
+            c1, c2 = st.columns([1, 1])
+            if c1.button("BACK", use_container_width=True):
+                 st.session_state['onboarding_step'] = 1
+                 st.rerun()
+                 
+            if uploaded_file:
+                # Auto-Advance Logic
+                if st.button("NEXT STEP", type="primary", use_container_width=True):
+                     file_path = os.path.join("data/resumes", uploaded_file.name)
+                     with open(file_path, "wb") as f:
+                         f.write(uploaded_file.getbuffer())
+                     
+                     with st.spinner("Analyzing resume..."):
+                         parser = ResumeParser()
+                         resume = parser.parse_and_save(file_path) # Saves Resume to DB
+                         st.session_state['ob_resume_id'] = resume.id
+                     
+                     st.session_state['onboarding_step'] = 3
+                     st.rerun()
+        # --- STEP 3: PREFERENCES (Roles/Locs) ---
+        elif step == 3:
+            st.markdown("""
+            <div class="step-header">
+                <div class="step-kicker">PREFERENCES</div>
+                <div class="step-title">Tell HireLink what to look for</div>
+                <div class="step-desc">Keep it focused: three roles and three locations is plenty for the Agent.</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            with st.form("step3_form", border=False):
+                st.markdown("**ROLES ***")
+                st.caption("Add titles you want the Agent to target.")
+                r1 = st.text_input("Role 1", placeholder="e.g. Senior Product Designer")
+                r2 = st.text_input("Role 2 (Optional)", placeholder="e.g. UX Designer")
+                r3 = st.text_input("Role 3 (Optional)", placeholder="e.g. Product Manager")
+                
+                st.markdown("**LOCATIONS ***")
+                st.caption("Search markets to pick up to three.")
+                l1 = st.text_input("Location 1", placeholder="e.g. Bangalore")
+                l2 = st.text_input("Location 2 (Optional)", placeholder="e.g. Remote")
+                l3 = st.text_input("Location 3 (Optional)", placeholder="e.g. Mumbai")
+                
+                st.markdown("**COMPANIES TO SKIP**")
+                skip = st.text_input("Optional — helpful for current employers.", placeholder="e.g. Current Employer Inc")
+                
+                st.write("")
+                c1, c2 = st.columns([1, 1])
+                if c2.form_submit_button("NEXT STEP", type="primary", use_container_width=True):
+                    if r1 and l1:
+                         st.session_state['ob_roles'] = f"{r1},{r2},{r3}".strip(',')
+                         st.session_state['ob_cities'] = f"{l1},{l2},{l3}".strip(',')
+                         st.session_state['ob_skip'] = skip
+                         st.session_state['onboarding_step'] = 4
+                         st.rerun()
+                    else:
+                        st.error("At least one Role and Location is required.")
+                        
+            if st.button("BACK", use_container_width=True):
+                st.session_state['onboarding_step'] = 2
+                st.rerun()
+
+        # --- STEP 4: WORK STYLE ---
+        elif step == 4:
+            st.markdown("""
+            <div class="step-header">
+                <div class="step-kicker">WORK ARRANGEMENT</div>
+                <div class="step-title">How do you want to work?</div>
+                <div class="step-desc">Pick how flexible you are so we can filter better.</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            with st.form("step4_form", border=False):
+                work_mode = st.radio("Work Arrangement", ["Any (Remote, Hybrid, or On-site)", "Remote only", "On-site / Hybrid only"])
+                
+                st.markdown("**INSTRUCTIONS & FILTERS**")
+                instructions = st.text_area("You can set them up later :)", placeholder="e.g. - Senior roles only - No crypto/web3 - No visa needed - Highlight startup exp")
+                
+                st.write("")
+                if st.form_submit_button("FINISH SETUP", type="primary", use_container_width=True):
+                    # FINAL SAVE TO DB
+                    is_first_user = db.query(backend.database.AppUser).count() == 0
+                    
+                    user = backend.database.AppUser(
+                        name=st.session_state.get('ob_name'),
+                        email=st.session_state.get('ob_email'),
+                        curr_loc=st.session_state.get('ob_loc'),
+                        linkedin=st.session_state.get('ob_linkedin'),
+                        website=st.session_state.get('ob_website'),
+                        github=st.session_state.get('ob_github'),
+                        target_roles=st.session_state.get('ob_roles'),
+                        target_cities=st.session_state.get('ob_cities'),
+                        skip_companies=st.session_state.get('ob_skip'),
+                        work_mode=work_mode,
+                        instructions=instructions,
+                        is_onboarded=False,
+                        is_admin=is_first_user # Grant Admin to first user
+                    )
+                    db.add(user)
+                    db.commit()
+                    st.session_state['onboarding_step'] = 5
+                    st.rerun()
+            
+            if st.button("BACK", use_container_width=True):
+                 st.session_state['onboarding_step'] = 3
+                 st.rerun()
+    
+        # --- STEP 5: CONNECT (Technical Step) ---
+        elif step == 5:
+            st.markdown("""
+            <div class="step-header">
+                <div class="step-kicker">FINAL STEP</div>
+                <div class="step-title">Connect Your Accounts</div>
+                <div class="step-desc">Launch the secure browser to login once. We save the session cookies locally.</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            if st.button("🚀 Launch Secure Login Browser", use_container_width=True):
+                launch_login_browser()
+                
+            st.write("")
+            if st.button("I'm All Set - Go to Dashboard 🎉", type="primary", use_container_width=True):
+                 user = db.query(backend.database.AppUser).first()
+                 if user:
+                     user.is_onboarded = True
+                     db.commit()
+                     st.balloons()
+                     st.rerun()
+
+def run_scraper(portals, keywords, location):
+    # Ensure iterability
+    if isinstance(portals, str): portals = [portals]
+    
+    total_new_jobs = 0
+    from backend.database import SessionLocal, Job
+    db = SessionLocal()
+    initial_count = db.query(Job).count()
+    db.close()
+    
+    for p_name in portals:
+        scraper = None
+        try:
+            if p_name == "Naukri": scraper = NaukriScraper()
+            elif p_name == "LinkedIn": scraper = LinkedInScraper()
+            elif p_name == "Indeed": scraper = IndeedScraper()
+            elif p_name == "Shine": scraper = ShineScraper()
+            elif p_name == "Glassdoor": scraper = GlassdoorScraper()
+            elif p_name == "Foundit": scraper = FounditScraper()
+            elif p_name == "Intershala": scraper = IntershalaScraper()
+            elif p_name == "IIMJobs": scraper = IIMJobsScraper()
+            elif p_name == "Freshersworld": scraper = FreshersworldScraper()
+            elif p_name == "Wellfound": scraper = WellfoundScraper()
+            
+            if scraper:
+                with st.spinner(f"Scraping {p_name}..."):
+                    try:
+                        scraper.search_jobs(keywords, location)
+                    except Exception as e:
+                        print(f"Error scraping {p_name}: {e}")
+        except: pass
+        
+    db = SessionLocal()
+    final_count = db.query(Job).count()
+    db.close()
+    
+    return max(0, final_count - initial_count)
 
 # --- MAIN CONTROLLER ---
 try:
-    # Use Access UserProfile dynamically
     user = db.query(backend.database.AppUser).filter_by(is_onboarded=True).first()
 except:
     user = None # Handle table not existing edge case if init failed
@@ -160,21 +353,152 @@ if not user:
 else:
     # Sidebar
     st.sidebar.header("Navigation")
-    st.sidebar.markdown(f"**👤 {user.name}**")
+    is_admin = getattr(user, 'is_admin', False)
+    st.sidebar.markdown(f"**👤 {user.name}**{' (Admin)' if is_admin else ''}")
     
     # TOUR TOGGLE
     tour_mode = st.sidebar.toggle("🗺️ Enable Tour Mode", value=False, help="Turn this on to see a guided walkthrough of features.")
     
+    if not hasattr(user, 'is_admin'):
+        st.error("⚠️ **SYSTEM UPDATE PENDING** ⚠️")
+        st.warning("Please restart your terminal to activate Admin features.")
+    
     if tour_mode:
         st.sidebar.info("👈 **Navigation Menu:** Switch between 'Job Search' (Finding Jobs) and 'Auto-Apply' (Matching & Applying).")
     
-    menu = st.sidebar.radio("Go to", ["Dashboard", "Job Search", "Resumes", "Auto-Apply", "Smart Answers", "Login & Sessions"])
+    nav_options = ["Dashboard", "Job Search", "Resumes", "Auto-Apply", "Smart Answers", "Login & Sessions"]
+    if is_admin:
+        nav_options.append("Admin Console")
+        
+    menu = st.sidebar.radio("Go to", nav_options)
+
+    # ... (Other menus same) ...
+    
+    if menu == "Admin Console":
+        st.header("🛡️ Admin Console")
+        st.markdown("Manage users and system health.")
+        
+        st.subheader("Registered Users")
+        users = db.query(backend.database.AppUser).all()
+        
+        for u in users:
+            with st.expander(f"{u.name} ({u.email}) {'👑 ADMIN' if u.is_admin else ''}", expanded=True):
+                c1, c2, c3 = st.columns(3)
+                c1.write(f"**Location:** {u.curr_loc}")
+                c2.write(f"**Role Targets:** {u.target_roles}")
+                c3.write(f"**Joined:** {u.created_at.strftime('%Y-%m-%d')}")
+                
+                if st.button("🗑️ Delete User", key=f"del_{u.id}"):
+                    if u.id == user.id:
+                        st.error("You cannot delete yourself!")
+                    else:
+                        db.delete(u)
+                        db.commit()
+                        st.success(f"Deleted {u.name}")
+                        st.rerun()
+                        
+        st.markdown("---")
+        st.markdown("---")
+        st.subheader("System Stats")
+        st.metric("Total Jobs in DB", db.query(Job).count())
+        st.metric("Total Applications Sent", db.query(Application).count())
+
+        st.markdown("---")
+        st.subheader("⚙️ System Configuration")
+        
+        # API KEY MANAGEMENT
+        current_key = os.getenv("GEMINI_API_KEY", "")
+        with st.form("config_form"):
+            st.markdown("**LLM Settings (Gemini)**")
+            st.caption("Required for Smart Resume Parsing and Cover Letters.")
+            
+            new_key = st.text_input("Gemini API Key", value=current_key if current_key else "", type="password", placeholder="AIzaSy...")
+            
+            if st.form_submit_button("Save Configuration"):
+                if new_key:
+                    # simplistic .env writer
+                    env_path = ".env"
+                    lines = []
+                    if os.path.exists(env_path):
+                        with open(env_path, "r") as f:
+                            lines = f.readlines()
+                    
+                    # Remove existing key
+                    lines = [l for l in lines if "GEMINI_API_KEY" not in l]
+                    lines.append(f"GEMINI_API_KEY={new_key}\n")
+                    
+                    with open(env_path, "w") as f:
+                        f.writelines(lines)
+                        
+                    os.environ["GEMINI_API_KEY"] = new_key
+                    st.success("API Key Saved! Please restart the app/terminal for full effect (some modules load env at startup).")
+                else:
+                    st.info("Key cleared.")
+
+# ... (Rest of app) ...
 
     if menu == "Dashboard":
-        # ... (Hero Section) ...
-    # (Leaving Dashboard lines alone for now, focus on Job Search changes below)
-    
-# ... (Skipping Dashboard logic to get to Job Search) ...
+        # HERO SECTION
+        st.markdown(f"""
+        <div style="padding: 2rem 0; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <h1 style="margin:0; font-size: 3rem;">Hello, {user.name.split()[0]} 👋</h1>
+            <p style="color: #94a3b8; font-size: 1.2rem; margin-top: 10px;">
+                Your AI Recruiter is active. Here is your mission status.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if tour_mode:
+            st.info("💡 **Dashboard:** This is your command center. See scraped jobs, active resumes, and application history.")
+        
+        # 1. METRICS (Auto-styled by CSS)
+        col1, col2, col3 = st.columns(3)
+        total_jobs = db.query(Job).count()
+        total_resumes = db.query(Resume).count()
+        total_apps = db.query(Application).filter(Application.status == "Applied").count() 
+        
+        col1.metric("Opportunities Found", total_jobs, delta="Total Scraped")
+        col2.metric("Talent Profiles", total_resumes, delta="Active Resumes")
+        col3.metric("Applications Fire", total_apps, delta=f"{round((total_apps/total_jobs)*100 if total_jobs else 0, 1)}% Conversion")
+        
+        st.markdown("---")
+        
+        # 2. CHARTS & HISTORY
+        c1, c2 = st.columns([2, 1])
+        
+        with c1:
+            st.subheader("Application History")
+            # Get successful applications
+            apps = db.query(Application, Job).join(Job, Application.job_id == Job.id).filter(Application.status == "Applied").limit(50).all()
+            
+            if apps:
+                data = []
+                for app, job in apps:
+                    data.append({
+                        "Date": app.applied_at.strftime("%Y-%m-%d"),
+                        "Company": job.company,
+                        "Job Title": job.title,
+                        "Portal": job.source
+                    })
+                df = pd.DataFrame(data)
+                st.dataframe(df, use_container_width=True)
+            else:
+                st.info("No successful applications yet. Go to Auto-Apply!")
+                
+        with c2:
+            st.subheader("Recent Activity")
+            # Show last 5 logs or app status
+            recent_apps = db.query(Application).order_by(Application.applied_at.desc()).limit(5).all()
+            if recent_apps:
+                for a in recent_apps:
+                     st.write(f"🕒 {a.applied_at.strftime('%H:%M')} - Applied to {a.job_id}")
+            else:
+                st.info("No activity yet.")
+
+        st.subheader("Portal System Status")
+        statuses = db.query(PortalStatus).all()
+        if statuses:
+            st.dataframe(pd.DataFrame([{"Portal": s.portal_name, "Status": s.status, "Last Scraped": s.last_scraped} for s in statuses]), use_container_width=True)
 
     elif menu == "Job Search":
         st.header("🔍 Job Search Agent")
@@ -192,61 +516,58 @@ else:
             keywords = col1.text_input("Keywords", placeholder="e.g. Python Developer")
             location = col2.text_input("Location", placeholder="e.g. Bangalore")
             
-            st.markdown("**Select Portals:**")
-            if tour_mode:
-                st.caption("ℹ️ **Tip:** Naukri and LinkedIn are the best. Select more for volume.")
-                
-            # Custom 'Pills' Layout using Checkboxes in Columns
-            p1, p2, p3, p4 = st.columns(4)
-            naukri = p1.checkbox("Naukri", value=True)
-            linkedin = p2.checkbox("LinkedIn", value=True)
-            indeed = p3.checkbox("Indeed")
-            glassdoor = p4.checkbox("Glassdoor")
+            # Neat Widget Arrangement (Pills)
+            st.markdown("##### 🌐 Select Job Portals")
             
-            p5, p6, p7, p8 = st.columns(4)
-            shine = p5.checkbox("Shine")
-            foundit = p6.checkbox("Foundit")
-            instahala = p7.checkbox("Intershala")
-            freshers = p8.checkbox("Freshersworld")
+            # Status Mapping for UI
+            portal_map = {
+                "LinkedIn": "LinkedIn ✅",
+                "IIMJobs": "IIMJobs ✅",
+                "Shine": "Shine ✅",
+                "Foundit": "Foundit ✅",
+                "Intershala": "Internshala ✅",
+                "Freshersworld": "Freshersworld ✅",
+                "Glassdoor": "Glassdoor ✅",
+                "Wellfound": "Wellfound ⚠️",
+                "Indeed": "Indeed ⚠️", 
+                "Naukri": "Naukri ❌"
+            }
             
-            p9, p10, p11, p12 = st.columns(4)
-            wellfound = p9.checkbox("Wellfound")
-            iimjobs = p10.checkbox("IIMJobs")
+            all_portals_ui = list(portal_map.values())
             
-            submitted = st.form_submit_button("Start Scraping", type="primary")
+            with st.container(border=True):
+                 st.caption("✅ Recommended  |  ⚠️ Unstable  |  ❌ Crashing  |  🚧 Coming Soon")
+                 selected_portals_ui = st.pills(
+                     "Portals",
+                     options=all_portals_ui,
+                     default=["LinkedIn ✅"],
+                     selection_mode="multi",
+                     label_visibility="collapsed"
+                 )
+            
+            st.write("") # Spacer
+            submitted = st.form_submit_button("Start Scraping", type="primary", use_container_width=True)
             
         if submitted:
-            active_portals = []
-            if naukri: active_portals.append("Naukri")
-            if linkedin: active_portals.append("LinkedIn")
-            if indeed: active_portals.append("Indeed")
-            if glassdoor: active_portals.append("Glassdoor")
-            if shine: active_portals.append("Shine")
-            if foundit: active_portals.append("Foundit")
-            if instahala: active_portals.append("Intershala")
-            if freshers: active_portals.append("Freshersworld")
-            if wellfound: active_portals.append("Wellfound")
-            if iimjobs: active_portals.append("IIMJobs")
+            # Clean up UI selection to get backend keys
+            # "LinkedIn ✅" -> "LinkedIn"
+            active_portals = [p.split(" ")[0] for p in selected_portals_ui] if selected_portals_ui else []
             
-            st.toast("Scraping started! Please wait...")
-            
-            with st.status("🔍 Scouting the web for jobs...", expanded=True) as status:
-                threads = []
-                for p in active_portals:
-                    st.write(f"Connecting to {p}...")
-                    t = threading.Thread(target=run_scraper, args=(p, keywords, location))
-                    t.start()
-                    threads.append(t)
-                
-                # Wait for all to finish
-                for t in threads:
-                    t.join()
-                
-                status.update(label="✅ Scraping Complete!", state="complete", expanded=False)
-            
-            st.success("Scraping finished! Refreshing results...")
-            time.sleep(1)
-            st.rerun()
+            if not keywords or not location:
+                 st.error("Please enter Keywords and Location")
+            elif not active_portals:
+                 st.error("Please select at least one portal")
+            else:
+                 with st.spinner(f"Scraping {len(active_portals)} portals for '{keywords}' in '{location}'..."):
+                     # Run Scraper (Synchronously for now to ensure data is ready)
+                     count = run_scraper(active_portals, keywords, location)
+                     if count > 0:
+                         st.success(f"Found {count} new jobs! 🎉")
+                     else:
+                         st.info("Scraping complete. No *new* jobs added (duplicates skipped). Check the list below for results. ⬇️")
+                     
+                     time.sleep(1.5)
+                     st.rerun()
                 
         st.markdown("---")
         st.subheader("Latest Scraped Jobs")
@@ -254,78 +575,195 @@ else:
         # INCREASED LIMIT TO 100
         jobs = db.query(Job).order_by(Job.scraped_date.desc()).limit(100).all()
         
-        # PROCEED / BULK APPLY BUTTONS
-        c1, c2 = st.columns(2)
-        if c1.button("✅ Go to Auto-Apply Tab (Matcher)", use_container_width=True):
-             st.info("Switch to the 'Auto-Apply' tab in the sidebar to use smart matching!")
-             
-        if c2.button(f"⚡ Bulk Apply to ALL {len(jobs) if jobs else 0} Jobs", type="primary", use_container_width=True):
-            default_resume = db.query(Resume).first()
-            if not default_resume:
-                st.error("Please upload a resume first in 'Resumes' tab!")
-            elif not jobs:
-                st.warning("No jobs to apply to.")
-            else:
-                progress_bar = st.progress(0)
-                status_text = st.empty()
-                success_count = 0
-                applier = AutoApplier()
-                try:
-                    for i, job in enumerate(jobs):
-                        status_text.text(f"Applying to {job.company} ({i+1}/{len(jobs)})...")
-                        if applier.apply_to_job(job.id, default_resume.id):
-                             success_count += 1
-                        progress_bar.progress((i + 1) / len(jobs))
-                    
-                    st.balloons()
-                    st.success(f"Batch Complete! Applied to {success_count} jobs.")
-                finally:
-                    applier.close_browser()
-        
-        # INCREASED LIMIT TO 100
-        jobs = db.query(Job).order_by(Job.scraped_date.desc()).limit(100).all()
         
         if jobs:
+            # --- BULK SELECTION CONTROLS ---
+            c_toggle, c_bulk_btn = st.columns([1, 3])
+            bulk_mode = c_toggle.toggle("✅ Enable Multi-Select", help="Switch to selection mode to apply to multiple jobs at once.")
+            
             tab1, tab2 = st.tabs(["Job Cards", "Table View"])
             
             with tab1:
-                # Get Default Resume for Quick Apply
                 default_resume = db.query(Resume).first()
+                if not default_resume and (bulk_mode or st.session_state.get('bulk_apply_clicked')):
+                     st.error("Please upload a resume first to apply!")
                 
-                for job in jobs:
-                    st.markdown(f"""
-                    <div class="job-card">
-                        <div class="job-title">{job.title}</div>
-                        <div class="job-company">🏢 {job.company}</div>
-                        <div class="job-meta">
-                            <div class="job-pill">📍 {job.location}</div>
-                            <div class="job-pill">🔗 {job.source}</div>
-                            <div class="job-pill">💰 {job.salary}</div>
-                            <div class="job-pill">📅 {job.posted_date.strftime('%Y-%m-%d') if job.posted_date else 'Recent'}</div>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    c1, c2 = st.columns([1, 4])
-                    if c1.button("⚡ Quick Apply", key=f"quick_apply_{job.id}", type="secondary"):
-                        if not default_resume:
-                            st.error("Please upload a resume first in 'Resumes' tab!")
-                        else:
-                            applier = AutoApplier()
-                            try:
-                                status_placeholder = st.empty()
-                                status_placeholder.info(f"Applying to {job.company}...")
-                                if applier.apply_to_job(job.id, default_resume.id):
-                                    st.toast(f"✅ Applied to {job.company}!")
-                                    status_placeholder.success("Applied!")
+                # Constrain Width (Center the cards)
+                sp1, center_col, sp2 = st.columns([1, 10, 1])
+                
+                with center_col:
+                    # --- BULK MODE UI ---
+                    if bulk_mode:
+                        # CONTROLS OUTSIDE FORM (Interactive)
+                        c_sel, c_count = st.columns([2, 5])
+                        select_all = c_sel.checkbox("Select All Jobs")
+                        if select_all:
+                            c_count.info(f"✅ {len(jobs)} jobs selected")
+                        
+                        with st.form("bulk_apply_form"):
+                            # TOP BUTTON
+                            top_submit = st.form_submit_button("⚡ Apply", type="primary", use_container_width=True, help="Apply to checked jobs", key="bulk_apply_top")
+                            
+                            # TOP PROGRESS PLACEHOLDERS (Visible when running)
+                            top_progress = st.empty()
+                            top_status = st.empty()
+                            
+                            st.divider()
+                            
+                            selected_job_ids = []
+                            
+                            # Render Checkbox Cards
+                            for job in jobs:
+                                with st.container(border=True):
+                                    c_chk, c_info = st.columns([0.5, 9.5])
+                                    with c_chk:
+                                        st.write("") 
+                                        # Force re-render by including state in key
+                                        chk_key = f"chk_{job.id}_ALL-{select_all}"
+                                        if st.checkbox("Select", key=chk_key, value=select_all, label_visibility="collapsed"):
+                                            selected_job_ids.append(job.id)
+                                    
+                                    with c_info:
+                                        # Row 1: Title
+                                        st.markdown(f"#### {job.title}")
+                                        
+                                        # Row 2: Company & Location (Gray text)
+                                        st.markdown(f"<div style='color:#94a3b8; margin-bottom: 8px;'>🏢 {job.company} &nbsp;•&nbsp; 📍 {job.location}</div>", unsafe_allow_html=True)
+                                        
+                                        # Row 3: Pills (Source as valid widget-like pill)
+                                        # Use the existing 'job-pill' class from CSS
+                                        source_pill = f'<span class="job-pill">🔗 {job.source}</span>'
+                                        salary_pill = f'<span class="job-pill">💰 {job.salary or "N/A"}</span>'
+                                        date_pill = f'<span class="job-pill">📅 {job.posted_date.strftime("%Y-%m-%d") if job.posted_date else "Recent"}</span>'
+                                        
+                                        st.markdown(f"""
+                                        <div style="display: flex; gap: 10px; flex-wrap: wrap; padding-bottom: 12px;">
+                                            {source_pill}
+                                            {salary_pill}
+                                            {date_pill}
+                                        </div>
+                                        """, unsafe_allow_html=True)
+                            
+                            st.write("")
+                            bottom_submit = st.form_submit_button("⚡ Apply", type="primary", use_container_width=True, help="Apply to checked jobs", key="bulk_apply_bottom")
+                            
+                            
+                            if top_submit or bottom_submit:
+                                if not selected_job_ids:
+                                    st.warning("No jobs selected.")
                                 else:
-                                    st.toast(f"❌ Failed to apply to {job.company}")
-                                    status_placeholder.error("Failed.")
-                            finally:
-                                applier.close_browser()
+                                    if not default_resume:
+                                        st.error("Resume missing!")
+                                    else:
+                                        # PROCESS BULK
+                                        # Initialize Bottom placeholders too
+                                        progress_bar = st.progress(0)
+                                        status_text = st.empty()
+                                        
+                                        success_cnt = 0
+                                        applier = AutoApplier()
+                                        try:
+                                            total = len(selected_job_ids)
+                                            for i, jid in enumerate(selected_job_ids):
+                                                msg = f"Applying... ({i+1}/{total})"
+                                                
+                                                # Update BOTH Top and Bottom
+                                                status_text.text(msg)
+                                                top_status.info(msg) # Use info for better visibility
+                                                
+                                                progress_val = (i + 1) / total
+                                                progress_bar.progress(progress_val)
+                                                top_progress.progress(progress_val)
+                                                
+                                                if applier.apply_to_job(jid, default_resume.id):
+                                                    success_cnt += 1
+                                            
+                                            st.balloons()
+                                            success_msg = f"Done! Sent {success_cnt} apps."
+                                            st.success(success_msg)
+                                            top_status.success(success_msg)
+                                            
+                                            time.sleep(2)
+                                            st.rerun()
+                                        finally:
+                                            applier.close_browser()
+
+                    # --- STANDARD MODE UI ---
+                    else:
+                        for job in jobs:
+                            # Boxed Card (Restored)
+                            with st.container(border=True):
+                                # Adjusted ratio to prevent overlap: 3 parts info, 1 part actions
+                                c_info, c_actions = st.columns([3, 1])
                                 
-                    if c2.button("Link", key=f"link_{job.id}"):
-                        st.write(f"URL: {job.url}")
+                                with c_info:
+                                    # Row 1: Title
+                                    st.markdown(f"#### {job.title}")
+                                    
+                                    # Row 2: Company & Location
+                                    st.markdown(f"<div style='color:#94a3b8; margin-bottom: 8px;'>🏢 {job.company} &nbsp;•&nbsp; 📍 {job.location}</div>", unsafe_allow_html=True)
+                                    
+                                    # Row 3: Pills (Source, Salary, Date)
+                                    source_pill = f'<span class="job-pill">🔗 {job.source}</span>'
+                                    salary_pill = f'<span class="job-pill">💰 {job.salary or "N/A"}</span>'
+                                    date_pill = f'<span class="job-pill">📅 {job.posted_date.strftime("%Y-%m-%d") if job.posted_date else "Recent"}</span>'
+                                    
+                                    st.markdown(f"""
+                                    <div style="display: flex; gap: 10px; flex-wrap: wrap; padding-bottom: 12px;">
+                                        {source_pill}
+                                        {salary_pill}
+                                        {date_pill}
+                                    </div>
+                                    """, unsafe_allow_html=True)
+                                    
+                                with c_actions:
+                                    # Action Buttons
+                                    key_apply = f"quick_apply_{job.id}"
+                                    if st.button("Apply", key=key_apply, use_container_width=True, type="primary"):
+                                        if not default_resume:
+                                            st.error("No Resume!")
+                                        else:
+                                            applier = AutoApplier()
+                                            st.toast(f"Applying to {job.company}...")
+                                            try:
+                                                if applier.apply_to_job(job.id, default_resume.id):
+                                                     st.success("Applied!")
+                                                else:
+                                                     st.error("Failed")
+                                            except Exception as e:
+                                                st.error(f"Err: {e}")
+                                            finally:
+                                                applier.close_browser()
+                                    
+                                    # Analyze Button
+                                    key_analyze = f"analyze_{job.id}"
+                                    if st.button("Analyze Fit 🧠", key=key_analyze, use_container_width=True):
+                                        if not default_resume:
+                                            st.error("Resume Required")
+                                        elif not os.getenv("GEMINI_API_KEY"):
+                                            st.error("Add API Key in Admin Console")
+                                        else:
+                                            with st.spinner("Asking AI Recruiter..."):
+                                                analyzer = JobAnalyzer()
+                                                result = analyzer.analyze_suitability(job.description or job.title, default_resume.raw_text)
+                                                if result:
+                                                    st.session_state[f"analysis_{job.id}"] = result
+                                                else:
+                                                    st.error("Analysis Failed")
+
+                                    # Restore Button Link
+                                    st.link_button("View 🔗", job.url, use_container_width=True)
+                            
+                            # Show Analysis Result (if available)
+                            if f"analysis_{job.id}" in st.session_state:
+                                res = st.session_state[f"analysis_{job.id}"]
+                                if res:
+                                    with st.expander(f"🧠 Analysis: {res.get('score', 0)}/100 Match", expanded=True):
+                                        st.markdown(f"**Reasoning:** {res.get('match_reason', 'N/A')}")
+                                        if res.get('missing_skills'):
+                                            st.error(f"**Missing Skills:** {', '.join(res.get('missing_skills'))}")
+                                        if res.get('keywords_to_add'):
+                                            st.info(f"**Add Keywords:** {', '.join(res.get('keywords_to_add'))}")
             
             with tab2:
                 # DataFrame View
@@ -495,3 +933,5 @@ else:
         
         if st.button("Launch Browser for Login"):
             launch_login_browser()
+
+# Force Reload Triggered by Agent

@@ -257,27 +257,30 @@ class AutoApplier:
                     except Exception as e:
                         logger.info(f"Not a LinkedIn modal or error: {e}")
                         
-                        # Fallback to simple form filling (original logic)
+                        # Fallback to simple form filling (original logic) REMOVED
+                        # UPGRADED: Use LLM Universal Filler
+                        logger.info("Engaging Universal LLM Form Filler...")
                         try:
-                            name_inputs = self.driver.find_elements(By.XPATH, "//input[contains(@name, 'name') or contains(@id, 'name') or contains(@autocomplete, 'name')]")
-                            if name_inputs and resume_data['name']:
-                                name_inputs[0].clear()
-                                name_inputs[0].send_keys(resume_data['name'])
-                        except: pass
-                        
-                        try:
-                            email_inputs = self.driver.find_elements(By.XPATH, "//input[contains(@name, 'email') or contains(@type, 'email')]")
-                            if email_inputs and resume_data['email']:
-                                email_inputs[0].clear()
-                                email_inputs[0].send_keys(resume_data['email'])
-                        except: pass
-                        
-                        try:
-                            phone_inputs = self.driver.find_elements(By.XPATH, "//input[contains(@name, 'phone') or contains(@type, 'tel')]")
-                            if phone_inputs and resume_data['phone']:
-                                phone_inputs[0].clear()
-                                phone_inputs[0].send_keys(resume_data['phone'])
-                        except: pass
+                            from backend.agents.llm_form_filler import LLMFormFiller
+                            filler = LLMFormFiller(self.driver)
+                            
+                            # Construct Profile Object for Filler
+                            user_profile = {
+                                "name": resume_data['name'],
+                                "email": resume_data['email'],
+                                "phone": resume_data['phone'],
+                                "skills": ["Python", "Java", "SQL", "AWS"], # STUB: Should fetch from parsed resume
+                                "experience": "5 Years" # STUB
+                            }
+                            # Ideally we fetch full parsed resume data here
+                            
+                            if filler.fill_form(user_profile):
+                                logger.info("LLM Filler executed successfully.")
+                            else:
+                                logger.warning("LLM Filler could not determine actions.")
+                                
+                        except Exception as e:
+                            logger.error(f"LLM Filler crashed: {e}")
                     
                     # Screenshot
                     if not os.path.exists("data/screenshots"):

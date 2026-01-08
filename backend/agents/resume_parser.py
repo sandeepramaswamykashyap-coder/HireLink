@@ -3,6 +3,8 @@ import spacy
 import re
 from backend.utils.logger import logger
 from backend.database import Resume, get_db
+from backend.utils.llm_client import LLMClient
+import json
 
 # Safe Data Transfer Object (POJO)
 class SimpleResume:
@@ -12,6 +14,7 @@ class SimpleResume:
 
 class ResumeParser:
     def __init__(self):
+        self.llm_client = LLMClient()
         try:
             self.nlp = spacy.load("en_core_web_sm")
         except:
@@ -32,6 +35,7 @@ class ResumeParser:
             logger.error(f"Error reading PDF {file_path}: {e}")
             return ""
 
+    # --- REGEX FALLBACKS ---
     def extract_email(self, text):
         email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
         matches = re.findall(email_pattern, text)
@@ -64,26 +68,68 @@ class ResumeParser:
                 found_skills.append(skill)
         return found_skills
 
+    # --- LLM EXTRACTION ---
+    def extract_with_llm(self, text):
+        prompt = f"""
+        You are an expert Resume Parser. Extract the following details from the resume text below into a valid JSON object.
+        
+        Fields required:
+        - name (string)
+        - email (string)
+        - phone (string)
+        - skills (list of strings)
+        - experience (list of objects with 'role', 'company', 'years', 'description')
+        - education (list of objects with 'degree', 'school', 'year')
+        - summary (string: brief professional summary)
+
+        Resume Text:
+        {text[:4000]} 
+        """
+        # Truncate text to avoid token limits if necessary, though Gemini handles large context well.
+        
+        return self.llm_client.generate_json(prompt)
+
     def parse_and_save(self, file_path):
         text = self.extract_text(file_path)
         if not text:
             return None
         
-        data = {
-            "name": self.extract_name(text),
-            "email": self.extract_email(text),
-            "phone": self.extract_phone(text),
-            "skills": self.extract_skills(text)
-        }
+        data = {}
         
+        # 1. Try LLM Extraction
+        if self.llm_client.client:
+            logger.info("Attempting LLM extraction...")
+            llm_data = self.extract_with_llm(text)
+            if llm_data:
+                data = llm_data
+                logger.info("LLM extraction successful.")
+            else:
+                logger.warning("LLM extraction failed or returned empty. Falling back to specific extractors.")
+        
+        # 2. Fallback / Fill missing with Regex
+        if not data.get('email'): data['email'] = self.extract_email(text)
+        if not data.get('phone'): data['phone'] = self.extract_phone(text)
+        if not data.get('name') or data['name'] == "Unknown": data['name'] = self.extract_name(text)
+        if not data.get('skills'): data['skills'] = self.extract_skills(text)
+        
+        # Ensure regex email matches what is in data if data is empty
+        # If LLM failed completely
+        if not data:
+             data = {
+                "name": self.extract_name(text),
+                "email": self.extract_email(text),
+                "phone": self.extract_phone(text),
+                "skills": self.extract_skills(text)
+            }
+
         # Save to DB
         from backend.database import SessionLocal
         db = SessionLocal()
         try:
             resume = Resume(
-                name=data['name'],
-                email=data['email'],
-                phone=data['phone'],
+                name=data.get('name'),
+                email=data.get('email'),
+                phone=data.get('phone'),
                 raw_text=text,
                 parsed_data=data,
                 file_path=file_path
@@ -94,7 +140,7 @@ class ResumeParser:
             
             # CRITICAL: Create Safe Return Object (POJO) to avoid Separation logic issues
             safe_resume = SimpleResume(resume.id, data)
-            logger.info(f"Parsed and saved resume for {data['name']}")
+            logger.info(f"Parsed and saved resume for {data.get('name')}")
             
             return safe_resume # Return POJO, NOT the SQLAlchemy object
             

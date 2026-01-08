@@ -57,12 +57,26 @@ class Application(Base):
     screenshot_path = Column(String)
 
 class AppUser(Base):
-    __tablename__ = 'app_user'
+    __tablename__ = 'users_v2'
     id = Column(Integer, primary_key=True)
     name = Column(String)
     email = Column(String)
     is_onboarded = Column(Boolean, default=False)
+    is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Enhanced Profile Fields
+    curr_loc = Column(String)
+    linkedin = Column(String)
+    website = Column(String)
+    github = Column(String)
+    
+    # Preferences
+    target_roles = Column(String) # JSON or Comma-separated
+    target_cities = Column(String)
+    skip_companies = Column(String)
+    work_mode = Column(String) # Remote, Hybrid, Onsite
+    instructions = Column(Text)
 
 class QuestionAnswer(Base):
     __tablename__ = 'question_answers'

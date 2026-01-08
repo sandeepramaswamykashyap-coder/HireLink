@@ -29,6 +29,8 @@ def setup_driver(headless=True, profile_dir=None, detach=False):
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--disable-gpu')
     options.add_argument('--window-size=1920,1080')
+    # options.add_argument('--remote-debugging-port=9222') # REMOVED: Causes conflicts if multiple instances run
+    options.add_argument('--disable-search-engine-choice-screen')
     
     # Use a FIXED User-Agent to ensure session cookies remain valid
     # Randomizing it causes sites to think it's a new device, invalidating the login.
@@ -40,15 +42,9 @@ def setup_driver(headless=True, profile_dir=None, detach=False):
         options.add_argument(f"user-data-dir={profile_dir}")
         logger.info(f"Using custom profile: {profile_dir}")
     else:
-        # Default local profile
-        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        default_profile = os.path.join(base_dir, 'data', 'chrome_profile')
-        if not os.path.exists(default_profile):
-            try:
-                os.makedirs(default_profile)
-            except: pass
-        options.add_argument(f"user-data-dir={default_profile}")
-        logger.info(f"Using default profile: {default_profile}")
+        # If no profile specified, let Selenium create a fresh temp profile automatically.
+        # This is the safest way to avoid locking conflicts.
+        logger.info("Using native temporary profile (isolated session)")
     
     # Anti-detection
     options.add_argument('--disable-blink-features=AutomationControlled')

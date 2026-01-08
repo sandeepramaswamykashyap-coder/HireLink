@@ -47,9 +47,18 @@ class LinkedInScraper(BaseScraper):
                     
                     job_url = link_elem.get_attribute("href")
                     
+                    title_text = title_elem.text.strip()
+                    company_text = company_elem.text.strip()
+                    
+                    # Validation: Skip obfuscated, empty, or too short data
+                    if "*****" in title_text or "*****" in company_text:
+                        continue
+                    if len(title_text) < 2 or len(company_text) < 2:
+                         continue
+                        
                     job_data = {
-                        "title": title_elem.text.strip(),
-                        "company": company_elem.text.strip(),
+                        "title": title_text,
+                        "company": company_text,
                         "location": loc_elem.text.strip(),
                         "url": job_url,
                         "description": "See Link",
