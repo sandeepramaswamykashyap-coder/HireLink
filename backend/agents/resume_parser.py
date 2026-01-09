@@ -53,10 +53,43 @@ class ResumeParser:
 
     def extract_name(self, text):
         # Heuristic: First line or using Spacy PERSON
+        # PROBLEM: Spacy sometimes tags "Jira", "Python", "SQL" as PERSON
+        
         doc = self.nlp(text)
+        
+        # Blacklist of common false positives
+        blacklist = {
+            "jira", "python", "sql", "java", "react", "aws", "docker", "kubernetes", "c++", 
+            "html", "css", "javascript", "developer", "engineer", "resume", "cv", "curriculum", "vitae",
+            "experience", "summary", "skills", "education", "contact", "email", "phone", "address",
+            "project", "projects", "work", "history", "profile", "objective", "declaration",
+            "date", "place", "signature", "name", "dob", "gender", "nationality", "marital", "status"
+        }
+        
+        candidates = []
         for ent in doc.ents:
             if ent.label_ == "PERSON":
-                return ent.text
+                cleaned_name = ent.text.strip()
+                # Validation:
+                # 1. Length > 2
+                # 2. Not in blacklist
+                # 3. No digits
+                # 4. At least 2 words? (Maybe singular names allowed but rare)
+                
+                if len(cleaned_name) > 2 and \
+                   cleaned_name.lower() not in blacklist and \
+                   not any(char.isdigit() for char in cleaned_name):
+                    candidates.append(cleaned_name)
+                    
+        # Prefer the first candidate that looks reasonable (2+ words)
+        for c in candidates:
+            if " " in c:
+                return c
+                
+        # Fallback to first single word candidate if no multi-word found
+        if candidates:
+            return candidates[0]
+            
         return "Unknown"
 
     def extract_skills(self, text):

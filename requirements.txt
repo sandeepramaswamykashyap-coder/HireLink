@@ -15,3 +15,12 @@ fake-useragent
 requests
 sqlalchemy
 google-generativeai
+razorpay
+razorpay
+scrapy
+python-jobspy
+django
+kivy
+pyqt6
+numpy
+nltk

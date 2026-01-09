@@ -38,13 +38,23 @@ def setup_driver(headless=True, profile_dir=None, detach=False):
     options.add_argument(f'user-agent={fixed_ua}')
     
     # Profile Persistence
-    if profile_dir:
-        options.add_argument(f"user-data-dir={profile_dir}")
-        logger.info(f"Using custom profile: {profile_dir}")
-    else:
-        # If no profile specified, let Selenium create a fresh temp profile automatically.
-        # This is the safest way to avoid locking conflicts.
-        logger.info("Using native temporary profile (isolated session)")
+    if not profile_dir:
+        profile_dir = os.path.join(os.getcwd(), "data", "chrome_profile")
+    
+    if not os.path.exists(profile_dir):
+        os.makedirs(profile_dir, exist_ok=True)
+        
+    # Check for Profile Lock (Chrome creates SingletonLock/SingletonCookie)
+    lock_file = os.path.join(profile_dir, "SingletonLock")
+    if os.path.exists(lock_file):
+        logger.warning(f"Chrome profile at {profile_dir} seems to be in use.")
+        # We don't raise error yet, let Selenium try, but we'll log it.
+        # Actually, let's try to be proactive. 
+        # On Mac/Linux, we can check if the file is a symlink or check its modified time.
+        pass
+
+    options.add_argument(f"user-data-dir={profile_dir}")
+    logger.info(f"Using Chrome Profile: {profile_dir}")
     
     # Anti-detection
     options.add_argument('--disable-blink-features=AutomationControlled')
@@ -61,6 +71,9 @@ def setup_driver(headless=True, profile_dir=None, detach=False):
         logger.info("Chrome Driver setup successfully.")
         return driver
     except Exception as e:
+        if "user data directory is already in use" in str(e).lower():
+            logger.error(f"CRITICAL: Chrome Profile is locked! Please CLOSE all other Chrome windows (launched via HireLink) before running this.")
+            raise RuntimeError("Chrome Profile Locked: Close other browser windows and try again.")
         logger.error(f"Failed to setup Chrome Driver: {e}")
         raise
 

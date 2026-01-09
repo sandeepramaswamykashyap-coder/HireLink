@@ -29,8 +29,8 @@ def setup_project():
         print("Run: streamlit run app.py")
 
 setup(
-    name="IndianSmartApplier",
-    version="1.0.0",
+    name="HireLink",
+    version="2.0.0",
     packages=find_packages(),
     install_requires=[
         "streamlit",
