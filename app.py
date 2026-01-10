@@ -1,4 +1,5 @@
 import streamlit as st
+st.set_page_config(page_title="Hire Link", layout="wide", initial_sidebar_state="expanded")
 import pandas as pd
 import threading
 import time
@@ -43,7 +44,7 @@ from backend.agents.job_analyzer import JobAnalyzer
 import os
 import time
 
-st.set_page_config(page_title="Hire Link", layout="wide", initial_sidebar_state="expanded")
+
 
 # --- CAPTURE REFERRAL ---
 if "ref" in st.query_params:
