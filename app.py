@@ -587,17 +587,19 @@ def render_onboarding():
 
         # --- STEP 2: SMART ANSWERS (NEW) ---
         elif step == 2:
-            st.markdown("""
-            <div class="step-header">
-                <div class="step-kicker">INTELLIGENCE</div>
-                <div class="step-title">Train your AI Agent</div>
-                <div class="step-desc">The agent uses these answers to fill out complex application forms automatically. The more you fill, the better it works.</div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            st.info("ℹ️ **Note**: You may encounter similar or duplicate questions. Please answer them all—redundancy helps the AI apply correctly to different portals.")
-            
-            with st.form("onboarding_smart_answers"):
+            _, c_center, _ = st.columns([1, 2, 1])
+            with c_center:
+                st.markdown("""
+                <div class="step-header">
+                    <div class="step-kicker">INTELLIGENCE</div>
+                    <div class="step-title">Train your AI Agent</div>
+                    <div class="step-desc">The agent uses these answers to fill out complex application forms automatically. The more you fill, the better it works.</div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                st.info("ℹ️ **Note**: You may encounter similar or duplicate questions. Please answer them all—redundancy helps the AI apply correctly to different portals.")
+                
+                with st.form("onboarding_smart_answers"):
                 # Fetch categories
                 qa_list = db.query(QuestionAnswer).all()
                 categories = sorted(list(set([q.category for q in qa_list])))
@@ -629,15 +631,17 @@ def render_onboarding():
 
         # --- STEP 3: RESUME ---
         elif step == 3:
-            st.markdown("""
-            <div class="step-header">
-                <div class="step-kicker">RESUME</div>
-                <div class="step-title">Upload your resume to get started</div>
-                <div class="step-desc">Drop your resume once and we will reuse it for every application our AI submits.</div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            uploaded_file = st.file_uploader("Upload PDF", type="pdf")
+            _, c_center, _ = st.columns([1, 2, 1])
+            with c_center:
+                st.markdown("""
+                <div class="step-header">
+                    <div class="step-kicker">RESUME</div>
+                    <div class="step-title">Upload your resume to get started</div>
+                    <div class="step-desc">Drop your resume once and we will reuse it for every application our AI submits.</div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                uploaded_file = st.file_uploader("Upload PDF", type="pdf")
             
             c1, c2 = st.columns([1, 1])
             if c1.button("BACK", use_container_width=True):
