@@ -713,6 +713,27 @@ def render_onboarding():
 
 from backend.utils.scraper_utils import run_scraper
 
+# --- PAYMENT CALLBACK HANDLER ---
+if "payment_success" in st.query_params:
+    # URL: /?payment_success=true&razorpay_payment_id=...
+    try:
+        # Check if we were expecting a payment
+        if 'pending_payment' in st.session_state:
+             pp = st.session_state['pending_payment']
+             update_user_plan(pp['plan']) # Function is defined above, so this is safe
+             
+             # Clear state
+             del st.session_state['pending_payment']
+             
+             # Clear URL params to clean up (requires rerun)
+             st.query_params.clear()
+             st.balloons()
+             st.success("Payment Received! Upgrade Complete. 🚀")
+             time.sleep(2)
+             st.rerun()
+    except Exception as e:
+        st.error(f"Payment Verification Failed: {e}")
+
 # --- MAIN CONTROLLER ---
 try:
     # Check for Impersonation (God Mode)

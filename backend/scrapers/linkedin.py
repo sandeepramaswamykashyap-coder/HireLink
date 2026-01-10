@@ -84,4 +84,60 @@ class LinkedInScraper(BaseScraper):
             self.stop_driver()
 
     def scrape_job_details(self, job_url):
-        pass
+        """
+        Visits the job URL to scrape full description and metadata.
+        """
+        self.start_driver()
+        try:
+            logger.info(f"Scraping detailed description for: {job_url}")
+            self.driver.get(job_url)
+            random_sleep(2, 4)
+            
+            # 1. Expand Description (if explicit 'See more' button exists)
+            try:
+                # Common "See more" buttons on LinkedIn
+                buttons = self.driver.find_elements(By.CLASS_NAME, "jobs-description__footer-button")
+                for btn in buttons:
+                     if "see more" in btn.text.lower() and btn.is_displayed():
+                         self.driver.execute_script("arguments[0].click();", btn)
+                         random_sleep(1)
+            except: pass
+
+            # 2. Extract Description
+            # Try multiple selectors for robustness (Public User vs Logged In User)
+            description = ""
+            selectors = [
+                 "div.description__text",          # Public Job Page
+                 "div.jobs-description__content",  # Logged In View
+                 "div.show-more-less-html__markup" # General Wrapper
+            ]
+            
+            for sel in selectors:
+                try:
+                    elem = self.driver.find_element(By.CSS_SELECTOR, sel)
+                    if elem.is_displayed():
+                        description = elem.text.strip()
+                        break
+                except: continue
+            
+            if not description:
+                logger.warning(f"Could not find description text for {job_url}")
+                return None
+                
+            # 3. Extract Skills (if available in "Skills" section)
+            skills = []
+            try:
+                # Look for "Skills" section in the description or separate component
+                # This is hard on LinkedIn as it's often dynamic, but we can try scraping textual keywords
+                # Or looking for the "Skills" card
+                pass 
+            except: pass
+            
+            return {
+                "description": description,
+                "skills": ", ".join(skills) if skills else ""
+            }
+
+        except Exception as e:
+            logger.error(f"Failed to scrape details for {job_url}: {e}")
+            return None

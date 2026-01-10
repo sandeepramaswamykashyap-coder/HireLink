@@ -1,5 +1,6 @@
 from backend.utils.selenium_utils import setup_driver, random_sleep
 from backend.database import get_db, Job, Resume, Application
+from sqlalchemy import func
 from backend.utils.logger import logger
 from backend.agents.cover_letter_generator import CoverLetterGenerator
 from selenium.webdriver.common.by import By
@@ -12,6 +13,50 @@ class AutoApplier:
         self.cl_gen = CoverLetterGenerator()
         self.driver = None
         
+    def enrich_jobs_data(self, days_lookback=2):
+        """
+        Scans recent jobs for missing descriptions and scrapes them.
+        """
+        from backend.database import SessionLocal, Job
+        from backend.scrapers.linkedin import LinkedInScraper
+        from datetime import datetime, timedelta
+        
+        db = SessionLocal()
+        try:
+            # Find jobs with "See Link" or very short descriptions
+            cutoff = datetime.utcnow() - timedelta(days=days_lookback)
+            
+            jobs_to_fix = db.query(Job).filter(
+                Job.scraped_date >= cutoff,
+                (Job.description == "See Link") | (func.length(Job.description) < 150)
+            ).all()
+            
+            if not jobs_to_fix: return
+            
+            logger.info(f"Found {len(jobs_to_fix)} jobs requiring data enrichment.")
+            
+            # Group by portal to reuse scrapers? For now just handle LinkedIn
+            linkedin_scraper = None
+            
+            for job in jobs_to_fix:
+                if job.source == "LinkedIn":
+                    if not linkedin_scraper: linkedin_scraper = LinkedInScraper()
+                    
+                    details = linkedin_scraper.scrape_job_details(job.url)
+                    if details and len(details.get("description", "")) > 100:
+                         job.description = details['description']
+                         if details.get('skills'):
+                             job.skills = str(details['skills'])
+                         db.commit()
+                         logger.info(f"Enriched job {job.id}: {job.title}")
+            
+            if linkedin_scraper: linkedin_scraper.stop_driver()
+            
+        except Exception as e:
+            logger.error(f"Enrichment failed: {e}")
+        finally:
+            db.close()
+
     def build_candidate_profile(self, user_id, resume_id):
         """
         Constructs a Holistic Pilot Profile for the AI.
@@ -323,6 +368,10 @@ class AutoApplier:
         yield {"step": "Scraping Jobs", "status": f"Scraping {', '.join(active_portals)}...", "progress": 30}
         new_jobs_count = run_scraper(active_portals, keywords, location)
         
+        # --- ENRICHMENT STEP ---
+        yield {"step": "Enrichment", "status": "Verifying job data quality...", "progress": 40}
+        self.enrich_jobs_data(days_lookback=2)
+
         yield {"step": "Matching Jobs", "status": f"Found {new_jobs_count} new. Calculating match scores...", "progress": 60}
         matcher = JobMatcher()
         matches = matcher.match_jobs(resume_id, limit=20) # Limit hyper-apply to top 20 for safety
@@ -543,6 +592,18 @@ class AutoApplier:
                     except: self.driver.execute_script("arguments[0].click();", apply_element)
                     random_sleep(4, 6)
                     
+                    # --- COVER LETTER DECISION ---
+                    generated_cl = self.cl_gen.generate(
+                        job_title=job.title,
+                        company_name=job.company,
+                        candidate_name=resume.name,
+                        skills=job.skills or resume.parsed_data.get('skills', []),
+                        resume_text=resume.raw_text
+                    )
+                    
+                    if generated_cl:
+                         candidate_profile["cover_letter"] = generated_cl
+                         
                     # --- UNIVERSAL FORM FILLING HANDOFF ---
                     yield "Engaging Autonomous Pilot for Form Completion..."
                     from backend.agents.llm_form_filler import LLMFormFiller

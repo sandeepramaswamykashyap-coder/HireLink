@@ -187,9 +187,10 @@ class LLMFormFiller:
         --- INSTRUCTIONS ---
         1. Identify required fields.
         2. Map profile values to form labels.
-        3. If you see a "Next", "Continue", or "Review" button, you MUST click it to proceed.
-        4. If you see a "Submit" or "Apply" button and the form is filled, click it last.
-        5. Return a JSON object: {{ "actions": [ {{ "type": "fill|select|click", "selector": "css_selector", "value": "str" }} ] }}
+        3. If a field asks for a Cover Letter, use the text provided in 'cover_letter' from the User Profile.
+        4. If you see a "Next", "Continue", or "Review" button, you MUST click it to proceed.
+        5. If you see a "Submit" or "Apply" button and the form is filled, click it last.
+        6. Return a JSON object: {{ "actions": [ {{ "type": "fill|select|click", "selector": "css_selector", "value": "str" }} ] }}
         """
         return self.llm_client.generate_json(prompt)
 
