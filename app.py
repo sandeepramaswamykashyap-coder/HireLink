@@ -655,17 +655,27 @@ def render_onboarding():
                      
                      with st.spinner("Analyzing resume..."):
                          try:
+                             # DEBUG TRACE
+                             st.toast("Starting Parser...")
                              parser = ResumeParser()
+                             st.toast("Reading File...")
                              resume = parser.parse_and_save(file_path) # Saves Resume to DB
-                             st.session_state['ob_resume_id'] = resume.id
-                             st.session_state['onboarding_step'] = 4
-                             st.rerun()
-                         except Exception as e:
-                             st.error(f"Failed to parse resume: {str(e)}")
-                             # Fallback: Allow proceeding without parsing if critical
-                             if st.button("Skip Parsing (Manual Entry)"):
+                             
+                             if resume:
+                                 st.session_state['ob_resume_id'] = resume.id
                                  st.session_state['onboarding_step'] = 4
                                  st.rerun()
+                             else:
+                                 st.error("Parser returned None. Try manual entry.")
+                                 
+                         except Exception as e:
+                             st.error(f"Critical Parser Error: {e}")
+            
+            # ALWAYS SHOW SKIP OPTION
+            if uploaded_file:
+                if st.button("⚠️ Skip Parsing & Enter Manually"):
+                    st.session_state['onboarding_step'] = 4
+                    st.rerun()
         # --- STEP 4: PREFERENCES (Roles/Locs) ---
         elif step == 4:
             st.markdown("""
