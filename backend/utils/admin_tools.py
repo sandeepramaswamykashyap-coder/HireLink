@@ -2,12 +2,10 @@ import os
 import shutil
 from backend.utils.logger import logger
 
-# Paths relative to this file: .../backend/utils/admin_tools.py
-# DB is in: .../data/sqlite/local.db
-# We go up 3 levels: backend/utils/ -> backend/ -> root -> data
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DB_DIR = os.path.join(BASE_DIR, 'data', 'sqlite')
-DB_PATH = os.path.join(DB_DIR, 'local.db')
+# Import DB_PATH from the source of truth to ensure we match the active application DB
+from backend.database import DB_PATH, DB_DIR
+
+# Snapshot will live in the same directory as the database
 SNAPSHOT_PATH = os.path.join(DB_DIR, 'admin_snapshot.db')
 
 def save_admin_snapshot():
