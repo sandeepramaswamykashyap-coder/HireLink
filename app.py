@@ -504,9 +504,9 @@ def render_onboarding():
             """, unsafe_allow_html=True)
             
             with st.form("step1_form"):
-                name = st.text_input("FULL NAME *", placeholder="e.g. Sandeep Kashyap")
-                email = st.text_input("EMAIL *", placeholder="e.g. sandeep@example.com")
-                loc = st.text_input("CURRENT LOCATION *", placeholder="e.g. Bangalore, India")
+                name = st.text_input("FULL NAME *", placeholder="e.g. John Doe")
+                email = st.text_input("EMAIL *", placeholder="e.g. john@example.com")
+                loc = st.text_input("CURRENT LOCATION *", placeholder="e.g. New York, USA")
                 linkedin = st.text_input("LINKEDIN PROFILE *", placeholder="https://www.linkedin.com/in/username")
                 website = st.text_input("PERSONAL WEBSITE", placeholder="https://yourportfolio.com")
                 github = st.text_input("GITHUB PROFILE", placeholder="https://github.com/username")
