@@ -654,12 +654,18 @@ def render_onboarding():
                          f.write(uploaded_file.getbuffer())
                      
                      with st.spinner("Analyzing resume..."):
-                         parser = ResumeParser()
-                         resume = parser.parse_and_save(file_path) # Saves Resume to DB
-                         st.session_state['ob_resume_id'] = resume.id
-                     
-                     st.session_state['onboarding_step'] = 4
-                     st.rerun()
+                         try:
+                             parser = ResumeParser()
+                             resume = parser.parse_and_save(file_path) # Saves Resume to DB
+                             st.session_state['ob_resume_id'] = resume.id
+                             st.session_state['onboarding_step'] = 4
+                             st.rerun()
+                         except Exception as e:
+                             st.error(f"Failed to parse resume: {str(e)}")
+                             # Fallback: Allow proceeding without parsing if critical
+                             if st.button("Skip Parsing (Manual Entry)"):
+                                 st.session_state['onboarding_step'] = 4
+                                 st.rerun()
         # --- STEP 4: PREFERENCES (Roles/Locs) ---
         elif step == 4:
             st.markdown("""
