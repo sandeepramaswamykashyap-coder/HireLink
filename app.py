@@ -357,7 +357,7 @@ def render_pricing(user_exists):
     st.markdown("<h2 style='text-align: center; margin-bottom: 10px;'>Simple, Transparent Pricing</h2>", unsafe_allow_html=True)
     
     # Center the toggle
-    t1, t2, t3 = st.columns([1.2, 1, 1.2])
+    t1, t2, t3 = st.columns([0.8, 1.8, 0.8])
     with t2:
         billing = st.radio("Billing Cycle", ["Monthly", "Annual (Save 30% 🎁)"], horizontal=True, label_visibility="collapsed")
          
