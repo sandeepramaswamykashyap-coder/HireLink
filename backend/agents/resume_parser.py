@@ -16,7 +16,9 @@ class ResumeParserV2:
     def __init__(self):
         self.llm_client = LLMClient()
         try:
-             self.nlp = spacy.load("en_core_web_sm")
+             # self.nlp = spacy.load("en_core_web_sm") 
+             # PERFORMANCE OPTIMIZATION: Skip Spacy for now to prevent hangs on cloud
+             self.nlp = None
         except:
              logger.warning("spaCy model load failed. Proceeding without NLP.")
              self.nlp = None

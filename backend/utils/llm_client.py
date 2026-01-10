@@ -15,7 +15,7 @@ class LLMClient:
         try:
             import google.generativeai as genai
             genai.configure(api_key=self.api_key)
-            self.client = genai.GenerativeModel('gemini-flash-latest')
+            self.client = genai.GenerativeModel('gemini-1.5-flash')
             logger.info("LLM Client (Gemini 1.5 Flash) initialized successfully.")
         except ImportError:
             logger.error("google-generativeai library not installed.")
