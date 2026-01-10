@@ -136,9 +136,10 @@ def render_landing_page(user_exists=False):
             st.rerun()
             
     with c3:
-        if st.button("Existing User Login", type="secondary", use_container_width=True):
-             st.session_state['show_login'] = True
-             st.rerun()
+        if not user_exists:
+            if st.button("Existing User Login", type="secondary", use_container_width=True):
+                 st.session_state['show_login'] = True
+                 st.rerun()
 
     st.markdown("""
     <div class="landing-features">
