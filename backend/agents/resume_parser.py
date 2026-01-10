@@ -12,7 +12,7 @@ class SimpleResume:
         self.id = id
         self.parsed_data = parsed_data
 
-class ResumeParser:
+class ResumeParserV2:
     def __init__(self):
         self.llm_client = LLMClient()
         try:
