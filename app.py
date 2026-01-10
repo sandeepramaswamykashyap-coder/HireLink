@@ -799,7 +799,9 @@ def render_onboarding():
             st.write("") 
             st.write("") 
             
-            if st.button("🚀 Launch Secure Login Browser", use_container_width=True):
+            st.info("💻 **Running Locally?** Click the button below to launch a browser and login.\\n☁️ **Running on Cloud?** Click 'I'm All Set' below and enter your credentials in the **'Keys'** tab inside the dashboard.")
+            
+            if st.button("🚀 Launch Secure Login Browser (Local Only)", use_container_width=True):
                 launch_login_browser()
                 
             st.write("")
