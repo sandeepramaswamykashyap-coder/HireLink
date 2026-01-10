@@ -317,7 +317,7 @@ h1 {
 }
 
 [data-testid="stMetricValue"] {
-    font-size: 2.5rem !important;
+    font-size: 2rem !important;
     font-weight: 800 !important;
     background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
     -webkit-background-clip: text;
