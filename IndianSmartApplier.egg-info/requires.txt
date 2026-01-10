@@ -1,4 +1,5 @@
 streamlit
+flask
 selenium
 beautifulsoup4
 webdriver_manager
@@ -6,14 +7,8 @@ spacy
 scikit-learn
 pandas
 pymupdf
-razorpay
-google-generativeai
-sqlalchemy
-requests
+transformers
+torch
+pytesseract
 fake-useragent
-nltk
-numpy
-psycopg2-binary
-bcrypt
-fpdf
-
+requests

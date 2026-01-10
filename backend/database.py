@@ -10,7 +10,13 @@ DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.ab
 if not os.path.exists(DB_DIR):
     os.makedirs(DB_DIR)
 DB_PATH = os.path.join(DB_DIR, 'local.db')
-DATABASE_URL = f"sqlite:///{DB_PATH}"
+
+# Logic: Use Env Var (Prod) else Local SQLite
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DB_PATH}")
+
+# Fix for Railway/Heroku using old 'postgres://' dialect
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 Base = declarative_base()
 
@@ -60,7 +66,8 @@ class AppUser(Base):
     __tablename__ = 'users_v2'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    email = Column(String)
+    email = Column(String, unique=True)
+    password_hash = Column(String) # Bcrypt hash
     is_onboarded = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)

@@ -1,59 +1,22 @@
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual Environments
 venv/
-env/
-ENV/
 .env
-.venv
-
-# Database
-data/sqlite/local.db
-*.db
-*.sqlite3
-
-# Logs
-logs/
-*.log
 
 # Streamlit
-# .streamlit/
-! .streamlit/config.toml # Keep config if customized, but usually secrets.toml is ignored
 .streamlit/secrets.toml
 
-# Chrome Profile (Sensitive Session Data)
-data/chrome_profile/
+# Database
+*.db
+*.sqlite3
+data/sqlite/*.db
+!data/sqlite/.keep
 
-# Uploaded Resumes
-data/resumes/
-
-# MacOS
+# OS
 .DS_Store
-.AppleDouble
-.LSOverride
+
+# Scraping
+data/chrome_profile/
+*.log

@@ -102,6 +102,17 @@ def launch_login_browser():
 
 # --- LANDING PAGE ---
 def render_landing_page(user_exists=False):
+    # --- GOOGLE ANALYTICS (GA4) ---
+    st.markdown("""
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-MEASUREMENT_ID"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-MEASUREMENT_ID');
+        </script>
+    """, unsafe_allow_html=True)
+
     # Top Navigation (Login)
     # --- HEADER SECTION ---
     # Aligns Logo (Left) and Login/Nav (Right)
@@ -888,10 +899,24 @@ if not user or st.session_state.get('force_landing', True):
              with c_btn1:
                  if st.button("Sign In", type="primary", use_container_width=True):
                      from backend.database import AppUser
+                     import bcrypt
+                     
                      u = db.query(AppUser).filter_by(email=email).first()
-                     if u and u.password == password: 
+                     
+                     # BCCRYPT VERIFICATION
+                     valid = False
+                     if u and u.password_hash:
+                         try:
+                             valid = bcrypt.checkpw(password.encode('utf-8'), u.password_hash.encode('utf-8'))
+                         except: valid = False
+                     elif u and u.password: # Legacy fallback (optional, remove for strict security)
+                         valid = (u.password == password)
+                     
+                     if valid: 
                          st.session_state['force_landing'] = False
                          st.session_state['show_login'] = False
+                         # Secure Session
+                         st.session_state['user_id'] = u.id 
                          st.success(f"Welcome back, {u.name}!")
                          time.sleep(1)
                          st.rerun()
@@ -1304,59 +1329,92 @@ else:
         </div>
         """, unsafe_allow_html=True)
         
-        if tour_mode:
-            st.info("💡 **Dashboard:** This is your command center. See scraped jobs, active resumes, and application history.")
+        tab_over, tab_hist = st.tabs(["📊 Overview", "📜 Full History"])
         
-        # 1. METRICS (Auto-styled by CSS)
-        col1, col2, col3 = st.columns(3)
-        total_jobs = db.query(Job).count()
-        total_resumes = db.query(Resume).count()
-        total_apps = db.query(Application).filter(Application.status == "Applied").count() 
-        
-        col1.metric("Opportunities Found", total_jobs, delta="Total Scraped")
-        col2.metric("Talent Profiles", total_resumes, delta="Active Resumes")
-        col3.metric("Applications Fire", total_apps, delta=f"{round((total_apps/total_jobs)*100 if total_jobs else 0, 1)}% Conversion")
-        
-        st.markdown("---")
-        
-        # 2. CHARTS & HISTORY
-        c1, c2 = st.columns([2, 1])
-        
-        with c1:
-            st.subheader("Application History")
-            # Get successful applications
-            apps = db.query(Application, Job).join(Job, Application.job_id == Job.id).filter(Application.status == "Applied").limit(50).all()
+        # --- TAB 1: OVERVIEW ---
+        with tab_over:
+            if tour_mode:
+                st.info("💡 **Dashboard:** This is your command center. See scraped jobs, active resumes, and application history.")
             
-            if apps:
-                data = []
-                for app, job in apps:
-                    data.append({
-                        "Date": app.applied_at.strftime("%Y-%m-%d"),
-                        "Company": job.company,
-                        "Job Title": job.title,
-                        "Portal": job.source
-                    })
-                df = pd.DataFrame(data)
-                st.dataframe(df, use_container_width=True)
-            else:
-                st.info("No successful applications yet. Go to Auto-Apply!")
-                
-        with c2:
-            st.subheader("Recent Activity")
-            # Show last 5 logs or app status
-            recent_apps = db.query(Application).order_by(Application.applied_at.desc()).limit(5).all()
-            if recent_apps:
-                for a in recent_apps:
-                     # Fetch job details
-                     j = db.query(Job).get(a.job_id)
-                     title = j.title if j else f"Job #{a.job_id}"
-                     company = f" at {j.company}" if j and j.company else ""
-                     st.write(f"🕒 {a.applied_at.strftime('%H:%M')} - Applied to **{title}**{company}")
-            else:
-                st.info("No activity yet.")
+            # 1. METRICS (Auto-styled by CSS)
+            col1, col2, col3 = st.columns(3)
+            total_jobs = db.query(Job).count()
+            total_resumes = db.query(Resume).count()
+            total_apps = db.query(Application).filter(Application.status == "Applied").count() 
+            
+            col1.metric("Opportunities Found", total_jobs, delta="Total Scraped")
+            col2.metric("Talent Profiles", total_resumes, delta="Active Resumes")
+            col3.metric("Applications Fire", total_apps, delta=f"{round((total_apps/total_jobs)*100 if total_jobs else 0, 1)}% Conversion")
+            
+            st.markdown("---")
+            
+            # 2. CHARTS & RECENT
+            c1, c2 = st.columns([2, 1])
+            
+            with c1:
+                st.subheader("Recent Activity")
+                # Show last 5 logs or app status
+                recent_apps = db.query(Application).order_by(Application.applied_at.desc()).limit(10).all()
+                if recent_apps:
+                    for a in recent_apps:
+                         # Fetch job details
+                         j = db.query(Job).get(a.job_id)
+                         title = j.title if j else f"Job #{a.job_id}"
+                         company = f" at {j.company}" if j and j.company else ""
+                         status_icon = "✅" if a.status == "Applied" else "⏳"
+                         st.write(f"{status_icon} {a.applied_at.strftime('%H:%M')} - **{title}**{company}")
+                else:
+                    st.info("No activity yet.")
+                    
+            with c2:
+                st.subheader("System Health")
+                statuses = db.query(PortalStatus).all()
+                if statuses:
+                    st.dataframe(
+                        pd.DataFrame([{"Portal": s.portal_name, "Status": s.status} for s in statuses]),
+                        use_container_width=True,
+                        hide_index=True
+                    )
 
-        st.subheader("Portal System Status")
-        statuses = db.query(PortalStatus).all()
+        # --- TAB 2: HISTORY ---
+        with tab_hist:
+            st.subheader("📜 Complete Application History")
+            
+            # Query ALL applications
+            all_apps = db.query(Application, Job).join(Job, Application.job_id == Job.id).order_by(Application.applied_at.desc()).all()
+            
+            if all_apps:
+                hist_data = []
+                for app, job in all_apps:
+                    hist_data.append({
+                        "ID": app.id,
+                        "Date": app.applied_at.strftime("%Y-%m-%d %H:%M"),
+                        "Role": job.title,
+                        "Company": job.company,
+                        "Source": job.source,
+                        "Status": app.status,
+                        "Link": job.url
+                    })
+                
+                df_hist = pd.DataFrame(hist_data)
+                
+                # Use Data Editor for better UX
+                st.data_editor(
+                    df_hist,
+                    column_config={
+                        "Link": st.column_config.LinkColumn("Job Link"),
+                        "Status": st.column_config.SelectboxColumn(
+                            "Status",
+                            options=["Applied", "Interview", "Rejected", "Offer"],
+                            required=True
+                        )
+                    },
+                    hide_index=True,
+                    use_container_width=True,
+                    disabled=["ID", "Date", "Role", "Company", "Source", "Link"] # Only Status editable
+                )
+            else:
+                st.info("No applications found in history.")
         if statuses:
             st.dataframe(pd.DataFrame([{"Portal": s.portal_name, "Status": s.status, "Last Scraped": s.last_scraped} for s in statuses]), use_container_width=True)
 
@@ -1575,7 +1633,19 @@ else:
             st.info("No rewards yet. Share your link to start getting discounts!")
             
     elif menu == "👤 Pilot Profile":
-        st.header("👤 Pilot Profile")
+        c_head, c_exp = st.columns([3, 1])
+        c_head.header("👤 Pilot Profile")
+        
+        # --- EXPORT DATA BUTTON ---
+        from backend.utils.data_export import export_user_data_json
+        json_data = export_user_data_json()
+        c_exp.download_button(
+            label="⬇️ Export Data (JSON)",
+            data=json_data,
+            file_name=f"hirelink_backup_{int(time.time())}.json",
+            mime="application/json",
+            help="Download a backup of your profile, answers, and resume data."
+        )
         
         # Custom CSS for Bigger Tabs
         st.markdown("""

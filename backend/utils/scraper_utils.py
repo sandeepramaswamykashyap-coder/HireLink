@@ -24,7 +24,10 @@ def run_scraper(portals, keywords, location):
             elif p_name == "LinkedIn": scraper = LinkedInScraper()
             elif p_name == "Indeed": scraper = IndeedScraper()
             elif p_name == "Shine": scraper = ShineScraper()
-            elif p_name == "Glassdoor": scraper = GlassdoorScraper()
+
+            elif p_name == "Glassdoor": 
+                from backend.scrapers.glassdoor import GlassdoorScraper
+                scraper = GlassdoorScraper()
             elif p_name == "Foundit": scraper = FounditScraper()
             elif p_name == "Intershala": scraper = IntershalaScraper()
             elif p_name == "IIMJobs": scraper = IIMJobsScraper()
