@@ -18,37 +18,68 @@ class LinkedInScraper(BaseScraper):
             self.update_portal_status("Scraping")
             
             # Use Guest Search URL (No login required for basic scrape)
-            # https://www.linkedin.com/jobs/search?keywords=Python&location=India
             search_url = f"{self.base_url}?keywords={keywords}&location={location}"
             
             logger.info(f"Navigating to {search_url}")
             self.driver.get(search_url)
             random_sleep(3, 5)
+
+            # DISMISS MODALS (Critical for Headless)
+            try:
+                # Common "Join to view" modal
+                close_btns = self.driver.find_elements(By.CSS_SELECTOR, "button[data-tracking-control-name='public_jobs_contextual-sign-in-modal_modal_dismiss']")
+                if close_btns: 
+                    close_btns[0].click()
+                    random_sleep(1)
+                
+                # "Sign in" CTA bottom banner
+                cta_close = self.driver.find_elements(By.CSS_SELECTOR, "button.cta-modal__dismiss-btn")
+                if cta_close: cta_close[0].click()
+
+                # Generic "X" buttons
+                x_btns = self.driver.find_elements(By.CSS_SELECTOR, "button[aria-label='Dismiss']")
+                if x_btns: x_btns[0].click()
+            except: pass
             
-            # Scroll a bit
-            body = self.driver.find_element(By.TAG_NAME, "body")
+            # Scroll with JS
             for _ in range(5):
-                body.send_keys(Keys.PAGE_DOWN)
-                random_sleep(0.5, 1)
+                self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                random_sleep(1, 1.5)
             
-            job_cards = self.driver.find_elements(By.CLASS_NAME, "base-card")
-            logger.info(f"Found {len(job_cards)} job cards")
+            # Robust Selectors
+            # Try multiple classes as LinkedIn A/B tests classes frequently
+            card_selectors = ["base-card", "job-search-card", "result-card"]
+            job_cards = []
+            for sel in card_selectors:
+                found = self.driver.find_elements(By.CLASS_NAME, sel)
+                if found:
+                    job_cards = found
+                    break
+            
+            logger.info(f"Found {len(job_cards)} job cards (Selector used: {sel if job_cards else 'None'})")
+            
+            # Debug if 0
+            if len(job_cards) == 0:
+                logger.warning(f"Page Title: {self.driver.title}")
+                logger.info("Possible anti-bot block or no results.")
             
             for card in job_cards:
                 if jobs_found_count >= limit:
                     break
                 
                 try:
-                    # Extract Data
-                    title_elem = card.find_element(By.CLASS_NAME, "base-search-card__title")
-                    company_elem = card.find_element(By.CLASS_NAME, "base-search-card__subtitle")
-                    loc_elem = card.find_element(By.CLASS_NAME, "job-search-card__location")
-                    link_elem = card.find_element(By.CLASS_NAME, "base-card__full-link")
+                    # Extract Data with Fallbacks
+                    try: title_text = card.find_element(By.CSS_SELECTOR, "h3").text.strip()
+                    except: title_text = card.find_element(By.CLASS_NAME, "base-search-card__title").text.strip()
                     
-                    job_url = link_elem.get_attribute("href")
+                    try: company_text = card.find_element(By.CSS_SELECTOR, "h4").text.strip()
+                    except: company_text = card.find_element(By.CLASS_NAME, "base-search-card__subtitle").text.strip()
                     
-                    title_text = title_elem.text.strip()
-                    company_text = company_elem.text.strip()
+                    try: loc_text = card.find_element(By.CLASS_NAME, "job-search-card__location").text.strip()
+                    except: loc_text = "Unknown"
+                    
+                    try: job_url = card.find_element(By.TAG_NAME, "a").get_attribute("href")
+                    except: continue # Essential
                     
                     # Validation: Skip obfuscated, empty, or too short data
                     if "*****" in title_text or "*****" in company_text:
@@ -59,7 +90,7 @@ class LinkedInScraper(BaseScraper):
                     job_data = {
                         "title": title_text,
                         "company": company_text,
-                        "location": loc_elem.text.strip(),
+                        "location": loc_text,
                         "url": job_url,
                         "description": "See Link",
                         "salary": "Not Disclosed",
@@ -71,7 +102,6 @@ class LinkedInScraper(BaseScraper):
                         jobs_found_count += 1
                         
                 except Exception as e:
-                    # Creating a new card or element issue
                     continue
             
             self.update_portal_status("Idle", jobs_found=jobs_found_count)
