@@ -761,29 +761,30 @@ except:
 if not user or st.session_state.get('force_landing', True):
     if st.session_state.get('show_login', False):
          # --- SIMPLE LOGIN FORM ---
-         st.markdown("## Login")
-         email = st.text_input("Email")
-         password = st.text_input("Password", type="password")
-         if st.button("Sign In"):
-             from backend.database import AppUser
-             u = db.query(AppUser).filter_by(email=email).first()
-             # Simple Auth for MVP (No hash check in this snippet, assumes direct match or demo mode)
-             # In real app, check hash.
-             if u and u.password == password: # Plaintext for demo speed, update to hash later
-                 st.session_state['force_landing'] = False
-                 st.session_state['show_login'] = False
-                 # Set cookie/session hack? Streamlit session is enough.
-                 # But we need to RELOAD Main Controller user fetch.
-                 # We can't easily injection "user" variable here without a rerun.
-                 st.success(f"Welcome back, {u.name}!")
-                 time.sleep(1)
-                 st.rerun()
-             else:
-                 st.error("Invalid credentials.")
-         
-         if st.button("Back"):
-             del st.session_state['show_login']
-             st.rerun()
+         _, lc, _ = st.columns([1, 2, 1])
+         with lc:
+             st.markdown("## Login")
+             email = st.text_input("Email")
+             password = st.text_input("Password", type="password")
+             
+             c_btn1, c_btn2 = st.columns([1, 1])
+             with c_btn1:
+                 if st.button("Sign In", type="primary", use_container_width=True):
+                     from backend.database import AppUser
+                     u = db.query(AppUser).filter_by(email=email).first()
+                     if u and u.password == password: 
+                         st.session_state['force_landing'] = False
+                         st.session_state['show_login'] = False
+                         st.success(f"Welcome back, {u.name}!")
+                         time.sleep(1)
+                         st.rerun()
+                     else:
+                         st.error("Invalid credentials.")
+             
+             with c_btn2:
+                 if st.button("Back", use_container_width=True):
+                     del st.session_state['show_login']
+                     st.rerun()
              
     elif st.session_state.get('show_onboarding', False):
         render_onboarding()
