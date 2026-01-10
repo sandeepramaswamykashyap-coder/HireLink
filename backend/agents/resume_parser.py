@@ -54,12 +54,31 @@ class ResumeParserV2:
     def extract_name(self, text):
         # Heuristic: First line or using Spacy PERSON
         if not self.nlp:
-            # Fallback: Just return first line or Unknown if no NLP
-            # Simple heuristic: First non-empty line that isn't too long
-            lines = [l.strip() for l in text.split('\n') if l.strip()]
-            if lines and len(lines[0]) < 50:
-                 return lines[0]
-            return "Unknown"
+             # Fallback: Smart Scan of first 10 lines
+             lines = [l.strip() for l in text.split('\n') if l.strip()]
+             
+             # Common headers to ignore
+             ignore_terms = ["resume", "cv", "curriculum", "vitae", "profile", "bio", "summary", "contact", "phone", "email", "address"]
+             
+             for line in lines[:10]:
+                 # clean line
+                 l_lower = line.lower()
+                 
+                 # Skip if contains ignore terms
+                 if any(term in l_lower for term in ignore_terms):
+                     continue
+                 
+                 # Skip if looks like phone/email
+                 if "@" in line or any(c.isdigit() for c in line):
+                     continue
+                     
+                 # If it passes filters and is essentially 2-3 words (Title Case often)
+                 words = line.split()
+                 if 1 < len(words) <= 4:
+                     return line
+            
+             # If all else fails
+             return lines[0] if lines else "Unknown"
 
         doc = self.nlp(text)
         
