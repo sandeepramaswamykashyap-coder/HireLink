@@ -385,13 +385,7 @@ def render_pricing(user_exists):
              else: update_user_plan('FREE') 
              st.rerun()
 
-    # --- SIDEBAR FOOTER ---
-    with st.sidebar:
-        st.markdown("---")
-        if st.button("🔴 Reset App State (Debug)", use_container_width=True):
-             for key in list(st.session_state.keys()):
-                 del st.session_state[key]
-             st.rerun()
+
 
     # --- STARTER ---
     with c2:
