@@ -1715,4 +1715,11 @@ else:
                      time.sleep(1.5)
                      st.rerun()
 
-
+    # --- GLOBAL SIDEBAR FOOTER (Always Visible) ---
+    with st.sidebar:
+        st.markdown("---")
+        if st.button("🔴 Reset App State (Debug)", use_container_width=True):
+             for key in list(st.session_state.keys()):
+                 del st.session_state[key]
+             st.rerun()
+        st.caption(f"HireLink v1.1 (Live)")
