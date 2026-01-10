@@ -991,7 +991,7 @@ else:
         st.header("🛡️ Admin Console")
         st.markdown("Manage users and system health.")
         
-        tab_dash, tab_users, tab_market = st.tabs(["📊 Dashboard", "👥 User Management", "🎟️ Marketing"])
+        tab_dash, tab_users, tab_market, tab_snapshots = st.tabs(["📊 Dashboard", "👥 User Management", "🎟️ Marketing", "💾 Snapshots"])
         
         # --- TAB 1: DASHBOARD ---
         with tab_dash:
