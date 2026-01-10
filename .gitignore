@@ -43,7 +43,7 @@ logs/
 *.log
 
 # Streamlit
-.streamlit/
+# .streamlit/
 ! .streamlit/config.toml # Keep config if customized, but usually secrets.toml is ignored
 .streamlit/secrets.toml
 
