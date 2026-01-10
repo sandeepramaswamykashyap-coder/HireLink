@@ -595,7 +595,7 @@ def render_onboarding():
 
         # --- STEP 2: SMART ANSWERS (NEW) ---
         elif step == 2:
-            _, c_center, _ = st.columns([1, 8, 1])
+            c_center = st.container()
             with c_center:
                 st.markdown("""
                 <div class="step-header">
