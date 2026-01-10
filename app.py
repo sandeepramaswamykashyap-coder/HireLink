@@ -1731,20 +1731,42 @@ else:
     # --- GLOBAL SIDEBAR FOOTER (Always Visible) ---
     with st.sidebar:
         st.markdown("---")
-        if st.button("🔴 Reset App State (Debug)", use_container_width=True):
-             # 1. Wipe Session
-             for key in list(st.session_state.keys()):
-                 del st.session_state[key]
-             
-             # 2. Wipe User Data (to prevent auto-login loop)
-             from backend.database import AppUser, Resume
-             try:
-                 db.query(AppUser).delete()
-                 db.query(Resume).delete()
-                 db.commit()
-                 st.toast("Database Wiped", icon="🗑️")
-             except Exception as e:
-                 st.error(f"Reset Failed: {e}")
-                 
-             st.rerun()
+        
+        with st.expander("🛠 Admin Controls (Save/Restore)"):
+            st.caption("Manage your profile snapshots.")
+            
+            from backend.utils.admin_tools import save_admin_snapshot, restore_admin_snapshot, factory_reset
+            
+            # SAVE
+            if st.button("💾 Save Current as Admin Template", use_container_width=True):
+                success, msg = save_admin_snapshot()
+                if success:
+                    st.toast(msg, icon="✅")
+                else:
+                    st.error(msg)
+            
+            # RESTORE
+            if st.button("♻️ Restore Admin Template", use_container_width=True):
+                success, msg = restore_admin_snapshot()
+                if success:
+                    st.toast(msg, icon="✅")
+                    # Clear session to force reload
+                    st.session_state.clear()
+                    time.sleep(1)
+                    st.rerun()
+                else:
+                    st.error(msg)
+            
+            # RESET
+            st.write("")
+            if st.button("💣 Factory Reset (Wipe All)", type="primary", use_container_width=True):
+                success, msg = factory_reset()
+                if success:
+                    st.toast(msg, icon="🗑️")
+                    st.session_state.clear()
+                    time.sleep(1)
+                    st.rerun()
+                else:
+                    st.error(msg)
+                    
         st.caption(f"HireLink v1.1 (Live)")
