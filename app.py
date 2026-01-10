@@ -43,7 +43,7 @@ from backend.agents.job_analyzer import JobAnalyzer
 import os
 import time
 
-st.set_page_config(page_title="Hire Link", layout="centered")
+st.set_page_config(page_title="Hire Link", layout="wide", initial_sidebar_state="expanded")
 
 # --- CAPTURE REFERRAL ---
 if "ref" in st.query_params:
