@@ -1,5 +1,17 @@
 import streamlit as st
 st.set_page_config(page_title="Hire Link", layout="wide", initial_sidebar_state="expanded")
+
+# --- NLTK SETUP (Critical for Text Processing) ---
+import nltk
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt', quiet=True)
+try:
+    nltk.data.find('tokenizers/punkt_tab')
+except LookupError:
+    nltk.download('punkt_tab', quiet=True)
+# -------------------------------------------------
 import pandas as pd
 import threading
 import time
