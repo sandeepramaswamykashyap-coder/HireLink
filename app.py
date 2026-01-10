@@ -34,8 +34,9 @@ from backend.scrapers.others import (
 )
 from backend.utils.payment_gateway import PaymentGateway
 pg = PaymentGateway()
+import importlib
 import backend.agents.resume_parser
-import backend.agents.auto_applier
+importlib.reload(backend.agents.resume_parser) # FORCE RELOAD to fix caching issues
 from backend.agents.resume_parser import ResumeParser
 from backend.agents.job_matcher import JobMatcher
 from backend.agents.auto_applier import AutoApplier
