@@ -639,7 +639,7 @@ def render_onboarding():
 
         # --- STEP 3: RESUME ---
         elif step == 3:
-            _, c_center, _ = st.columns([1, 8, 1])
+            c_center = st.container()
             with c_center:
                 st.markdown("""
                 <div class="step-header">
