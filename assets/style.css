@@ -76,10 +76,11 @@ body,
     font-family: 'Plus Jakarta Sans', sans-serif !important;
     background-color: var(--bg-deep);
     color: #f8fafc;
-    font-size: 20px !important;
+    font-size: 16px !important;
 }
 
 /* GLOBAL TEXT BOOST */
+/* GLOBAL TEXT BOOST - NORMALIZED */
 p,
 .stMarkdown,
 .stText,
@@ -87,20 +88,20 @@ p,
 li,
 span,
 div {
-    font-size: 1.15rem;
+    font-size: 1rem;
     line-height: 1.6;
 }
 
 /* Small text not too small */
 .stCaption {
-    font-size: 1rem !important;
+    font-size: 0.85rem !important;
     color: #cbd5e1 !important;
 }
 
 /* Inputs larger */
 .stTextInput input,
 .stSelectbox div {
-    font-size: 1.2rem !important;
+    font-size: 1rem !important;
 }
 
 /* Animated Background */
@@ -120,7 +121,7 @@ h3 {
 }
 
 h1 {
-    font-size: 3.5rem !important;
+    font-size: 2.5rem !important;
     background: var(--gradient-hero);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -132,13 +133,13 @@ h1 {
 
 /* --- ST PILLS / PORTAL SELECTOR BOOST --- */
 [data-testid="stPills"] {
-    gap: 12px !important;
+    gap: 8px !important;
     padding: 8px 0 !important;
 }
 
 [data-testid="stPills"] [data-testid="stPillsItem"] {
-    padding: 0.6rem 1.2rem !important;
-    font-size: 1rem !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem !important;
     font-weight: 600 !important;
     border-radius: 50px !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
