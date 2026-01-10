@@ -1719,7 +1719,19 @@ else:
     with st.sidebar:
         st.markdown("---")
         if st.button("🔴 Reset App State (Debug)", use_container_width=True):
+             # 1. Wipe Session
              for key in list(st.session_state.keys()):
                  del st.session_state[key]
+             
+             # 2. Wipe User Data (to prevent auto-login loop)
+             from backend.database import AppUser, Resume
+             try:
+                 db.query(AppUser).delete()
+                 db.query(Resume).delete()
+                 db.commit()
+                 st.toast("Database Wiped", icon="🗑️")
+             except Exception as e:
+                 st.error(f"Reset Failed: {e}")
+                 
              st.rerun()
         st.caption(f"HireLink v1.1 (Live)")
