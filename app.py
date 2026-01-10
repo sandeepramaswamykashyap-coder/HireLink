@@ -462,6 +462,66 @@ def update_user_plan(plan):
         st.success(f"Plan updated to {plan}!")
         time.sleep(1)
 
+
+def check_and_show_payment_modal():
+    if 'pending_payment' in st.session_state:
+        pp = st.session_state['pending_payment']
+        
+        @st.dialog("Complete Your Upgrade 🚀")
+        def pay_modal():
+            st.write(f"You are upgrading to **{pp['plan']}**")
+            
+            # Show Price breakdown
+            original_amt = pp.get('original_amount', pp['amount'])
+            current_amt = pp['amount']
+            
+            if current_amt < original_amt:
+                st.markdown(f"Original Price: ~~₹{original_amt}~~")
+                st.markdown(f"**Discounted Price: ₹{current_amt}** ✅")
+            else:
+                st.write(f"Total: **₹{current_amt}**")
+            
+            st.markdown("---")
+            
+            # --- COUPON SECTION (Inside Checkout) ---
+            with st.expander("🎁 Have a Promo Code?", expanded=False):
+                c_in, c_btn = st.columns([2.5, 1.2])
+                code_input = c_in.text_input("Enter Code", label_visibility="collapsed", placeholder="PROMO2024").strip().upper()
+                if c_btn.button("Apply"):
+                    from backend.database import Coupon
+                    coupon = db.query(Coupon).filter(Coupon.code == code_input).first()
+                    if coupon:
+                        # Apply Discount
+                        if 'original_amount' not in pp:
+                             pp['original_amount'] = pp['amount'] # Store base price
+                             
+                        base = pp['original_amount']
+                        disc_amt = int(base * (1 - coupon.discount_percent/100))
+                        
+                        pp['amount'] = disc_amt
+                        pp['applied_coupon'] = coupon.code
+                        
+                        # Update Live Payment Link
+                        new_link = pg.create_payment_link(disc_amt, pp['plan'], pp['email']) 
+                        if new_link:
+                             pp['url'] = new_link.get('short_url')
+                             
+                        st.session_state['pending_payment'] = pp
+                        st.success(f"Applied {coupon.discount_percent}% OFF!")
+                        st.rerun()
+                    else:
+                        st.error("Invalid Code")
+
+            st.link_button(f"💳 Pay Now ₹{current_amt}", pp['url'], type="primary", use_container_width=True)
+            
+            # Mock Success for Demo
+            if st.button("Simulate Payment Success (Dev Mode)"):
+                update_user_plan(pp['plan'])
+                del st.session_state['pending_payment']
+                st.rerun()
+                
+        pay_modal()
+
 # --- ONBOARDING LOGIC ---
 def render_onboarding():
     st.markdown("""
@@ -717,6 +777,22 @@ def render_onboarding():
                      db.commit()
                      st.session_state['show_onboarding'] = False
                      st.session_state['force_landing'] = False
+                     
+                     # --- TRIGGER PAYMENT IF PLAN SELECTED ---
+                     plan = st.session_state.get('selected_plan', 'TRIAL')
+                     if plan in ['STARTER', 'PRO', 'PRO_PLUS']:
+                         prices = {'STARTER': 850, 'PRO': 2500, 'PRO_PLUS': 1299} # Recalculate or store better
+                         price = prices.get(plan, 850)
+                         pg = PaymentGateway()
+                         link_data = pg.create_payment_link(price, plan, user.email)
+                         if link_data:
+                             st.session_state['pending_payment'] = {
+                                 "url": link_data.get('short_url'),
+                                 "plan": plan,
+                                 "amount": price,
+                                 "email": user.email
+                             }
+                     
                      st.balloons()
                      st.rerun()
 
@@ -1607,4 +1683,5 @@ else:
                      st.success(f"Successfully saved credentials for {updated_count} portals!")
                      time.sleep(1.5)
                      st.rerun()
+
 
