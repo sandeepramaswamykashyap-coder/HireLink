@@ -1775,42 +1775,4 @@ else:
     # --- GLOBAL SIDEBAR FOOTER (Always Visible) ---
     with st.sidebar:
         st.markdown("---")
-        
-        with st.expander("🛠 Admin Controls (Save/Restore)"):
-            st.caption("Manage your profile snapshots.")
-            
-            from backend.utils.admin_tools import save_admin_snapshot, restore_admin_snapshot, factory_reset
-            
-            # SAVE
-            if st.button("💾 Save Current as Admin Template", use_container_width=True):
-                success, msg = save_admin_snapshot()
-                if success:
-                    st.toast(msg, icon="✅")
-                else:
-                    st.error(msg)
-            
-            # RESTORE
-            if st.button("♻️ Restore Admin Template", use_container_width=True):
-                success, msg = restore_admin_snapshot()
-                if success:
-                    st.toast(msg, icon="✅")
-                    # Clear session to force reload
-                    st.session_state.clear()
-                    time.sleep(1)
-                    st.rerun()
-                else:
-                    st.error(msg)
-            
-            # RESET
-            st.write("")
-            if st.button("💣 Factory Reset (Wipe All)", type="primary", use_container_width=True):
-                success, msg = factory_reset()
-                if success:
-                    st.toast(msg, icon="🗑️")
-                    st.session_state.clear()
-                    time.sleep(1)
-                    st.rerun()
-                else:
-                    st.error(msg)
-                    
         st.caption(f"HireLink v1.1 (Live)")
