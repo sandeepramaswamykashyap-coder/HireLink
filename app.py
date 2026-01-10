@@ -124,23 +124,17 @@ def render_landing_page(user_exists=False):
     """, unsafe_allow_html=True)
     
     # Centered CTA Buttons
-    if user_exists:
-        _, c_btn, _ = st.columns([1, 1, 1])
-        with c_btn:
+    # Centered CTA Buttons
+    _, c_btn, _ = st.columns([1, 1, 1])
+    with c_btn:
+        if user_exists:
             if st.button("Go to Dashboard 🚀", type="primary", use_container_width=True):
                 st.session_state['force_landing'] = False
                 st.rerun()
-    else:
-        c1, c2, c3, c4 = st.columns([1, 2, 2, 1])
-        with c2:
+        else:
             if st.button("Start Applying Now 🚀", type="primary", use_container_width=True):
                 st.session_state['show_onboarding'] = True
                 st.rerun()
-                
-        with c3:
-             if st.button("Existing User Login", type="secondary", use_container_width=True):
-                 st.session_state['show_login'] = True
-                 st.rerun()
 
     st.markdown("""
     <div class="landing-features">
