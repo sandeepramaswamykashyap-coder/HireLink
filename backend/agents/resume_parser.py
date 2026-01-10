@@ -16,12 +16,10 @@ class ResumeParser:
     def __init__(self):
         self.llm_client = LLMClient()
         try:
-            self.nlp = spacy.load("en_core_web_sm")
+             self.nlp = spacy.load("en_core_web_sm")
         except:
-            logger.warning("spaCy model not found, downloading...")
-            from spacy.cli import download
-            download("en_core_web_sm")
-            self.nlp = spacy.load("en_core_web_sm")
+             logger.warning("spaCy model load failed. Proceeding without NLP.")
+             self.nlp = None
 
     def extract_text(self, file_path):
         """Extract text from PDF"""
