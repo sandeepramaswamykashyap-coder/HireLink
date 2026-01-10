@@ -867,6 +867,9 @@ if not user or st.session_state.get('force_landing', True):
     else:
         render_landing_page(user_exists=(user is not None))
 else:
+    # --- CHECK FOR PENDING PAYMENTS ---
+    check_and_show_payment_modal()
+
     # Sidebar
     st.sidebar.header("Navigation")
     is_admin = getattr(user, 'is_admin', False)
