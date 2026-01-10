@@ -81,7 +81,12 @@ def launch_login_browser():
         st.info("1. Login to Naukri in the open tab.\n2. Open a new tab -> go to linkedin.com -> login.\n3. Open a new tab -> go to indeed.com -> login.")
         time.sleep(2) 
     except Exception as e:
-        st.error(f"Failed to launch browser: {e}")
+        error_msg = str(e).lower()
+        if "devtoolsactiveport" in error_msg or "chrome failed to start" in error_msg:
+             st.error("❌ Cloud Environment Detected: Cannot launch local browser.")
+             st.info("Since you are running on Streamlit Cloud, the app cannot open a window on your computer. Please enter your credentials in the **'Keys'** tab inside the dashboard instead.")
+        else:
+             st.error(f"Failed to launch browser: {e}")
 
 # --- LANDING PAGE ---
 def render_landing_page(user_exists=False):
