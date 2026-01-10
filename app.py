@@ -1241,6 +1241,50 @@ else:
                         st.rerun()
 
 
+        # --- TAB 4: SNAPSHOTS (From Sidebar) ---
+        with tab_snapshots:
+            st.markdown("### 💾 Admin Profile Snapshots")
+            st.info("Save your current setup (profile, answers, resumes) as a template to restore later. Useful for demos or testing.")
+            
+            from backend.utils.admin_tools import save_admin_snapshot, restore_admin_snapshot, factory_reset
+            
+            c_snap1, c_snap2, c_snap3 = st.columns(3)
+            
+            with c_snap1:
+                st.markdown("#### 1. Save State")
+                if st.button("💾 Save Current State", use_container_width=True):
+                    success, msg = save_admin_snapshot()
+                    if success:
+                        st.toast(msg, icon="✅")
+                        st.success(f"Snapshot Saved! {msg}")
+                    else:
+                        st.error(msg)
+            
+            with c_snap2:
+                st.markdown("#### 2. Restore State")
+                if st.button("♻️ Restore From Snapshot", type="primary", use_container_width=True):
+                    success, msg = restore_admin_snapshot()
+                    if success:
+                        st.toast(msg, icon="✅")
+                        st.success("Restored! Refreshing...")
+                        st.session_state.clear()
+                        time.sleep(1)
+                        st.rerun()
+                    else:
+                        st.error(msg)
+                        
+            with c_snap3:
+                st.markdown("#### 3. Nuclear Option")
+                if st.button("💣 Factory Reset (Wipe All)", type="secondary", use_container_width=True):
+                    success, msg = factory_reset()
+                    if success:
+                        st.toast(msg, icon="🗑️")
+                        st.session_state.clear()
+                        time.sleep(1)
+                        st.rerun()
+                    else:
+                        st.error(msg)
+
 
 # ... (Rest of app) ...
 
