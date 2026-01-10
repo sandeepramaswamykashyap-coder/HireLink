@@ -114,15 +114,19 @@ h1 {
 .job-card,
 .feature-card,
 .status-card,
-.pricing-card,
-[data-testid="stMetric"],
-.portal-item {
+.pricing-card {
     background: var(--glass-bg);
     backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 30px;
+    height: 100%;
+    min-height: 500px;
 }
 
 .job-card:hover,
@@ -273,6 +277,69 @@ button[kind="primary"]:hover {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #475569;
+}
+
+/* --- PRICING DETAIL STYLES --- */
+.pricing-card .stButton {
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.pricing-card.featured {
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+.plan-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.plan-slogan {
+    font-size: 0.9rem;
+    color: var(--text-main);
+    margin-bottom: 20px;
+}
+
+.price-tag {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 15px 0 5px 0;
+    color: white;
+}
+
+.price-period {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.pricing-features {
+    flex-grow: 1;
+}
+
+.pricing-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pricing-features li {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pricing-features li::before {
+    content: "✓";
+    color: var(--success);
+    font-weight: 900;
 }
 
 /* --- UTILS --- */

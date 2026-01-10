@@ -341,9 +341,7 @@ def render_pricing(user_exists):
         justify-content: center;
         align-items: center;
         gap: 20px;
-        border: 1px solid rgba(255,255,255,0.1);
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        margin-left: 20px; /* Nudge to the right */
     }
     
     div[data-testid="stRadio"] label p {
@@ -396,6 +394,11 @@ def render_pricing(user_exists):
             </div>
         </div>
         """, unsafe_allow_html=True)
+        if st.button("Start Free", key="btn_free", use_container_width=True):
+             st.session_state['selected_plan'] = 'FREE'
+             if not user_exists: st.session_state['show_onboarding'] = True
+             else: update_user_plan('FREE') 
+             st.rerun()
 
     with c2:
         st.markdown(f"""
@@ -413,6 +416,29 @@ def render_pricing(user_exists):
             </div>
         </div>
         """, unsafe_allow_html=True)
+        if st.button("Choose Starter", key="btn_starter", use_container_width=True):
+             if not user_exists:
+                 # Payment-First logic
+                 link_data = pg.create_payment_link(p_starter, "STARTER", "guest@hirelink.ai")
+                 if link_data:
+                     st.session_state['pending_payment'] = {
+                         "url": link_data.get('short_url'),
+                         "plan": "STARTER",
+                         "amount": p_starter,
+                         "email": "guest@hirelink.ai",
+                         "is_guest": True
+                     }
+                 st.rerun()
+             else:
+                 link_data = pg.create_payment_link(p_starter, "STARTER", user.email)
+                 if link_data:
+                     st.session_state['pending_payment'] = {
+                         "url": link_data.get('short_url'),
+                         "plan": "STARTER",
+                         "amount": p_starter,
+                         "email": user.email
+                     }
+                     st.rerun()
 
     with c3:
         st.markdown(f"""
@@ -432,47 +458,9 @@ def render_pricing(user_exists):
             </div>
         </div>
         """, unsafe_allow_html=True)
-
-    # Grid for Buttons (Forces separate line, perfectly aligned)
-    _, b1, b2, b3, _ = st.columns([0.2, 3, 3, 3, 0.2])
-
-    with b1:
-        if st.button("Start Free", key="btn_free", use_container_width=True):
-             st.session_state['selected_plan'] = 'FREE'
-             if not user_exists: st.session_state['show_onboarding'] = True
-             else: update_user_plan('FREE') 
-             st.rerun()
-
-    with b2:
-        if st.button("Choose Starter", key="btn_starter", use_container_width=True):
-             if not user_exists:
-                 # Payment-First logic: Setup pending payment instead of showing onboarding
-                 link_data = pg.create_payment_link(p_starter, "STARTER", "guest@hirelink.ai") # Temporary guest email
-                 if link_data:
-                     st.session_state['pending_payment'] = {
-                         "url": link_data.get('short_url'),
-                         "plan": "STARTER",
-                         "amount": p_starter,
-                         "email": "guest@hirelink.ai",
-                         "is_guest": True # Flag to trigger onboarding after payment
-                     }
-                 st.rerun()
-             else:
-                 # Payment Flow for existing user
-                 link_data = pg.create_payment_link(p_starter, "STARTER", user.email)
-                 if link_data:
-                     st.session_state['pending_payment'] = {
-                         "url": link_data.get('short_url'),
-                         "plan": "STARTER",
-                         "amount": p_starter,
-                         "email": user.email
-                     }
-                     st.rerun()
-
-    with b3:
         if st.button("Choose Pro", key="btn_pro", type="primary", use_container_width=True):
              if not user_exists:
-                 # Payment-First logic: Setup pending payment instead of showing onboarding
+                 # Payment-First logic
                  link_data = pg.create_payment_link(p_pro, "PRO", "guest@hirelink.ai")
                  if link_data:
                      st.session_state['pending_payment'] = {
@@ -484,7 +472,6 @@ def render_pricing(user_exists):
                      }
                  st.rerun()
              else:
-                 # Payment Flow for existing user
                  link_data = pg.create_payment_link(p_pro, "PRO", user.email)
                  if link_data:
                      st.session_state['pending_payment'] = {
