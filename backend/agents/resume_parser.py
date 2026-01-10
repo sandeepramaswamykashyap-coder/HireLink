@@ -51,8 +51,14 @@ class ResumeParser:
 
     def extract_name(self, text):
         # Heuristic: First line or using Spacy PERSON
-        # PROBLEM: Spacy sometimes tags "Jira", "Python", "SQL" as PERSON
-        
+        if not self.nlp:
+            # Fallback: Just return first line or Unknown if no NLP
+            # Simple heuristic: First non-empty line that isn't too long
+            lines = [l.strip() for l in text.split('\n') if l.strip()]
+            if lines and len(lines[0]) < 50:
+                 return lines[0]
+            return "Unknown"
+
         doc = self.nlp(text)
         
         # Blacklist of common false positives
