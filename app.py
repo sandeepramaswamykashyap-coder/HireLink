@@ -43,7 +43,7 @@ from backend.agents.job_analyzer import JobAnalyzer
 import os
 import time
 
-st.set_page_config(page_title="Hire Link", layout="wide")
+st.set_page_config(page_title="Hire Link", layout="centered")
 
 # --- CAPTURE REFERRAL ---
 if "ref" in st.query_params:
@@ -95,11 +95,16 @@ def render_landing_page(user_exists=False):
         st.image("assets/logo.png", width=220)
         
     with h_col2:
-        if user_exists:
-            st.write("") # Spacer to align with logo vertical center roughly
-            if st.button("🔑 Login", type="secondary", use_container_width=True):
-                st.session_state['force_landing'] = False
-                st.rerun()
+        st.write("") # Spacer to align with logo vertical center roughly
+        if st.button("🔑 Login", type="secondary", use_container_width=True):
+             # If user exists, go to dashboard. If not, go to Login Page (which we need to make accessible)
+             # For now, let's treat Login as "Go to Dashboard" if exists, or "Show Login Form" if not.
+             if user_exists:
+                 st.session_state['force_landing'] = False
+                 st.rerun()
+             else:
+                 st.session_state['show_login'] = True
+                 st.rerun()
 
     st.markdown("""
     <div class="landing-container">
@@ -750,7 +755,33 @@ except:
     user = None # Handle table not existing edge case if init failed
 
 if not user or st.session_state.get('force_landing', True):
-    if st.session_state.get('show_onboarding', False):
+    if st.session_state.get('show_login', False):
+         # --- SIMPLE LOGIN FORM ---
+         st.markdown("## Login")
+         email = st.text_input("Email")
+         password = st.text_input("Password", type="password")
+         if st.button("Sign In"):
+             from backend.database import AppUser
+             u = db.query(AppUser).filter_by(email=email).first()
+             # Simple Auth for MVP (No hash check in this snippet, assumes direct match or demo mode)
+             # In real app, check hash.
+             if u and u.password == password: # Plaintext for demo speed, update to hash later
+                 st.session_state['force_landing'] = False
+                 st.session_state['show_login'] = False
+                 # Set cookie/session hack? Streamlit session is enough.
+                 # But we need to RELOAD Main Controller user fetch.
+                 # We can't easily injection "user" variable here without a rerun.
+                 st.success(f"Welcome back, {u.name}!")
+                 time.sleep(1)
+                 st.rerun()
+             else:
+                 st.error("Invalid credentials.")
+         
+         if st.button("Back"):
+             del st.session_state['show_login']
+             st.rerun()
+             
+    elif st.session_state.get('show_onboarding', False):
         render_onboarding()
     else:
         render_landing_page(user_exists=(user is not None))
