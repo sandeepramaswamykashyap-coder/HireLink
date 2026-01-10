@@ -1270,10 +1270,15 @@ else:
             with c_snap3:
                 st.markdown("#### 3. Nuclear Option")
                 if st.button("💣 Factory Reset (Wipe All)", type="secondary", use_container_width=True):
+                    # Force close current session to release file lock
+                    db.close()
+                    
                     success, msg = factory_reset()
                     if success:
                         st.toast(msg, icon="🗑️")
+                        # Nuke session
                         st.session_state.clear()
+                        # Force browser cache clear workarounds if needed (usually just rerun is enough)
                         time.sleep(1)
                         st.rerun()
                     else:
