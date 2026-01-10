@@ -832,6 +832,9 @@ else:
     st.sidebar.caption(f"**PLAN:** {plan_display}")
     if limit < 999999 and limit > 0:
         st.sidebar.progress(min(apps_used / limit, 1.0))
+    
+    st.sidebar.divider()
+    st.sidebar.caption("v1.1 (Live)")
         
     st.sidebar.caption(f"{apps_used} / {'∞' if limit > 900000 else limit} Applications Used")
     
