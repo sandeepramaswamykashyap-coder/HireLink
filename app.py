@@ -600,30 +600,30 @@ def render_onboarding():
                 st.info("ℹ️ **Note**: You may encounter similar or duplicate questions. Please answer them all—redundancy helps the AI apply correctly to different portals.")
                 
                 with st.form("onboarding_smart_answers"):
-                # Fetch categories
-                qa_list = db.query(QuestionAnswer).all()
-                categories = sorted(list(set([q.category for q in qa_list])))
-                
-                # Group by category
-                for cat in categories:
-                    with st.expander(f"📝 {cat.replace('_', ' ').title()}", expanded=False):
-                        cat_questions = [q for q in qa_list if q.category == cat]
-                        for q in cat_questions:
-                            # Highlight mandatory-ish fields
-                            label = q.question
-                            if "name" in label.lower() or "email" in label.lower() or "phone" in label.lower():
-                                label = "🔴 " + label
-                                
-                            val = st.text_input(label, value=q.answer or "", key=f"d_qa_{q.id}")
-                            # Update in-memory object (will commit after submit)
-                            q.answer = val
-                
-                st.write("")
-                c1, c2 = st.columns([1, 1])
-                if c2.form_submit_button("Save & Continue", type="primary", use_container_width=True):
-                    db.commit()
-                    st.session_state['onboarding_step'] = 3
-                    st.rerun()
+                    # Fetch categories
+                    qa_list = db.query(QuestionAnswer).all()
+                    categories = sorted(list(set([q.category for q in qa_list])))
+                    
+                    # Group by category
+                    for cat in categories:
+                        with st.expander(f"📝 {cat.replace('_', ' ').title()}", expanded=False):
+                            cat_questions = [q for q in qa_list if q.category == cat]
+                            for q in cat_questions:
+                                # Highlight mandatory-ish fields
+                                label = q.question
+                                if "name" in label.lower() or "email" in label.lower() or "phone" in label.lower():
+                                    label = "🔴 " + label
+                                    
+                                val = st.text_input(label, value=q.answer or "", key=f"d_qa_{q.id}")
+                                # Update in-memory object (will commit after submit)
+                                q.answer = val
+                    
+                    st.write("")
+                    c1, c2 = st.columns([1, 1])
+                    if c2.form_submit_button("Save & Continue", type="primary", use_container_width=True):
+                        db.commit()
+                        st.session_state['onboarding_step'] = 3
+                        st.rerun()
             
             if st.button("BACK", use_container_width=True):
                 st.session_state['onboarding_step'] = 1
