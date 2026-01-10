@@ -800,13 +800,13 @@ def render_onboarding():
             st.write("") 
             
             st.info("""
-            💻 **Running Locally?** Click the button below to launch a browser and login.
-            
             ☁️ **Running on Cloud?** Click **'I'm All Set'** below and enter your credentials in the **'Keys'** tab inside the dashboard.
             """)
             
-            if st.button("🚀 Launch Secure Login Browser (Local Only)", use_container_width=True):
-                launch_login_browser()
+            with st.expander("🔌 Connect via Local Browser (For Localhost Users Only)"):
+                st.caption("If you are running this app on your own computer, you can launch a browser to login automatically.")
+                if st.button("🚀 Launch Secure Login Browser", use_container_width=True):
+                    launch_login_browser()
                 
             st.write("")
             if st.button("I'm All Set - Go to Dashboard 🎉", type="primary", use_container_width=True):
