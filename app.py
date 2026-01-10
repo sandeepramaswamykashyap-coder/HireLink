@@ -595,7 +595,7 @@ def render_onboarding():
 
         # --- STEP 2: SMART ANSWERS (NEW) ---
         elif step == 2:
-            _, c_center, _ = st.columns([1, 2, 1])
+            _, c_center, _ = st.columns([1, 8, 1])
             with c_center:
                 st.markdown("""
                 <div class="step-header">
@@ -639,7 +639,7 @@ def render_onboarding():
 
         # --- STEP 3: RESUME ---
         elif step == 3:
-            _, c_center, _ = st.columns([1, 2, 1])
+            _, c_center, _ = st.columns([1, 8, 1])
             with c_center:
                 st.markdown("""
                 <div class="step-header">
