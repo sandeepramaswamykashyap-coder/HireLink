@@ -548,14 +548,14 @@ def render_onboarding():
     progress = step / total_steps
     
     # Progress Bar (Centered above card)
-    c1, c2, c3 = st.columns([1, 2, 1])
+    c1, c2, c3 = st.columns([1, 8, 1])
     with c2:
         st.progress(progress)
         st.caption(f"Step {step} of {total_steps}")
     
     # Layout: [Spacer] [Card] [Spacer]
     # To mimic a 500px card, we use strict column ratios.
-    main_col1, main_col2, main_col3 = st.columns([1, 2, 1])
+    main_col1, main_col2, main_col3 = st.columns([1, 8, 1])
     
     with main_col2:
         st.markdown('<div class="onboarding-card">', unsafe_allow_html=True)
