@@ -1,5 +1,8 @@
 import fitz  # PyMuPDF
-import spacy
+try:
+    import spacy
+except ImportError:
+    spacy = None
 import re
 from backend.utils.logger import logger
 from backend.database import Resume, get_db
