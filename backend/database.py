@@ -147,7 +147,7 @@ else:
 
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-from sqlalchemy import inspect # Add import
+from sqlalchemy import inspect, text # Add text import
 
 def migrate_db():
     """
@@ -161,7 +161,7 @@ def migrate_db():
                 logger.info("Migration: 'password' column missing in users_v2. Adding it.")
                 with engine.connect() as conn:
                     with conn.begin(): # Transaction
-                        conn.execute("ALTER TABLE users_v2 ADD COLUMN password VARCHAR")
+                        conn.execute(text("ALTER TABLE users_v2 ADD COLUMN password VARCHAR"))
                 logger.info("Migration: Successfully added 'password' column.")
     except Exception as e:
         logger.warning(f"Migration check failed: {e}")
