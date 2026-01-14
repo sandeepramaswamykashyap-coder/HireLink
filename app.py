@@ -2605,35 +2605,38 @@ else:
             for r in resumes:
                 with st.expander(f"{r.name} - {r.email}"):
                     c1, c2 = st.columns([3, 1])
-                    with c1:
-                        data = r.parsed_data or {}
-                        st.markdown(f"**👤 Name:** {data.get('name', 'N/A')}")
-                        st.markdown(f"**📧 Email:** {data.get('email', 'N/A')}")
-                        st.markdown(f"**📱 Phone:** {data.get('phone', 'N/A')}")
+                with st.expander(f"{r.name} - {r.email}"):
+                    data = r.parsed_data or {}
+                    st.markdown(f"**👤 Name:** {data.get('name', 'N/A')}")
+                    st.markdown(f"**📧 Email:** {data.get('email', 'N/A')}")
+                    st.markdown(f"**📱 Phone:** {data.get('phone', 'N/A')}")
+                    
+                    if data.get('skills'):
+                        st.markdown("**🛠️ Skills:**")
+                        # Create wrapped pill-like display
+                        skills_html = f"""
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
+                            {''.join([f'<span style="background-color:#2b2d42; color:white; padding:4px 10px; border-radius:12px; font-size:0.85rem; border:1px solid rgba(255,255,255,0.1);">{s}</span>' for s in data.get('skills', [])])}
+                        </div>
+                        """
+                        st.markdown(skills_html, unsafe_allow_html=True)
                         
-                        if data.get('skills'):
-                            st.markdown("**🛠️ Skills:**")
-                            # Create wrapped pill-like display
-                            skills_html = f"""
-                            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
-                                {''.join([f'<span style="background-color:#2b2d42; color:white; padding:4px 10px; border-radius:12px; font-size:0.85rem; border:1px solid rgba(255,255,255,0.1);">{s}</span>' for s in data.get('skills', [])])}
-                            </div>
-                            """
-                            st.markdown(skills_html, unsafe_allow_html=True)
-                            
-                        if data.get('experience'):
-                            st.markdown("---")
-                            st.markdown("**💼 Experience:**")
-                            # Handle if experience is list or string
-                            exp = data.get('experience')
-                            if isinstance(exp, list):
-                                for e in exp:
-                                    st.markdown(f"- **{e.get('role', 'Role')}** at {e.get('company', 'Company')} ({e.get('years', '')})")
-                            else:
-                                st.write(str(exp))
+                    if data.get('experience'):
+                        st.markdown("---")
+                        st.markdown("**💼 Experience:**")
+                        # Handle if experience is list or string
+                        exp = data.get('experience')
+                        if isinstance(exp, list):
+                            for e in exp:
+                                st.markdown(f"- **{e.get('role', 'Role')}** at {e.get('company', 'Company')} ({e.get('years', '')})")
+                        else:
+                            st.write(str(exp))
 
-                    with c2:
-                    with c2:
+                    st.markdown("---")
+                    # Footer Actions
+                    # Using columns to align right
+                    _, col_del = st.columns([4, 1])
+                    with col_del:
                         if st.button("🗑️ Delete", key=f"del_btn_{r.id}"):
                             confirm_delete_resume(r.id, r.name)
 
