@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     libappindicator3-1 \
     libatk-bridge2.0-0 \
     libgtk-3-0 \
+    libgbm1 \
     --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -49,7 +50,7 @@ ENV PORT=8501
 EXPOSE 8501
 
 # 9. Healthcheck
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
+HEALTHCHECK CMD curl --fail http://localhost:$PORT/_stcore/health
 
 # 10. Start Application
 # Use shell form to allow environment variable expansion
