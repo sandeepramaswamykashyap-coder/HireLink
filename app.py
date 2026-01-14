@@ -560,7 +560,7 @@ def render_landing_page(user_exists=False):
 <div class="landing-wrapper">
 <div class="landing-hero">
 <div class="landing-title" style="font-family: 'Outfit', sans-serif !important; color: white !important; font-size: 5rem !important; font-weight: 900 !important; line-height: 1.1 !important; margin-bottom: 25px !important;">Automate Your <span class="gradient-text">Dream Job</span> Search today.</div>
-<p class="landing-subtitle"><strong>WARNING: Recruiters Are Panicking! 🤯</strong> This Secret AI Bot Auto-Applies to 1,000+ Jobs While You Sleep. <strong>Get Hired in DAYS, Not Months.</strong></p>
+<p class="landing-subtitle">Stop manually applying. Let our AI Agent find, filter, and apply to thousands of jobs for you while you sleep.</p>
 <div class="landing-trust">
 <span>⭐️⭐️⭐️⭐️⭐️ Trusted by 5,000+ Job Seekers</span>
 <span class="trust-badge">🔒 Secure & Private</span>
