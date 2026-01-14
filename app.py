@@ -2590,6 +2590,7 @@ else:
                     status = update.get('status')
                     
                     # Update State
+                    print(f"DEBUG: Pilot Step: {step} - Status: {status}") # Trace
                     st.session_state['m_step'] = step
                     st.session_state['m_status'] = status
                     st.session_state['m_phase_idx'] = phase_map.get(step, 0)
