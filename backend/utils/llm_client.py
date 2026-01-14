@@ -8,15 +8,29 @@ class LLMClient:
         self._setup_client()
 
     def _setup_client(self):
+        # 1. Check Environment Variable
         if not self.api_key:
-            logger.warning("GEMINI_API_KEY not found in environment variables. LLM features will be disabled.")
+            # 2. Check Database (PortalCredential)
+            try:
+                from backend.database import SessionLocal, PortalCredential
+                db = SessionLocal()
+                cred = db.query(PortalCredential).filter_by(portal_name="GEMINI_API_KEY").first()
+                if cred and cred.password:
+                    self.api_key = cred.password
+                    logger.info("Found GEMINI_API_KEY in Database.")
+                db.close()
+            except Exception as e:
+                logger.warning(f"Could not fetch API key from DB: {e}")
+
+        if not self.api_key:
+            logger.warning("GEMINI_API_KEY not found in environment or database. LLM features will be disabled.")
             return
 
         try:
             import google.generativeai as genai
             genai.configure(api_key=self.api_key)
-            self.client = genai.GenerativeModel('gemini-1.5-flash')
-            logger.info("LLM Client (Gemini 1.5 Flash) initialized successfully.")
+            self.client = genai.GenerativeModel('gemini-flash-latest')
+            logger.info("LLM Client (Gemini Flash Latest) initialized successfully.")
         except ImportError:
             logger.error("google-generativeai library not installed.")
         except Exception as e:

@@ -2398,9 +2398,21 @@ else:
                          new_u = st.text_input("Username/Email", value=u_val, key=f"u_{p}")
                          new_p = st.text_input("Password", value=p_val, type="password", key=f"p_{p}")
                  
+                 # --- AI CONFIGURATION ---
+                 st.markdown("---")
+                 st.subheader("🤖 AI Configuration")
+                 st.caption("Required for HireLink Assistant & Smart Fill features.")
+                 
+                 gemini_cred = cred_map.get("GEMINI_API_KEY")
+                 g_val = gemini_cred.password if gemini_cred else ""
+                 
+                 new_gemini_key = st.text_input("Gemini API Key", value=g_val, type="password", help="Get a free key from Google AI Studio", key="gemini_key_input")
+
                  st.write("")
                  if st.form_submit_button("💾 Save Credentials", type="primary", use_container_width=True):
                      updated_count = 0
+                     
+                     # 1. Save Portals
                      for p in portals:
                          u = st.session_state.get(f"u_{p}")
                          pwd = st.session_state.get(f"p_{p}")
@@ -2415,9 +2427,28 @@ else:
                                  new_cred = PortalCredential(user_id=user.id, portal_name=p, username=u, password=pwd)
                                  db.add(new_cred)
                                  updated_count += 1
+                    
+                     # 2. Save Gemini Key
+                     # We use st.session_state key or the returned value? 
+                     # Inside form, text_input returns value. But we are inside submit block?
+                     # No, we must read the widget state using the key if logic is deferred?
+                     # Wait, standard Streamlit form pattern:
+                     # submitted = st.form_submit_button(...)
+                     # if submitted:
+                     #    val = new_gemini_key (variable available in scope)
                      
+                     if new_gemini_key:
+                         existing = cred_map.get("GEMINI_API_KEY")
+                         if existing:
+                             existing.password = new_gemini_key
+                             updated_count += 1
+                         else:
+                             # username="apikey" convention
+                             db.add(PortalCredential(user_id=user.id, portal_name="GEMINI_API_KEY", username="apikey", password=new_gemini_key))
+                             updated_count += 1
+
                      db.commit()
-                     st.success(f"Successfully saved credentials for {updated_count} portals!")
+                     st.success(f"Successfully saved credentials for {updated_count} items!")
                      time.sleep(1.5)
                      st.rerun()
 
