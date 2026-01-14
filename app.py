@@ -352,25 +352,33 @@ div[data-testid="stMetricLabel"] {
     letter-spacing: 1px;
 }
 
-/* Tabs */
+/* Tabs - AGGRESSIVE OVERRIDE */
 .stTabs [data-baseweb="tab-list"] {
-    gap: 20px;
-    background: rgba(255,255,255,0.03);
-    padding: 16px;
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.05);
+    gap: 30px !important;
+    background: rgba(255,255,255,0.03) !important;
+    padding: 20px !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(255,255,255,0.05) !important;
+    display: flex !important;
+    justify-content: center !important; /* Center the tabs */
 }
 
 .stTabs [data-baseweb="tab"] {
-    height: 50px;
-    white-space: pre-wrap;
-    background-color: transparent;
-    border-radius: 12px;
-    color: #cbd5e1;
-    font-weight: 600;
-    transition: all 0.2s;
-    padding: 0 30px !important; 
-    font-size: 1.1rem;
+    height: 60px !important;
+    white-space: pre-wrap !important;
+    background-color: transparent !important;
+    border-radius: 16px !important;
+    color: #cbd5e1 !important;
+    font-weight: 600 !important;
+    transition: all 0.2s !important;
+    padding: 0 40px !important; 
+    font-size: 1.2rem !important;
+    border: 1px solid transparent !important;
+}
+
+.stTabs [data-baseweb="tab"]:hover {
+    background-color: rgba(255,255,255,0.05) !important;
+    border-color: rgba(255,255,255,0.1) !important;
 }
 
 .stTabs [aria-selected="true"] {
