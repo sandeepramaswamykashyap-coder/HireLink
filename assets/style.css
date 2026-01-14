@@ -113,7 +113,7 @@ h1 {
 
 /* --- LANDING PAGE (PREMIUM) --- */
 .landing-wrapper {
-    max-width: 1200px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -125,7 +125,7 @@ h1 {
 }
 
 .landing-title {
-    font-size: 4.5rem !important;
+    font-size: 4rem !important;
     font-weight: 900 !important;
     line-height: 1.1 !important;
     margin-bottom: 25px !important;
