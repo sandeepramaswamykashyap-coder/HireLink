@@ -67,17 +67,364 @@ if "ref" in st.query_params:
     st.session_state['captured_ref'] = st.query_params["ref"]
 
 # Load Custom CSS
-def local_css(file_name):
-    with open(file_name) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+# Load Custom CSS
+st.markdown("""<style>
+/* GOOGLE FONTS */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;700;900&display=swap');
 
-    with open(file_name) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+/* --- VARS --- */
+:root {
+    --bg-deep: #020617;
+    --bg-surface: #0f172a;
+    --bg-card: rgba(30, 41, 59, 0.4);
 
-try:
-    local_css("assets/style.css")
-except:
-    pass # Fallback if file missing
+    /* Professional Blue/Indigo Theme */
+    --primary: #4f46e5;
+    /* Indigo 600 */
+    --primary-hover: #4338ca;
+    /* Indigo 700 */
+    --accent: #0ea5e9;
+    /* Sky 500 */
+    --success: #10b981;
+    /* Emerald 500 */
+
+    /* Button Gradient (Professional) */
+    --gradient-btn: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+
+    /* Subtle Gradient for Headers only */
+    --gradient-hero: linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%);
+    --gradient-glass: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+
+    --glow: 0 0 15px rgba(79, 70, 229, 0.3);
+    --border: rgba(255, 255, 255, 0.1);
+}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- BASE SETUP --- */
+html,
+body,
+.stApp {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    background-color: var(--bg-deep);
+    color: #f8fafc;
+    font-size: 18px !important;
+    /* Increased from 16px */
+}
+
+/* GLOBAL TEXT BOOST */
+p,
+.stMarkdown,
+.stText,
+.stCaption,
+li,
+span,
+div {
+    font-size: 1.1rem;
+    /* Increased from 1rem */
+    line-height: 1.6;
+}
+
+/* --- TYPOGRAPHY --- */
+h1,
+h2,
+h3 {
+    font-family: 'Outfit', sans-serif !important;
+    letter-spacing: -0.02em;
+    color: white !important;
+}
+
+h1 {
+    font-size: 2.5rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+}
+
+/* --- DASHBOARD COMPONENTS --- */
+.job-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+}
+
+.job-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+}
+
+.match-score-badge {
+    background: rgba(16, 185, 129, 0.1);
+    color: #34d399;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-weight: 800;
+}
+
+/* --- LANDING PAGE (PREMIUM) --- */
+.landing-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.landing-hero {
+    padding: 40px 20px;
+    /* Reduced from 80px */
+    text-align: center;
+    background: radial-gradient(circle at center, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
+}
+
+h1.landing-title {
+    font-size: 5.5rem !important;
+    /* Specificity Fix + Increased Size */
+    font-weight: 900 !important;
+    line-height: 1.1 !important;
+    margin-bottom: 25px !important;
+    letter-spacing: -3px;
+}
+
+.landing-subtitle {
+    font-size: 1.25rem !important;
+    color: #94a3b8 !important;
+    max-width: 700px;
+    margin: 0 auto 50px !important;
+}
+
+.landing-features {
+    display: flex;
+    /* Changed from Grid to Flex */
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    margin: 40px 0;
+    /* Reduced from 60px */
+}
+
+.feature-card {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 25px;
+    /* Reduced from 40px */
+    text-align: left;
+    transition: all 0.3s ease;
+    flex: 1 1 300px;
+    /* Flexbox sizing */
+    max-width: 400px;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--primary);
+    background: rgba(30, 41, 59, 0.8);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.portal-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 40px;
+}
+
+.portal-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid var(--border);
+    transition: 0.3s;
+}
+
+.portal-item:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* --- MISSION CONTROL --- */
+.mission-header {
+    background: linear-gradient(90deg, #1e1b4b 0%, #312e81 100%);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    border-radius: 12px;
+    padding: 15px 25px;
+    margin-bottom: 20px;
+    display: flex;
+}
+
+.m-stat {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+}
+
+/* ST OVERRIDES */
+[data-testid="stSidebar"] {
+    background: #0f172a;
+}
+
+.stButton button {
+    border-radius: 12px;
+}
+
+button[kind="primary"] {
+    background: var(--gradient-btn) !important;
+    border: none !important;
+}
+
+/* --- PRICING SECTION --- */
+.pricing-section {
+    padding: 20px;
+    /* Reduced from 60px 20px */
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pricing-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+}
+
+.pricing-card {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto 20px auto;
+    text-align: center;
+    position: relative;
+    transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    min-height: 480px;
+}
+
+.pricing-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+}
+
+.pricing-header {
+    margin-bottom: 30px;
+}
+
+.plan-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+}
+
+.price-tag {
+    font-size: 3rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.pricing-features {
+    text-align: left;
+    margin-bottom: 40px;
+    flex-grow: 1;
+}
+
+.pricing-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pricing-features li {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+}
+
+.pricing-features li::before {
+    content: "✓";
+    color: #10b981;
+    font-weight: 800;
+}
+
+/* MISSION CONTROL UI */
+.mission-header {
+    background: linear-gradient(90deg, #1e1b4b 0%, #312e81 100%);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    border-radius: 12px;
+    padding: 15px 25px;
+    margin-bottom: 20px;
+}
+
+.m-stat {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px 10px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.m-stat:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+}
+
+.m-stat-val {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: white;
+}
+
+.m-stat-label {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+</style>""", unsafe_allow_html=True)
 
 
 
