@@ -2784,8 +2784,24 @@ else:
                     # Actions
                     col_act_1, col_act_2 = st.columns([0.85, 0.15])
                     with col_act_2:
-                         if st.button("🗑️ Delete", key=f"del_{r.id}", type="secondary"):
-                             confirm_delete_resume(r.id, r.name)
+                         # Key for confirmation state
+                         confirm_key = f"confirm_del_{r.id}"
+                         
+                         if st.session_state.get(confirm_key):
+                             st.warning("Confirm?")
+                             c_yes, c_no = st.columns(2)
+                             if c_yes.button("Yes", key=f"yes_{r.id}"):
+                                 confirm_delete_resume(r.id, r.name)
+                                 # Reset state
+                                 st.session_state[confirm_key] = False
+                                 st.rerun()
+                             if c_no.button("No", key=f"no_{r.id}"):
+                                 st.session_state[confirm_key] = False
+                                 st.rerun()
+                         else:
+                             if st.button("🗑️ Delete", key=f"del_{r.id}", type="secondary"):
+                                 st.session_state[confirm_key] = True
+                                 st.rerun()
 
         # --- TAB 2: SMART ANSWERS ---
         with tab_smart:
