@@ -2456,6 +2456,7 @@ else:
 
         # --- TAB 2: SMART ANSWERS ---
         with tab_smart:
+            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
             st.subheader("Knowledge Base")
             st.markdown("This is the **brain** of your agent. The more questions you answer here, the accurately it can fill forms.")
             st.info("ℹ️ **Note**: You may encounter similar or duplicate questions. Please answer them all—redundancy helps the AI apply correctly to different portals.")
@@ -2513,9 +2514,11 @@ else:
                     st.toast("Smart Answers saved successfully!", icon="✅")
                     time.sleep(1)
                     st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
 
         # --- TAB 3: PORTAL KEYS (CREDENTIALS) ---
         with tab_keys:
+            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
             st.subheader("🔑 Portal Credentials")
             st.info("Securely store your login details here. The **Pilot** will use them to automatically log you in.")
             
@@ -2592,6 +2595,7 @@ else:
                      st.success(f"Successfully saved credentials for {updated_count} items!")
                      time.sleep(1.5)
                      st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
 
     # --- GLOBAL SIDEBAR FOOTER (Always Visible) ---
     with st.sidebar:
