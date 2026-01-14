@@ -2654,7 +2654,7 @@ else:
         """, unsafe_allow_html=True)
         
         st.caption("👇 Copy your unique referral link:")
-        st.code(f"https://www.hirelink.tech/register?ref={user.referral_code}", language="text")
+        st.code(f"https://www.hirelink.tech/?ref={user.referral_code}", language="text")
 
         st.markdown("---")
 
