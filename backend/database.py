@@ -66,8 +66,7 @@ class AppUser(Base):
     __tablename__ = 'users_v2'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    email = Column(String, unique=True)
-    password_hash = Column(String) # Bcrypt hash
+    email = Column(String)
     is_onboarded = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -140,7 +139,11 @@ class PortalCredential(Base):
     updated_at = Column(DateTime, default=datetime.utcnow)
 
 # Setup Database
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+if DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+else:
+    engine = create_engine(DATABASE_URL)
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_db():
