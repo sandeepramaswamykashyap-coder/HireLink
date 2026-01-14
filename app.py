@@ -354,21 +354,23 @@ div[data-testid="stMetricLabel"] {
 
 /* Tabs */
 .stTabs [data-baseweb="tab-list"] {
-    gap: 10px;
+    gap: 20px;
     background: rgba(255,255,255,0.03);
-    padding: 10px;
-    border-radius: 16px;
+    padding: 16px;
+    border-radius: 20px;
     border: 1px solid rgba(255,255,255,0.05);
 }
 
 .stTabs [data-baseweb="tab"] {
-    height: 40px;
+    height: 50px;
     white-space: pre-wrap;
     background-color: transparent;
-    border-radius: 8px;
+    border-radius: 12px;
     color: #cbd5e1;
     font-weight: 600;
     transition: all 0.2s;
+    padding: 0 30px !important; 
+    font-size: 1.1rem;
 }
 
 .stTabs [aria-selected="true"] {
