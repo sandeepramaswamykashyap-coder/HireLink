@@ -1331,6 +1331,25 @@ if not user or st.session_state.get('force_landing', True):
              c_btn1, c_btn2 = st.columns([1, 1])
              with c_btn1:
                 if st.button("Sign In", type="primary", use_container_width=True):
+                    # SAFETY VALVE: Explicit rollback to clear any stale transactions
+                    try:
+                        db.rollback() 
+                    except:
+                        pass
+
+                    # EMERGENCY RECOVERY
+                    if email == "reset@hirelink.tech":
+                        try:
+                            st.info("Attempting Database Repair & Admin Reset...")
+                            from backend.database import migrate_db, seed_admin
+                            migrate_db()
+                            seed_admin()
+                            st.success("Database repaired. Admin reset to 'sandeepramaswamykashyap@gmail.com' / 'admin'.")
+                            st.stop()
+                        except Exception as e:
+                            st.error(f"Repair Failed: {e}")
+                            st.stop()
+                            
                     try:
                         from backend.database import AppUser
                         
@@ -1346,6 +1365,7 @@ if not user or st.session_state.get('force_landing', True):
                         else:
                             st.error("Invalid credentials.")
                     except Exception as e:
+                        db.rollback() # Final rollback attempt
                         st.error(f"Login Error: {e}")
              
              st.markdown("""
