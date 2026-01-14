@@ -1243,55 +1243,62 @@ def render_onboarding():
                 instructions = st.text_area("You can set them up later :)", placeholder="e.g. - Senior roles only - No crypto/web3 - No visa needed - Highlight startup exp")
                 
                 st.write("")
-                    if st.form_submit_button("FINISH SETUP", type="primary", use_container_width=True):
-                        # FINAL SAVE TO DB
-                        ob_email = st.session_state.get('ob_email')
-                        existing_user = db.query(backend.database.AppUser).filter_by(email=ob_email).first()
-                        
-                        if existing_user:
-                            # Update Existing
-                            user = existing_user
-                            user.name = st.session_state.get('ob_name')
-                            user.curr_loc = st.session_state.get('ob_loc')
-                            user.linkedin = st.session_state.get('ob_linkedin')
-                            user.website = st.session_state.get('ob_website')
-                            user.github = st.session_state.get('ob_github')
-                            user.target_roles = st.session_state.get('ob_roles')
-                            user.target_cities = st.session_state.get('ob_cities')
-                            user.skip_companies = st.session_state.get('ob_skip')
-                            user.work_mode = work_mode
-                            user.instructions = instructions
-                            user.is_onboarded = True or user.is_onboarded # Keep true if true
-                            # Don't update password for existing users here (security)
-                        else:
-                            # Create New
-                            is_first_user = db.query(backend.database.AppUser).count() == 0
-                            user = backend.database.AppUser(
-                                name=st.session_state.get('ob_name'),
-                                email=ob_email,
-                                curr_loc=st.session_state.get('ob_loc'),
-                                linkedin=st.session_state.get('ob_linkedin'),
-                                website=st.session_state.get('ob_website'),
-                                github=st.session_state.get('ob_github'),
-                                target_roles=st.session_state.get('ob_roles'),
-                                target_cities=st.session_state.get('ob_cities'),
-                                skip_companies=st.session_state.get('ob_skip'),
-                                work_mode=work_mode,
-                                instructions=instructions,
-                                is_onboarded=True, # Done
-                                is_admin=is_first_user,
-                                subscription_plan=st.session_state.get('selected_plan', 'TRIAL')
-                            )
-                            # Set Password
-                            user.set_password(st.session_state.get('ob_password', 'ChangeMe123'))
-                            db.add(user)
-                        
-                        db.commit()
+                if st.form_submit_button("FINISH SETUP", type="primary", use_container_width=True):
+                    # FINAL SAVE TO DB
+                    ob_email = st.session_state.get('ob_email')
+                    existing_user = db.query(backend.database.AppUser).filter_by(email=ob_email).first()
+                    
+                    if existing_user:
+                        # Update Existing
+                        user = existing_user
+                        user.name = st.session_state.get('ob_name')
+                        user.curr_loc = st.session_state.get('ob_loc')
+                        user.linkedin = st.session_state.get('ob_linkedin')
+                        user.website = st.session_state.get('ob_website')
+                        user.github = st.session_state.get('ob_github')
+                        user.target_roles = st.session_state.get('ob_roles')
+                        user.target_cities = st.session_state.get('ob_cities')
+                        user.skip_companies = st.session_state.get('ob_skip')
+                        user.work_mode = work_mode
+                        user.instructions = instructions
+                        user.is_onboarded = True or user.is_onboarded # Keep true if true
+                        # Don't update password for existing users here (security)
+                    else:
+                        # Create New
+                        is_first_user = db.query(backend.database.AppUser).count() == 0
+                        user = backend.database.AppUser(
+                            name=st.session_state.get('ob_name'),
+                            email=ob_email,
+                            curr_loc=st.session_state.get('ob_loc'),
+                            linkedin=st.session_state.get('ob_linkedin'),
+                            website=st.session_state.get('ob_website'),
+                            github=st.session_state.get('ob_github'),
+                            target_roles=st.session_state.get('ob_roles'),
+                            target_cities=st.session_state.get('ob_cities'),
+                            skip_companies=st.session_state.get('ob_skip'),
+                            work_mode=work_mode,
+                            instructions=instructions,
+                            is_onboarded=True, # Done
+                            is_admin=is_first_user,
+                            subscription_plan=st.session_state.get('selected_plan', 'TRIAL')
+                        )
+                        # Set Password
+                        user.set_password(st.session_state.get('ob_password', 'ChangeMe123'))
+                        db.add(user)
+                    
+                    db.commit()
 
                     # --- APPLY REFERRAL ---
                     if st.session_state.get('captured_ref'):
                         from backend.utils.affiliate_manager import AffiliateManager
                         AffiliateManager.apply_referral(user.id, st.session_state['captured_ref'])
+                    
+                    st.balloons()
+                    st.success("You're all set! Redirecting...")
+                    time.sleep(2)
+                    st.session_state['show_onboarding'] = False
+                    st.session_state['force_landing'] = False
+                    st.rerun()
 
                     st.session_state['onboarding_step'] = 6
                     st.rerun()
