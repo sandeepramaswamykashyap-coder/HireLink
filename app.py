@@ -136,8 +136,8 @@ def render_landing_page(user_exists=False):
                  st.session_state['show_login'] = True
                  st.rerun()
 
-    st.markdown("""
-    <div class="landing-container">
+    st.markdown(f"""
+    <div class="landing-wrapper">
         <div class="landing-hero">
             <h1 class="landing-title">Automate Your <span class="gradient-text">Dream Job</span> Search today.</h1>
             <p class="landing-subtitle">Stop manually applying. Let our AI Agent find, filter, and apply to thousands of jobs for you while you sleep.</p>
@@ -145,60 +145,54 @@ def render_landing_page(user_exists=False):
                 <span>⭐️⭐️⭐️⭐️⭐️ Trusted by 5,000+ Job Seekers</span>
                 <span class="trust-badge">🔒 Secure & Private</span>
             </div>
+            
+            <div style="display: flex; justify-content: center; gap: 20px; margin-top: 40px;">
+                <a href="/?show_onboarding=true" target="_self" style="text-decoration: none;">
+                    <button style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-weight: 700; cursor: pointer; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);">
+                        Start Applying Now 🚀
+                    </button>
+                </a>
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Centered CTA Buttons
-    # Centered CTA Buttons
-    _, c_btn, _ = st.columns([1, 1, 1])
-    with c_btn:
-        if user_exists:
-            if st.button("Go to Dashboard 🚀", type="primary", use_container_width=True):
-                st.session_state['force_landing'] = False
-                st.rerun()
-        else:
-            if st.button("Start Applying Now 🚀", type="primary", use_container_width=True):
-                st.session_state['show_onboarding'] = True
-                st.rerun()
 
-    st.markdown("""
-    <div class="landing-features">
-        <div class="feature-card">
-            <div class="feature-icon">🔍</div>
-            <h3>Smart Search</h3>
-            <p>We scrape LinkedIn, Naukri, and Indeed deeply.</p>
+        <div class="landing-features">
+            <div class="feature-card">
+                <span class="feature-icon">🔍</span>
+                <h3>Smart Search</h3>
+                <p>We scrape LinkedIn, Naukri, and Indeed deeply to find the hidden gems.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">⚡️</span>
+                <h3>Auto-Apply</h3>
+                <p>Our AI Agent fills out complex forms and applies on your behalf 24/7.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🧠</span>
+                <h3>AI Resume Match</h3>
+                <p>Advanced matching engine ensures you only apply to high-relevance roles.</p>
+            </div>
         </div>
-        <div class="feature-card">
-            <div class="feature-icon">⚡️</div>
-            <h3>Auto-Apply</h3>
-            <p>One-click apply to hundreds of relevant roles.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">🧠</div>
-            <h3>AI Resume Match</h3>
-            <p>We only apply if your resume score is >70%.</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("""
-    <div class="landing-portals">
-        <h2 style="text-align: center; margin-bottom: 40px; font-size: 2.5rem;">Supported <span class="gradient-text">Platforms</span> 🌐</h2>
-        <div class="portal-grid">
-            <div class="portal-item"><b>LinkedIn</b></div>
-            <div class="portal-item"><b>Naukri</b></div>
-            <div class="portal-item"><b>Indeed</b></div>
-            <div class="portal-item"><b>Shine</b></div>
-            <div class="portal-item"><b>Foundit</b></div>
-            <div class="portal-item"><b>Internshala</b></div>
-            <div class="portal-item"><b>IIMJobs</b></div>
-            <div class="portal-item"><b>Freshersworld</b></div>
-            <div class="portal-item"><b>Wellfound</b></div>
-            <div class="portal-item"><b>Glassdoor</b></div>
+
+        <div class="landing-portals" style="text-align: center; margin: 80px 0;">
+            <h2 style="font-size: 2.5rem; margin-bottom: 40px;">Supported <span class="gradient-text">Platforms</span> 🌐</h2>
+            <div class="portal-grid">
+                <div class="portal-item"><b>LinkedIn</b></div>
+                <div class="portal-item"><b>Naukri</b></div>
+                <div class="portal-item"><b>Indeed</b></div>
+                <div class="portal-item"><b>Shine</b></div>
+                <div class="portal-item"><b>Foundit</b></div>
+                <div class="portal-item"><b>Internshala</b></div>
+                <div class="portal-item"><b>IIMJobs</b></div>
+                <div class="portal-item"><b>Freshersworld</b></div>
+                <div class="portal-item"><b>Wellfound</b></div>
+                <div class="portal-item"><b>Glassdoor</b></div>
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+    # Note: Using HTML buttons above to maintain tight layout control. 
+    # The session state transitions will be handled by our existing query param / logic.
 
     st.markdown("""
     <div style="margin-top: 100px; padding: 60px; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); text-align: center;">
