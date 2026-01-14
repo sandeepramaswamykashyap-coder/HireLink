@@ -2599,33 +2599,33 @@ else:
                         import re
                         matches = re.findall(r'\d+', status)
                         if matches: st.session_state['m_scanned'] = int(matches[0])
-                        
-                        if "matches" in status.lower() and step == "Matching Jobs":
-                            import re
-                            matches = re.findall(r'\d+', status)
-                            if matches: st.session_state['m_matches'] = int(matches[0])
-                        
-                        if status == "SUCCESS":
-                            st.session_state['m_sent'] += 1
-                        
-                        # Refresh UI Components
-                        render_phases(st.session_state['m_phase_idx'])
-                        update_stats_ui()
-                        
-                        full_log.append(f"[{datetime.now().strftime('%H:%M:%S')}] {step}: {status}")
-                        log_terminal.code("\n".join(full_log[-10:]))
-                        
-                        if step == "Finished":
-                            st.session_state['pilot_running'] = False
-                            st.balloons()
-                            st.success("Mission Concluded Successfully!")
-                            st.rerun()
-                            
-                except Exception as e:
-                    st.session_state['pilot_running'] = False
-                    st.error(f"Critical System Failure: {str(e)}")
-                    st.session_state['m_status'] = "FAILURE: " + str(e)
+                    
+                    if "matches" in status.lower() and step == "Matching Jobs":
+                        import re
+                        matches = re.findall(r'\d+', status)
+                        if matches: st.session_state['m_matches'] = int(matches[0])
+                    
+                    if status == "SUCCESS":
+                        st.session_state['m_sent'] += 1
+                    
+                    # Refresh UI Components
+                    render_phases(st.session_state['m_phase_idx'])
                     update_stats_ui()
+                    
+                    full_log.append(f"[{datetime.now().strftime('%H:%M:%S')}] {step}: {status}")
+                    log_terminal.code("\n".join(full_log[-10:]))
+                    
+                    if step == "Finished":
+                        st.session_state['pilot_running'] = False
+                        st.balloons()
+                        st.success("Mission Concluded Successfully!")
+                        st.rerun()
+                        
+            except Exception as e:
+                st.session_state['pilot_running'] = False
+                st.error(f"Critical System Failure: {str(e)}")
+                st.session_state['m_status'] = "FAILURE: " + str(e)
+                update_stats_ui()
 
         st.divider()
 
