@@ -1084,12 +1084,12 @@ def render_pricing(user_exists):
                  link_data = pg.create_payment_link(p_pro, "PRO", user.email)
                  if link_data:
                      st.session_state['pending_payment'] = {
-                         "url": link_data.get('short_url'),
-                         "plan": "PRO",
-                         "amount": p_pro,
                          "email": user.email
                      }
                      st.rerun()
+
+    # --- SPACER BELOW BUTTONS (User Request) ---
+    st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
 
 def update_user_plan(plan):
     # Helper to update DB for existing user
