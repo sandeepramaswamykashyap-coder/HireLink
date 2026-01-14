@@ -386,6 +386,14 @@ div[data-testid="stMetricLabel"] {
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3) !important;
 }
 
+/* Hide Default Streamlit Tab Decorations */
+.stTabs [data-baseweb="tab-highlight"], 
+.stTabs [data-baseweb="tab-border"] {
+    display: none !important;
+    height: 0 !important;
+    width: 0 !important;
+}
+
 /* Sidebar Override */
 [data-testid="stSidebar"] {
     background-color: #020617 !important;
