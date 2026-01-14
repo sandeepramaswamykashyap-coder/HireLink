@@ -2088,15 +2088,15 @@ else:
             
             st.markdown('<div class="glass-card">', unsafe_allow_html=True)
             # with st.container(border=True): # REMOVED for Glass Effect
-                role = st.text_input("Target Roles (comma-separated)", value=st.session_state['mission_role'], placeholder="e.g. Developer, Engineer", key="pilot_role")
-                loc = st.text_input("Locations (comma-separated)", value=st.session_state['mission_loc'], placeholder="e.g. Remote, Mumbai", key="pilot_loc")
-                
-                if resumes:
-                    sel_res_name = st.selectbox("Identity (Resume)", list(res_opts.keys()))
-                    sel_res_id = res_opts[sel_res_name]
-                else:
-                    st.error("❌ No Identity Found")
-                    sel_res_id = None
+            role = st.text_input("Target Roles (comma-separated)", value=st.session_state['mission_role'], placeholder="e.g. Developer, Engineer", key="pilot_role")
+            loc = st.text_input("Locations (comma-separated)", value=st.session_state['mission_loc'], placeholder="e.g. Remote, Mumbai", key="pilot_loc")
+            
+            if resumes:
+                sel_res_name = st.selectbox("Identity (Resume)", list(res_opts.keys()))
+                sel_res_id = res_opts[sel_res_name]
+            else:
+                st.error("❌ No Identity Found")
+                sel_res_id = None
             
             # Save Sync State
             st.session_state['mission_role'] = role
@@ -2133,39 +2133,39 @@ else:
             # Sub-container for the active content
             st.markdown('<div class="glass-card">', unsafe_allow_html=True)
             # with st.container(border=True):
-                # Phase Indicator
-                phase_placeholder = st.empty()
+            # Phase Indicator
+            phase_placeholder = st.empty()
+            
+            # Stats Row (Persistent placeholders)
+            s1, s2, s3, s4 = st.columns(4)
+            scrape_stat = s1.empty()
+            match_stat = s2.empty()
+            apply_stat = s3.empty()
+            status_stat = s4.empty()
+
+            def render_phases(active_idx):
+                phases = ["Login", "Scan", "Match", "Apply"]
+                icons = ["🔑", "📊", "🧠", "🚀"]
+                html = '<div class="mission-phases">'
+                for i, (p, icon) in enumerate(zip(phases, icons)):
+                    cls = "active" if i == active_idx else ("completed" if i < active_idx else "")
+                    html += f'<div class="phase-item {cls}"><div class="phase-dot">{icon}</div><div class="phase-label">{p}</div></div>'
+                html += '</div>'
+                phase_placeholder.markdown(html, unsafe_allow_html=True)
+
+            def update_stats_ui():
+                scrape_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_scanned"]}</span><span class="m-stat-label">Scanned</span></div>', unsafe_allow_html=True)
+                match_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_matches"]}</span><span class="m-stat-label">Matches</span></div>', unsafe_allow_html=True)
+                apply_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_sent"]}</span><span class="m-stat-label">Applied</span></div>', unsafe_allow_html=True)
                 
-                # Stats Row (Persistent placeholders)
-                s1, s2, s3, s4 = st.columns(4)
-                scrape_stat = s1.empty()
-                match_stat = s2.empty()
-                apply_stat = s3.empty()
-                status_stat = s4.empty()
+                step = st.session_state["m_step"]
+                msg = st.session_state["m_status"]
+                active_msg = msg if len(msg) < 30 else msg[:27] + "..."
+                status_stat.markdown(f'<div class="m-stat"><span class="m-stat-val" style="font-size:1.1rem; color:#34d399; font-weight:700;"><span class="status-pulse"></span>{step}</span><span class="m-stat-label">{active_msg}</span></div>', unsafe_allow_html=True)
 
-                def render_phases(active_idx):
-                    phases = ["Login", "Scan", "Match", "Apply"]
-                    icons = ["🔑", "📊", "🧠", "🚀"]
-                    html = '<div class="mission-phases">'
-                    for i, (p, icon) in enumerate(zip(phases, icons)):
-                        cls = "active" if i == active_idx else ("completed" if i < active_idx else "")
-                        html += f'<div class="phase-item {cls}"><div class="phase-dot">{icon}</div><div class="phase-label">{p}</div></div>'
-                    html += '</div>'
-                    phase_placeholder.markdown(html, unsafe_allow_html=True)
-
-                def update_stats_ui():
-                    scrape_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_scanned"]}</span><span class="m-stat-label">Scanned</span></div>', unsafe_allow_html=True)
-                    match_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_matches"]}</span><span class="m-stat-label">Matches</span></div>', unsafe_allow_html=True)
-                    apply_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_sent"]}</span><span class="m-stat-label">Applied</span></div>', unsafe_allow_html=True)
-                    
-                    step = st.session_state["m_step"]
-                    msg = st.session_state["m_status"]
-                    active_msg = msg if len(msg) < 30 else msg[:27] + "..."
-                    status_stat.markdown(f'<div class="m-stat"><span class="m-stat-val" style="font-size:1.1rem; color:#34d399; font-weight:700;"><span class="status-pulse"></span>{step}</span><span class="m-stat-label">{active_msg}</span></div>', unsafe_allow_html=True)
-
-                render_phases(st.session_state['m_phase_idx'])
-                update_stats_ui()
-                st.write("") # Internal padding
+            render_phases(st.session_state['m_phase_idx'])
+            update_stats_ui()
+            st.write("") # Internal padding
             st.markdown('</div>', unsafe_allow_html=True)
 
             # Space between Mission Control and Systems Log
