@@ -2394,7 +2394,12 @@ else:
         col_left, col_right = st.columns([1, 1.8], gap="large")
 
         with col_left:
-            st.markdown("#### 🛠️ Mission Config")
+            st.markdown("""
+            <div class="mission-header">
+                <span style="font-size: 1.5rem;">🛠️</span>
+                <h5>Mission Config</h5>
+            </div>
+            """, unsafe_allow_html=True)
             
             with st.container(border=True):
                 role = st.text_input("Target Roles (comma-separated)", value=st.session_state['mission_role'], placeholder="e.g. Developer, Engineer", key="pilot_role")
@@ -2416,18 +2421,19 @@ else:
 
                 st.write("")
                 st.write("### Ready to Launch?")
-            if st.button("🔥 ENGAGE HYPER-DRIVE", type="primary", use_container_width=True):
-                missing = []
-                if not role: missing.append("Target Role")
-                if not loc: missing.append("Location")
-                if not sel_res_id: missing.append("Active Resume")
-                if not sel_portals: missing.append("Active Portals")
                 
-                if missing:
-                    st.error(f"⚠️ MISSION ABORTED. Missing: {', '.join(missing)}")
-                else:
-                    st.session_state['pilot_running'] = True
-                    # Re-initialized below in loop logic
+                if st.button("🔥 ENGAGE HYPER-DRIVE", type="primary", use_container_width=True):
+                    missing = []
+                    if not role: missing.append("Target Role")
+                    if not loc: missing.append("Location")
+                    if not sel_res_id: missing.append("Active Resume")
+                    if not sel_portals: missing.append("Active Portals")
+                    
+                    if missing:
+                        st.error(f"⚠️ MISSION ABORTED. Missing: {', '.join(missing)}")
+                    else:
+                        st.session_state['pilot_running'] = True
+                        # Re-initialized below in loop logic
 
         with col_right:
             # --- MISSION CONTROL WIDGET (PERMANENT) ---
