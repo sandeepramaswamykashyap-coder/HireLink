@@ -2765,7 +2765,7 @@ else:
                                 st.write(str(exp))
 
                     # Actions
-                    col_act_1, col_act_2 = st.columns([0.85, 0.15])
+                    col_act_1, col_act_2 = st.columns([0.70, 0.30])
                     with col_act_2:
                          # Key for confirmation state
                          confirm_key = f"confirm_del_{r.id}"
