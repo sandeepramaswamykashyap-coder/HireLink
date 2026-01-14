@@ -2018,17 +2018,28 @@ else:
             if tour_mode:
                 st.info("💡 **Dashboard:** This is your command center. See scraped jobs, active resumes, and application history.")
             
-            # 1. METRICS (Glass Card)
-            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-            col1, col2, col3 = st.columns(3)
-            total_jobs = db.query(Job).count()
-            total_resumes = db.query(Resume).count()
-            total_apps = db.query(Application).filter(Application.status == "Applied").count() 
-            
-            col1.metric("Opportunities Found", total_jobs, delta="Total Scraped")
-            col2.metric("Talent Profiles", total_resumes, delta="Active Resumes")
-            col3.metric("Applications Fired", total_apps, delta=f"{round((total_apps/total_jobs)*100 if total_jobs else 0, 1)}% Conversion")
-            st.markdown('</div>', unsafe_allow_html=True)
+            # 1. METRICS (Glass Card - Custom HTML for proper boxing)
+            st.markdown(f"""
+            <div class="glass-card" style="display: flex; justify-content: space-around; text-align: center;">
+                <div>
+                    <div style="font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Opportunities</div>
+                    <div style="font-size: 2.2rem; font-weight: 700; color: white;">{total_jobs}</div>
+                    <div style="font-size: 0.8rem; color: #22c55e;">↑ Total Scraped</div>
+                </div>
+                <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
+                <div>
+                     <div style="font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Talent Profiles</div>
+                    <div style="font-size: 2.2rem; font-weight: 700; color: white;">{total_resumes}</div>
+                    <div style="font-size: 0.8rem; color: #22c55e;">↑ Active Resumes</div>
+                </div>
+                <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
+                <div>
+                     <div style="font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Applications</div>
+                    <div style="font-size: 2.2rem; font-weight: 700; color: white;">{total_apps}</div>
+                    <div style="font-size: 0.8rem; color: #22c55e;">↑ {round((total_apps/total_jobs)*100 if total_jobs else 0, 1)}% Conversion</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
             
             st.markdown("---")
             
