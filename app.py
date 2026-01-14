@@ -2577,27 +2577,27 @@ else:
             start_time = datetime.utcnow()
             full_log = []
             
-                phase_map = {
-                    "Login Verification": 0, "Auto-Login": 0, "Login Success": 0,
-                    "Scraping Jobs": 1, "Enrichment": 1,
-                    "Matching Jobs": 2,
-                    "Applying": 3, "Finished": 4
-                }
-                
-                try:
-                    for update in applier.run_hyper_automation(role, loc, sel_res_id, target_portals=sel_portals, user_email=user.email):
-                        step = update.get('step')
-                        status = update.get('status')
-                        
-                        # Update State
-                        st.session_state['m_step'] = step
-                        st.session_state['m_status'] = status
-                        st.session_state['m_phase_idx'] = phase_map.get(step, 0)
-                        
-                        # Parsing logic for stats
-                        if "Scraped" in status or "Found" in status:
-                            import re
-                            matches = re.findall(r'\d+', status)
+            phase_map = {
+                "Login Verification": 0, "Auto-Login": 0, "Login Success": 0,
+                "Scraping Jobs": 1, "Enrichment": 1,
+                "Matching Jobs": 2,
+                "Applying": 3, "Finished": 4
+            }
+            
+            try:
+                for update in applier.run_hyper_automation(role, loc, sel_res_id, target_portals=sel_portals, user_email=user.email):
+                    step = update.get('step')
+                    status = update.get('status')
+                    
+                    # Update State
+                    st.session_state['m_step'] = step
+                    st.session_state['m_status'] = status
+                    st.session_state['m_phase_idx'] = phase_map.get(step, 0)
+                    
+                    # Parsing logic for stats
+                    if "Scraped" in status or "Found" in status:
+                        import re
+                        matches = re.findall(r'\d+', status)
                             if matches: st.session_state['m_scanned'] = int(matches[0])
                         
                         if "matches" in status.lower() and step == "Matching Jobs":
