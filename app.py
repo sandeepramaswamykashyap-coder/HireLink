@@ -1603,12 +1603,13 @@ if not user or st.session_state.get('force_landing', True):
          _, lc, _ = st.columns([1, 2, 1])
          with lc:
              st.markdown("## Login")
-             email = st.text_input("Email")
-             password = st.text_input("Password", type="password")
-             
-             c_btn1, c_btn2 = st.columns([1, 1])
-             with c_btn1:
-                if st.button("Sign In", type="primary", use_container_width=True):
+             with st.form("login_form"):
+                 email = st.text_input("Email")
+                 password = st.text_input("Password", type="password")
+                 
+                 submitted = st.form_submit_button("Sign In", type="primary", use_container_width=True)
+                 
+                 if submitted:
                     # EMERGENCY RECOVERY BACKDOOR
                     if email == "reset@hirelink.tech":
                         try:
