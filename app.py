@@ -1,5 +1,5 @@
 import streamlit as st
-st.set_page_config(page_title="Hire Link", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="HireLink v1.2 (Patched)", layout="wide", initial_sidebar_state="expanded")
 
 # --- RESUME SEEDING DATA (Sanitized) ---
 SEED_RESUME_DATA = {
