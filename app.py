@@ -46,7 +46,7 @@ def auto_seed_resume():
         print(f"Seed Error: {e}")
 
 # Run Seed
-auto_seed_resume()
+# auto_seed_resume() # DISABLED TO PREVENT ZOMBIE RESUMES
 
 # --- END SEED ---
 
@@ -136,6 +136,53 @@ if "page" in st.query_params:
 # Load Custom CSS
 # Load Custom CSS
 st.markdown("""<style>
+/* MISSION CONTROL PHASES (FIXED) */
+.mission-phases {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.phase-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.4;
+    transition: all 0.3s ease;
+}
+
+.phase-item.active {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.phase-item.completed {
+    opacity: 0.8;
+    color: #10b981;
+}
+
+.phase-dot {
+    font-size: 1.2rem;
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+}
+
+.phase-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.phase-item.active .phase-label {
+    color: #0ea5e9;
+    text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+}
+
 /* GOOGLE FONTS */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;700;900&display=swap');
 
@@ -2387,7 +2434,7 @@ else:
             st.markdown("""
             <div class="mission-header">
                 <span style="font-size: 1.5rem;">📡</span>
-                <h5>Mission Control Center</h5>
+                <h5>Mission Control Center v2</h5>
             </div>
             """, unsafe_allow_html=True)
             
