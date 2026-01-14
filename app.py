@@ -1453,7 +1453,65 @@ else:
         os.system("pkill -9 -f Chrome >/dev/null 2>&1")
         os.system("pkill -9 -f chromedriver >/dev/null 2>&1")
         st.sidebar.success("Reset Complete! Try again.")
+    if st.sidebar.button("🛠️ Emergency Browser Reset", help="Click this if you get 'Chrome Profile Locked' errors. It will forcefully close all hidden Chrome windows."):
+        import os
+        os.system("pkill -9 -f Chrome >/dev/null 2>&1")
+        os.system("pkill -9 -f chromedriver >/dev/null 2>&1")
+        st.sidebar.success("Reset Complete! Try again.")
     
+    # --- CHATBOT INTEGRATION ---
+    if "messages" not in st.session_state:
+        st.session_state["messages"] = [{"role": "assistant", "content": "Hi! Are you here to hire or get hired?"}]
+
+    with st.sidebar.popover("💬 HireLink Assistant", use_container_width=True):
+        st.caption("Ask me anything about HireLink!")
+        
+        # Chat History
+        for msg in st.session_state.messages:
+            st.chat_message(msg["role"]).write(msg["content"])
+            
+        # Quick Replies (Only if history is short, to guide user)
+        if len(st.session_state.messages) < 2:
+            c1, c2 = st.columns(2)
+            if c1.button("I'm an Employer", use_container_width=True):
+                st.session_state.messages.append({"role": "user", "content": "I'm an Employer"})
+                st.rerun()
+            if c2.button("I'm a Candidate", use_container_width=True):
+                st.session_state.messages.append({"role": "user", "content": "I'm a Candidate"})
+                st.rerun()
+
+        # Input
+        if prompt := st.chat_input("Type your question...", key="chat_input"):
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            st.rerun()
+
+    # Process pending chat (since chat_input triggers rerun)
+    if st.session_state.messages[-1]["role"] == "user":
+        # We need to run the agent. But we can't do it inside the popover easily if we just reran?
+        # Wait, the rerun re-renders the page. The popover closes by default on rerun? 
+        # Actually, st.popover handles state? No.
+        # If I use st.sidebar.expander, it stays open if state is set.
+        # If I use st.popover, maybe it closes.
+        # Let's use st.expander for persistence during chat interactions.
+        pass
+
+    # Actually, logic for processing:
+    # We should detect if last message is user, then generate response, then append to history.
+    if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
+        with st.sidebar.status("Thinking...", expanded=True) as status:
+            try:
+                from backend.agents.assistant import HireLinkAssistant
+                agent = HireLinkAssistant()
+                response = agent.get_response(st.session_state.messages[-1]["content"], st.session_state.messages[:-1])
+                st.session_state.messages.append({"role": "assistant", "content": response})
+                status.update(label="Replied!", state="complete", expanded=False)
+                # Force rerun to show message?
+                # st.rerun() # Might cause loop?
+            except Exception as e:
+                st.error(f"Bot failed: {e}")
+                
+    # --- END CHATBOT ---
+
     if not hasattr(user, 'is_admin'):
         st.error("⚠️ **SYSTEM UPDATE PENDING** ⚠️")
         st.warning("Please restart your terminal to activate Admin features.")
