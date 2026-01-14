@@ -70,22 +70,42 @@ def setup_driver(headless=True, profile_dir=None, detach=False):
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
     
-    try:
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=options)
-        
-        # Additional anti-detection scripts
-        driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-        
-        logger.info("Chrome Driver initialized successfully.")
-        return driver
-    except Exception as e:
-        err_str = str(e).lower()
-        if any(msg in err_str for msg in ["user data directory is already in use", "session not created", "chrome failed to start"]):
-            logger.error(f"CRITICAL: Browser Engine Blocked. Profile: {profile_dir}. Error: {e}")
-            raise RuntimeError(f"Browser Engine Blocked: {e}")
-        logger.error(f"Failed to setup Chrome Driver: {e}")
-        raise
+    # --- RETRY LOGIC FOR STABILITY ---
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            logger.info(f"Attempting to start Chrome Driver (Attempt {attempt + 1}/{max_retries})...")
+            
+            # Re-initialize options to be safe
+            # Use a fresh service instance each time
+            service = Service(ChromeDriverManager().install())
+            
+            # On last attempt, try WITHOUT the profile (Fallback to Temp)
+            if attempt == max_retries - 1:
+                 logger.warning("⚠️ LAST ATTEMPT: Trying with TEMPORARY profile to bypass corruption...")
+                 fallback_opts = Options()
+                 fallback_opts.add_argument('--headless=new')
+                 fallback_opts.add_argument('--no-sandbox')
+                 fallback_opts.add_argument('--disable-dev-shm-usage')
+                 fallback_opts.add_argument('--disable-gpu')
+                 fallback_opts.add_argument(f"user-agent={fixed_ua}")
+                 driver = webdriver.Chrome(service=service, options=fallback_opts)
+            else:
+                 driver = webdriver.Chrome(service=service, options=options)
+            
+            # Additional anti-detection scripts
+            driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+            
+            logger.info("Chrome Driver initialized successfully.")
+            return driver
+        except Exception as e:
+            logger.warning(f"Driver Init Failed (Attempt {attempt + 1}): {e}")
+            if attempt < max_retries - 1:
+                time.sleep(2)
+            else:
+                err_str = str(e).lower()
+                logger.error(f"CRITICAL: Browser Engine Failed even with temp profile. Error: {e}")
+                raise RuntimeError(f"Browser Engine Blocked: {e}")
 
 def random_sleep(min_seconds=2, max_seconds=5):
     """Sleep for a random amount of time to mimic human behavior"""
