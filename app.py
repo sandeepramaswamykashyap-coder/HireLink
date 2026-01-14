@@ -956,7 +956,7 @@ def render_pricing(user_exists):
     # --- FORCE CSS FOR PRICING CARDS (Fix for Transparent UI) ---
     st.markdown("""
     <style>
-    .pricing-card {
+    .pricing-card-redux {
         background: #1e293b !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 20px !important;
@@ -970,7 +970,7 @@ def render_pricing(user_exists):
         min-height: 350px !important;
         justify-content: space-between !important;
     }
-    .pricing-card:hover {
+    .pricing-card-redux:hover {
         transform: translateY(-5px) !important;
         border-color: #6366f1 !important;
         box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2) !important;
@@ -996,7 +996,7 @@ def render_pricing(user_exists):
     
     with c1:
         st.markdown(f"""
-        <div class="pricing-card">
+        <div class="pricing-card-redux">
             <div class="plan-name">FREE TIER</div>
             <div class="plan-slogan">Taste the automation</div>
             <div class="price-tag">₹0</div>
@@ -1013,7 +1013,7 @@ def render_pricing(user_exists):
 
     with c2:
         st.markdown(f"""
-        <div class="pricing-card">
+        <div class="pricing-card-redux">
             <div class="plan-name">STARTER</div>
             <div class="plan-slogan">For steady applying</div>
             <div class="price-tag">₹{p_starter}</div>
@@ -1030,7 +1030,7 @@ def render_pricing(user_exists):
 
     with c3:
         st.markdown(f"""
-        <div class="pricing-card featured">
+        <div class="pricing-card-redux featured">
             <div class="most-popular-badge">BEST VALUE</div>
             <div class="plan-name" style="color: #a78bfa;">PRO POWER</div>
             <div class="plan-slogan">Maximum velocity</div>
