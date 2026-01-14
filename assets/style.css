@@ -48,7 +48,8 @@ body,
     font-family: 'Plus Jakarta Sans', sans-serif !important;
     background-color: var(--bg-deep);
     color: #f8fafc;
-    font-size: 16px !important;
+    font-size: 18px !important;
+    /* Increased from 16px */
 }
 
 /* GLOBAL TEXT BOOST */
@@ -59,7 +60,8 @@ p,
 li,
 span,
 div {
-    font-size: 1rem;
+    font-size: 1.1rem;
+    /* Increased from 1rem */
     line-height: 1.6;
 }
 
@@ -119,13 +121,15 @@ h1 {
 }
 
 .landing-hero {
-    padding: 80px 20px;
+    padding: 40px 20px;
+    /* Reduced from 80px */
     text-align: center;
     background: radial-gradient(circle at center, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
 }
 
-.landing-title {
-    font-size: 6rem !important;
+h1.landing-title {
+    font-size: 5.5rem !important;
+    /* Specificity Fix + Increased Size */
     font-weight: 900 !important;
     line-height: 1.1 !important;
     margin-bottom: 25px !important;
@@ -140,19 +144,26 @@ h1 {
 }
 
 .landing-features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    display: flex;
+    /* Changed from Grid to Flex */
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 25px;
-    margin: 60px 0;
+    margin: 40px 0;
+    /* Reduced from 60px */
 }
 
 .feature-card {
     background: rgba(30, 41, 59, 0.5);
     border: 1px solid var(--border);
     border-radius: 24px;
-    padding: 40px;
+    padding: 25px;
+    /* Reduced from 40px */
     text-align: left;
     transition: all 0.3s ease;
+    flex: 1 1 300px;
+    /* Flexbox sizing */
+    max-width: 400px;
 }
 
 .feature-card:hover {
@@ -168,8 +179,9 @@ h1 {
 }
 
 .portal-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 15px;
     margin-top: 40px;
 }
@@ -223,7 +235,8 @@ button[kind="primary"] {
 
 /* --- PRICING SECTION --- */
 .pricing-section {
-    padding: 60px 20px;
+    padding: 20px;
+    /* Reduced from 60px 20px */
     max-width: 1200px;
     margin: 0 auto;
 }

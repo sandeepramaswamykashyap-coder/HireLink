@@ -144,7 +144,7 @@ def render_landing_page(user_exists=False):
 
     st.markdown(f"""<div class="landing-wrapper">
 <div class="landing-hero">
-<h1 class="landing-title">Automate Your <span class="gradient-text">Dream Job</span> Search today.</h1>
+<h1 class="landing-title" style="font-size: 5rem !important; line-height: 1.1 !important; margin-bottom: 25px !important;">Automate Your <span class="gradient-text">Dream Job</span> Search today.</h1>
 <p class="landing-subtitle">Stop manually applying. Let our AI Agent find, filter, and apply to thousands of jobs for you while you sleep.</p>
 <div class="landing-trust">
 <span>⭐️⭐️⭐️⭐️⭐️ Trusted by 5,000+ Job Seekers</span>
@@ -299,7 +299,7 @@ def render_pricing(user_exists):
 
     st.markdown("""
     <div class="pricing-section">
-        <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 10px;">Plans for Every Career Stage</h2>
+        <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 5px;">Plans for Every Career Stage</h2>
         <p style="text-align: center; color: #94a3b8; margin-bottom: 30px;">Start for free, upgrade when you're ready to speed up.</p>
     </div>
     """, unsafe_allow_html=True)
