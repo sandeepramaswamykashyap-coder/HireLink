@@ -187,10 +187,11 @@ class LLMFormFiller:
         --- INSTRUCTIONS ---
         1. Identify required fields.
         2. Map profile values to form labels.
-        3. If a field asks for a Cover Letter, use the text provided in 'cover_letter' from the User Profile.
-        4. If you see a "Next", "Continue", or "Review" button, you MUST click it to proceed.
-        5. If you see a "Submit" or "Apply" button and the form is filled, click it last.
-        6. Return a JSON object: {{ "actions": [ {{ "type": "fill|select|click", "selector": "css_selector", "value": "str" }} ] }}
+        3. **CRITICAL**: For 'Job Title' or 'Current Role', use the value of 'current_role' from the User Profile. For 'Company' or 'Current Employer', use 'current_company'.
+        4. If a field asks for a Cover Letter, use the text provided in 'cover_letter' from the User Profile.
+        5. If you see a "Next", "Continue", or "Review" button, you MUST click it to proceed.
+        6. If you see a "Submit" or "Apply" button and the form is filled, click it last.
+        7. Return a JSON object: {{ "actions": [ {{ "type": "fill|select|click", "selector": "css_selector", "value": "str" }} ] }}
         """
         return self.llm_client.generate_json(prompt)
 
@@ -269,7 +270,7 @@ class LLMFormFiller:
             
             if not plan or not plan.get("actions"):
                 logger.warning("Pilot found no actions to take.")
-                break
+                return False # Changed from break to return False
             
             # 3. Execution (with navigation awareness)
             nav_button_clicked = False
@@ -299,4 +300,4 @@ class LLMFormFiller:
                 # We filled stuff but didn't click next? Maybe it's a one-page form or we done.
                 return True
                 
-        return True
+        return False # Changed from return True to return False if we exhaust retries without success

@@ -9,90 +9,103 @@ from backend.database import SessionLocal, Job
 from backend.utils.logger import logger
 
 def run_scraper(portals, keywords, location):
-    """Executes a list of scrapers and returns the number of new jobs found."""
-    # Ensure iterability
+    """
+    Executes a list of scrapers and returns the number of new jobs found.
+    Supports keywords and location as lists or comma-separated strings.
+    """
+    # Ensure iterability for portals
     if isinstance(portals, str): portals = [portals]
     
+    # Parse keywords and locations into normalized lists
+    if isinstance(keywords, str):
+        kw_list = [k.strip() for k in keywords.split(",") if k.strip()]
+    else:
+        kw_list = keywords if isinstance(keywords, list) else [keywords]
+        
+    if isinstance(location, str):
+        loc_list = [l.strip() for l in location.split(",") if l.strip()]
+    else:
+        loc_list = location if isinstance(location, list) else [location]
+
+    # Fallback to single item if list is empty
+    if not kw_list: kw_list = ["Software Engineer"]
+    if not loc_list: loc_list = ["Remote"]
+
     db = SessionLocal()
     initial_count = db.query(Job).count()
     db.close()
     
-    for p_name in portals:
-        scraper = None
-        try:
-            if p_name == "Naukri": scraper = NaukriScraper()
-            elif p_name == "LinkedIn": scraper = LinkedInScraper()
-            elif p_name == "Indeed": scraper = IndeedScraper()
-            elif p_name == "Shine": scraper = ShineScraper()
-
-            elif p_name == "Glassdoor": 
-                from backend.scrapers.glassdoor import GlassdoorScraper
-                scraper = GlassdoorScraper()
-            elif p_name == "Foundit": scraper = FounditScraper()
-            elif p_name == "Intershala": scraper = IntershalaScraper()
-            elif p_name == "IIMJobs": scraper = IIMJobsScraper()
-            elif p_name == "Freshersworld": scraper = FreshersworldScraper()
-            elif p_name == "Wellfound": scraper = WellfoundScraper()
-            
-            if scraper:
-                logger.info(f"Hyper-Automation: Scraping {p_name}...")
+    # Combinatorial Loop: Role x Location x Portal
+    for kw in kw_list:
+        for loc in loc_list:
+            for p_name in portals:
+                scraper = None
                 try:
-                    scraper.search_jobs(keywords, location)
+                    if p_name == "Naukri": scraper = NaukriScraper()
+                    elif p_name == "LinkedIn": scraper = LinkedInScraper()
+                    elif p_name == "Indeed": scraper = IndeedScraper()
+                    elif p_name == "Shine": scraper = ShineScraper()
+                    elif p_name == "Glassdoor": 
+                        from backend.scrapers.glassdoor import GlassdoorScraper
+                        scraper = GlassdoorScraper()
+                    elif p_name == "Foundit": scraper = FounditScraper()
+                    elif p_name == "Intershala": scraper = IntershalaScraper()
+                    elif p_name == "IIMJobs": scraper = IIMJobsScraper()
+                    elif p_name == "Freshersworld": scraper = FreshersworldScraper()
+                    elif p_name == "Wellfound": scraper = WellfoundScraper()
+                    
+                    if scraper:
+                        logger.info(f"Hyper-Automation: Scraping {p_name} for '{kw}' in '{loc}'...")
+                        try:
+                            scraper.search_jobs(kw, loc)
+                        except Exception as e:
+                            logger.error(f"Error scraping {p_name}: {e}")
                 except Exception as e:
-                    logger.error(f"Error scraping {p_name}: {e}")
-        except Exception as e:
-            logger.error(f"Scraper initialization failed for {p_name}: {e}")
-        
+                    logger.error(f"Scraper initialization failed for {p_name}: {e}")
+    
     db = SessionLocal()
     final_count = db.query(Job).count()
     new_jobs = max(0, final_count - initial_count)
     
     # --- DEMO FALLBACK ---
-    # If genuine scraping failed (likely due to CloudIP blocks), generate demo data
-    # so the user can experience the Hyper-Drive pipeline.
     if new_jobs == 0:
-        logger.warning(f"Hyper-Automation: No jobs found via scrapers. Generating DEMO jobs for '{keywords}'.")
+        logger.warning(f"Hyper-Automation: No jobs found. Generating DEMO jobs for '{kw_list[0]}' in '{loc_list[0]}'.")
         try:
+            # Just generate for the first combination to avoid flooding DB with demos
+            demo_kw = kw_list[0]
+            demo_loc = loc_list[0]
             demo_jobs = [
                 {
-                    "title": f"Senior {keywords} (Demo)",
+                    "title": f"Senior {demo_kw} (Demo)",
                     "company": "TechGlobal Inc.",
-                    "location": location,
+                    "location": demo_loc,
                     "url": "https://www.example.com/job/1",
-                    "description": f"We are looking for an expert in {keywords}. Requirements: Python, AWS, and AI.\nThis is a generated sample job to test the Auto-Apply pipeline.",
+                    "description": f"Expert in {demo_kw} required. Keywords: {', '.join(kw_list)}.",
                     "source": "Demo"
                 },
                 {
-                    "title": f"Lead {keywords} Engineer (Demo)",
+                    "title": f"Lead {demo_kw} Engineer (Demo)",
                     "company": "StartupX",
-                    "location": location,
+                    "location": demo_loc,
                     "url": "https://www.example.com/job/2",
-                    "description": f"Join our fast-paced team as a {keywords} Developer. Remote friendly.\nApply now to experience the speed of HireLink.",
-                    "source": "Demo"
-                },
-                {
-                    "title": f"{keywords} Consultant (Demo)",
-                    "company": "Enterprise Solutions",
-                    "location": "Remote",
-                    "url": "https://www.example.com/job/3",
-                    "description": f"Consulting role for {keywords}. High impact project.\n(Note: This is a demo entry for testing).",
+                    "description": f"Join our team as a {demo_kw}. Remote friendly.\nLocations: {', '.join(loc_list)}.",
                     "source": "Demo"
                 }
             ]
             
+            added = 0
             for d in demo_jobs:
-                # Check duplicate
                 if not db.query(Job).filter_by(url=d['url']).first():
                     job = Job(**d)
                     db.add(job)
+                    added += 1
             
             db.commit()
-            new_jobs = 3
-            logger.info("Generated 3 DEMO jobs.")
+            new_jobs = added
+            logger.info(f"Generated {added} DEMO jobs.")
             
         except Exception as e:
             logger.error(f"Failed to generate demo jobs: {e}")
     
     db.close()
-    
     return new_jobs

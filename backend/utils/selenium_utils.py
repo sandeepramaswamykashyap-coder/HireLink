@@ -28,6 +28,8 @@ def setup_driver(headless=True, profile_dir=None, detach=False):
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--disable-gpu')
+    options.add_argument('--disable-setuid-sandbox')
+    options.add_argument('--disable-infobars')
     options.add_argument('--window-size=1920,1080')
     # options.add_argument('--remote-debugging-port=9222') # REMOVED: Causes conflicts if multiple instances run
     options.add_argument('--disable-search-engine-choice-screen')
@@ -44,14 +46,21 @@ def setup_driver(headless=True, profile_dir=None, detach=False):
     if not os.path.exists(profile_dir):
         os.makedirs(profile_dir, exist_ok=True)
         
-    # Check for Profile Lock (Chrome creates SingletonLock/SingletonCookie)
-    lock_file = os.path.join(profile_dir, "SingletonLock")
-    if os.path.exists(lock_file):
-        logger.warning(f"Chrome profile at {profile_dir} seems to be in use.")
-        # We don't raise error yet, let Selenium try, but we'll log it.
-        # Actually, let's try to be proactive. 
-        # On Mac/Linux, we can check if the file is a symlink or check its modified time.
-        pass
+    # --- AGGRESSIVE DEFENSIVE LOCK CLEARING ---
+    # Selenium/Chrome can hang or fail if these locks from previous crashes remain.
+    lock_files = ["SingletonLock", "SingletonSocket", "SingletonCookie", "lock"]
+    for lock in lock_files:
+        lpath = os.path.join(profile_dir, lock)
+        if os.path.exists(lpath):
+            try:
+                # Force unlink regardless of type
+                if os.path.islink(lpath):
+                    os.unlink(lpath)
+                else:
+                    os.remove(lpath)
+                logger.info(f"Hardened Engine: Cleared stale Chrome lock: {lock}")
+            except Exception as le:
+                logger.warning(f"Engine Warning: Could not clear lock {lock}: {le}")
 
     options.add_argument(f"user-data-dir={profile_dir}")
     logger.info(f"Using Chrome Profile: {profile_dir}")
@@ -68,12 +77,13 @@ def setup_driver(headless=True, profile_dir=None, detach=False):
         # Additional anti-detection scripts
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         
-        logger.info("Chrome Driver setup successfully.")
+        logger.info("Chrome Driver initialized successfully.")
         return driver
     except Exception as e:
-        if "user data directory is already in use" in str(e).lower():
-            logger.error(f"CRITICAL: Chrome Profile is locked! Please CLOSE all other Chrome windows (launched via HireLink) before running this.")
-            raise RuntimeError("Chrome Profile Locked: Close other browser windows and try again.")
+        err_str = str(e).lower()
+        if any(msg in err_str for msg in ["user data directory is already in use", "session not created", "chrome failed to start"]):
+            logger.error(f"CRITICAL: Browser Engine Blocked. Profile: {profile_dir}. Error: {e}")
+            raise RuntimeError(f"Browser Engine Blocked: {e}")
         logger.error(f"Failed to setup Chrome Driver: {e}")
         raise
 

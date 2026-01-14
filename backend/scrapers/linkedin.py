@@ -48,12 +48,20 @@ class LinkedInScraper(BaseScraper):
             
             # Robust Selectors
             # Try multiple classes as LinkedIn A/B tests classes frequently
-            card_selectors = ["base-card", "job-search-card", "result-card"]
+            card_selectors = [
+                "base-card", 
+                "job-search-card", 
+                "result-card",
+                "jobs-search-results__list-item",
+                "job-card-container",
+                "job-card-list__container"
+            ]
             job_cards = []
             for sel in card_selectors:
                 found = self.driver.find_elements(By.CLASS_NAME, sel)
                 if found:
                     job_cards = found
+                    logger.info(f"LinkedIn Logic: Detected job cards via selector: .{sel}")
                     break
             
             logger.info(f"Found {len(job_cards)} job cards (Selector used: {sel if job_cards else 'None'})")

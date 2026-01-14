@@ -8,8 +8,8 @@ class SessionValidator:
 
     def start_driver(self):
         if not self.driver:
-            # Use headless for speed, rely on shared profile for cookies
-            self.driver = setup_driver(headless=True)
+            # Setting headless=False so user can see the initial validation
+            self.driver = setup_driver(headless=False)
 
     def close_driver(self):
         if self.driver:

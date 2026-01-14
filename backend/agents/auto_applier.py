@@ -82,7 +82,14 @@ class AutoApplier:
             if not contact.get("name"): contact["name"] = user.name or resume.name
             profile["contact"] = contact
             
-            # 3. Smart Answers (The "Knowledge Base")
+            # 4. Flatten Current Experience for easier LLM access
+            if profile.get("experience") and isinstance(profile["experience"], list) and len(profile["experience"]) > 0:
+                latest = profile["experience"][0]
+                profile["current_role"] = latest.get("role", "") or latest.get("title", "")
+                profile["current_company"] = latest.get("company", "") or latest.get("employer", "")
+                profile["current_summary"] = latest.get("description", "")
+            
+            # 5. Smart Answers (The "Knowledge Base")
             # Group by category for cleaner LLM context
             knowledge_base = {}
             for qa in qa_list:
@@ -92,7 +99,7 @@ class AutoApplier:
             
             profile["smart_answers"] = knowledge_base
             
-            # 4. User Preferences (The "Mission")
+            # 6. User Preferences (The "Mission")
             profile["preferences"] = {
                 "target_roles": user.target_roles,
                 "target_cities": user.target_cities,

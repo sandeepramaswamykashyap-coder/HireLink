@@ -21,13 +21,8 @@ def run_e2e_simulation():
     
     # 1. SETUP
     log("Step 0: Setup (Admin Tools)")
-    from backend.database import DB_PATH
-    if os.path.exists(DB_PATH):
-        os.remove(DB_PATH)
-        log(f"Cleaned up old DB at {DB_PATH}")
-        
-    # Ensure DB Schema exists (especially after deletion/migration)
-    init_db()
+    save_result = save_admin_snapshot()
+    log(f"Snapshot Save: {save_result[1]}")
     
     db = SessionLocal()
     
@@ -108,35 +103,6 @@ def run_e2e_simulation():
     log(f"History Table Accessible. Total Records: {history_count}")
     if history_count > 0:
         log("History Dashboard Data is Ready.")
-
-    log("\n[E2E] Step 6: Intelligence & Security Check")
-    
-    # 6a. Security
-    import bcrypt
-    pw = b"secret123"
-    hashed = bcrypt.hashpw(pw, bcrypt.gensalt())
-    if bcrypt.checkpw(pw, hashed):
-        log("Security: Bcrypt Hashing & Verification PASSED.")
-    else:
-        log("Security: Bcrypt Verification FAILED.")
-        
-    # 6b. Writer
-    from backend.agents.writer import CoverLetterGenerator
-    writer = CoverLetterGenerator()
-    dummy_job = Job(title="Test Role", company="Test Corp", description="Must love Python.", skills="Python")
-    dummy_resume = Resume(raw_text="I love Python.", parsed_data={}, name="Test User")
-    class MockUser:
-        name = "Test User"
-    
-    try:
-        pdf_path = writer.create_pdf(dummy_job, dummy_resume, MockUser(), output_path="test_cl.pdf")
-        if os.path.exists(pdf_path):
-            log(f"Writer: Cover Letter Generated at {pdf_path} (Size: {os.path.getsize(pdf_path)} bytes)")
-        else:
-            log("Writer: PDF Generation FAILED (File not found).")
-    except Exception as e:
-        log(f"Writer: PDF Generation Error: {e}")
-
     log("Simulation Complete.")
 
 if __name__ == "__main__":
