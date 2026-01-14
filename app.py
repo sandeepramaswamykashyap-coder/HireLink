@@ -119,7 +119,10 @@ def render_landing_page(user_exists=False):
     h_col1, h_col2 = st.columns([6, 1])
     
     with h_col1:
-        st.image("assets/logo.png", width=220)
+        # Subtle padding for logo aesthetics
+        st.markdown('<div style="padding: 8px 0;">', unsafe_allow_html=True)
+        st.image("assets/logo.png", width=210)
+        st.markdown('</div>', unsafe_allow_html=True)
         
     with h_col2:
         st.write("") # Spacer to align with logo vertical center roughly
@@ -341,6 +344,7 @@ def render_pricing(user_exists):
         justify-content: center;
         align-items: center;
         gap: 20px;
+        border: 1px solid rgba(255,255,255,0.1);
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
     
@@ -355,7 +359,7 @@ def render_pricing(user_exists):
     st.markdown("<h2 style='text-align: center; margin-bottom: 10px;'>Simple, Transparent Pricing</h2>", unsafe_allow_html=True)
     
     # Center the toggle
-    t1, t2, t3 = st.columns([0.8, 1.8, 0.8])
+    t1, t2, t3 = st.columns([1.2, 1, 1.2])
     with t2:
         billing = st.radio("Billing Cycle", ["Monthly", "Annual (Save 30% 🎁)"], horizontal=True, label_visibility="collapsed")
          
@@ -375,7 +379,7 @@ def render_pricing(user_exists):
     lbl_period = "per month"
     if is_annual: lbl_period += " (billed annually)"
 
-    # Grid for Cards
+    # Grid with padding
     _, c1, c2, c3, _ = st.columns([0.2, 3, 3, 3, 0.2])
     
     with c1:
@@ -394,11 +398,6 @@ def render_pricing(user_exists):
             </div>
         </div>
         """, unsafe_allow_html=True)
-        if st.button("Start Free", key="btn_free", use_container_width=True):
-             st.session_state['selected_plan'] = 'FREE'
-             if not user_exists: st.session_state['show_onboarding'] = True
-             else: update_user_plan('FREE') 
-             st.rerun()
 
     with c2:
         st.markdown(f"""
@@ -416,29 +415,6 @@ def render_pricing(user_exists):
             </div>
         </div>
         """, unsafe_allow_html=True)
-        if st.button("Choose Starter", key="btn_starter", use_container_width=True):
-             if not user_exists:
-                 # Payment-First logic
-                 link_data = pg.create_payment_link(p_starter, "STARTER", "guest@hirelink.ai")
-                 if link_data:
-                     st.session_state['pending_payment'] = {
-                         "url": link_data.get('short_url'),
-                         "plan": "STARTER",
-                         "amount": p_starter,
-                         "email": "guest@hirelink.ai",
-                         "is_guest": True
-                     }
-                 st.rerun()
-             else:
-                 link_data = pg.create_payment_link(p_starter, "STARTER", user.email)
-                 if link_data:
-                     st.session_state['pending_payment'] = {
-                         "url": link_data.get('short_url'),
-                         "plan": "STARTER",
-                         "amount": p_starter,
-                         "email": user.email
-                     }
-                     st.rerun()
 
     with c3:
         st.markdown(f"""
@@ -458,18 +434,39 @@ def render_pricing(user_exists):
             </div>
         </div>
         """, unsafe_allow_html=True)
-        if st.button("Choose Pro", key="btn_pro", type="primary", use_container_width=True):
+
+    # Separate row for buttons to ensure perfect horizontal alignment
+    _, b1, b2, b3, _ = st.columns([0.2, 3, 3, 3, 0.2])
+
+    with b1:
+        if st.button("Start Free", key="btn_free", use_container_width=True):
+             st.session_state['selected_plan'] = 'FREE'
+             if not user_exists: st.session_state['show_onboarding'] = True
+             else: update_user_plan('FREE') 
+             st.rerun()
+
+    with b2:
+        if st.button("Choose Starter", key="btn_starter", use_container_width=True):
              if not user_exists:
-                 # Payment-First logic
-                 link_data = pg.create_payment_link(p_pro, "PRO", "guest@hirelink.ai")
+                 st.session_state['selected_plan'] = 'STARTER'
+                 st.session_state['show_onboarding'] = True
+                 st.rerun()
+             else:
+                 link_data = pg.create_payment_link(p_starter, "STARTER", user.email)
                  if link_data:
                      st.session_state['pending_payment'] = {
                          "url": link_data.get('short_url'),
-                         "plan": "PRO",
-                         "amount": p_pro,
-                         "email": "guest@hirelink.ai",
-                         "is_guest": True 
+                         "plan": "STARTER",
+                         "amount": p_starter,
+                         "email": user.email
                      }
+                     st.rerun()
+
+    with b3:
+        if st.button("Choose Pro", key="btn_pro", type="primary", use_container_width=True):
+             if not user_exists:
+                 st.session_state['selected_plan'] = 'PRO'
+                 st.session_state['show_onboarding'] = True
                  st.rerun()
              else:
                  link_data = pg.create_payment_link(p_pro, "PRO", user.email)
@@ -482,14 +479,8 @@ def render_pricing(user_exists):
                      }
                      st.rerun()
 
-def update_user_plan(plan, is_guest=False):
-    # Helper to update DB for user
-    if is_guest:
-        # For guests, we simply set the plan in state so onboarding can pick it up
-        st.session_state['selected_plan'] = plan
-        st.session_state['show_onboarding'] = True
-        return
-
+def update_user_plan(plan):
+    # Helper to update DB for existing user
     user = db.query(backend.database.AppUser).first()
     if user:
         user.subscription_plan = plan
@@ -553,19 +544,7 @@ def check_and_show_payment_modal():
             
             # Mock Success for Demo
             if st.button("Simulate Payment Success (Dev Mode)"):
-                plan = pp['plan']
-                is_guest = pp.get('is_guest', False)
-                
-                # Update Plan
-                update_user_plan(plan, is_guest=is_guest)
-                
-                # Reward Referrer (if applicable)
-                if not is_guest:
-                    user = db.query(backend.database.AppUser).first()
-                    if user:
-                        from backend.utils.affiliate_manager import AffiliateManager
-                        AffiliateManager.process_commission(user.id, pp['amount'], db=db)
-                
+                update_user_plan(pp['plan'])
                 del st.session_state['pending_payment']
                 st.rerun()
                 
@@ -813,11 +792,8 @@ def render_onboarding():
 
                     # --- APPLY REFERRAL ---
                     if st.session_state.get('captured_ref'):
-                        import importlib
-                        import backend.utils.affiliate_manager
-                        importlib.reload(backend.utils.affiliate_manager)
                         from backend.utils.affiliate_manager import AffiliateManager
-                        AffiliateManager.apply_referral(user.id, st.session_state['captured_ref'], db=db)
+                        AffiliateManager.apply_referral(user.id, st.session_state['captured_ref'])
 
                     st.session_state['onboarding_step'] = 6
                     st.rerun()
@@ -926,24 +902,10 @@ if not user or st.session_state.get('force_landing', True):
              with c_btn1:
                  if st.button("Sign In", type="primary", use_container_width=True):
                      from backend.database import AppUser
-                     import bcrypt
-                     
                      u = db.query(AppUser).filter_by(email=email).first()
-                     
-                     # BCCRYPT VERIFICATION
-                     valid = False
-                     if u and u.password_hash:
-                         try:
-                             valid = bcrypt.checkpw(password.encode('utf-8'), u.password_hash.encode('utf-8'))
-                         except: valid = False
-                     elif u and u.password: # Legacy fallback (optional, remove for strict security)
-                         valid = (u.password == password)
-                     
-                     if valid: 
+                     if u and u.password == password: 
                          st.session_state['force_landing'] = False
                          st.session_state['show_login'] = False
-                         # Secure Session
-                         st.session_state['user_id'] = u.id 
                          st.success(f"Welcome back, {u.name}!")
                          time.sleep(1)
                          st.rerun()
@@ -1446,14 +1408,19 @@ else:
             st.dataframe(pd.DataFrame([{"Portal": s.portal_name, "Status": s.status, "Last Scraped": s.last_scraped} for s in statuses]), use_container_width=True)
 
     elif menu == "🚀 Job Pilot":
-        # --- 1. FLIGHT DECK HEADER ---
+        # --- 1. SESSION STATE INITIALIZATION ---
         if 'mission_role' not in st.session_state: st.session_state['mission_role'] = ""
         if 'mission_loc' not in st.session_state: st.session_state['mission_loc'] = ""
+        if 'm_scanned' not in st.session_state: st.session_state['m_scanned'] = 0
+        if 'm_matches' not in st.session_state: st.session_state['m_matches'] = 0
+        if 'm_sent' not in st.session_state: st.session_state['m_sent'] = 0
+        if 'm_step' not in st.session_state: st.session_state['m_step'] = "Standby"
+        if 'm_status' not in st.session_state: st.session_state['m_status'] = "Waiting for command."
+        if 'm_phase_idx' not in st.session_state: st.session_state['m_phase_idx'] = -1
         
-        # --- RESUME LOGIC (PRE-FETCH) ---
+        # --- RESUME LOGIC ---
         resumes = db.query(Resume).all()
         res_opts = {r.name: r.id for r in resumes} if resumes else {}
-        active_res_index = 0
 
         # FLIGHT DECK BANNER
         st.markdown("""
@@ -1468,41 +1435,32 @@ else:
         </div>
         """, unsafe_allow_html=True)
         
-        # MISSION CONTROL PANEL
-        with st.container(border=True):
-            st.markdown("##### 🛠️ Mission Configuration")
-            c1, c2, c3 = st.columns([2, 2, 2])
-            
-            # Persistent Inputs
-            role = c1.text_input("Target Role", value=st.session_state['mission_role'], placeholder="e.g. Python Developer", key="pilot_role")
-            loc = c2.text_input("Location", value=st.session_state['mission_loc'], placeholder="e.g. Remote", key="pilot_loc")
-            
-            # Resume Select
-            if resumes:
-                sel_res_name = c3.selectbox("Active Identity (Resume)", list(res_opts.keys()))
-                sel_res_id = res_opts[sel_res_name]
-            else:
-                c3.error("❌ No Identity Found")
-                sel_res_id = None
-        
-        # Save Sync State
-        st.session_state['mission_role'] = role
-        st.session_state['mission_loc'] = loc
-        
-        # PORTAL SELECTOR
-        all_p = ["LinkedIn", "Naukri", "Indeed", "Shine", "Foundit", "Internshala", "IIMJobs", "Wellfound", "Freshersworld", "Glassdoor"]
-        sel_portals = st.pills("Active Channels", all_p, default=["LinkedIn"], selection_mode="multi")
+        # --- MAIN SPLIT LAYOUT ---
+        col_left, col_right = st.columns([1, 1.8], gap="large")
 
-        st.write("")
-        st.write("")
-
-        # --- THE BIG BUTTON ---
-        c_btn, c_term = st.columns([1, 2])
-        
-        with c_btn:
-            st.markdown("### Ready to Launch?")
-            st.markdown("Initiate the full autonomous loop: Login Check -> Market Scan -> Profile Match -> Auto-Apply.")
+        with col_left:
+            st.markdown("#### 🛠️ Mission Config")
             
+            with st.container(border=True):
+                role = st.text_input("Target Roles (comma-separated)", value=st.session_state['mission_role'], placeholder="e.g. Developer, Engineer", key="pilot_role")
+                loc = st.text_input("Locations (comma-separated)", value=st.session_state['mission_loc'], placeholder="e.g. Remote, Mumbai", key="pilot_loc")
+                
+                if resumes:
+                    sel_res_name = st.selectbox("Identity (Resume)", list(res_opts.keys()))
+                    sel_res_id = res_opts[sel_res_name]
+                else:
+                    st.error("❌ No Identity Found")
+                    sel_res_id = None
+            
+            # Save Sync State
+            st.session_state['mission_role'] = role
+            st.session_state['mission_loc'] = loc
+
+            all_p = ["LinkedIn", "Naukri", "Indeed", "Shine", "Foundit", "Internshala", "IIMJobs", "Wellfound", "Freshersworld", "Glassdoor"]
+            sel_portals = st.pills("Active Channels", all_p, default=["LinkedIn"], selection_mode="multi")
+
+            st.write("")
+            st.write("### Ready to Launch?")
             if st.button("🔥 ENGAGE HYPER-DRIVE", type="primary", use_container_width=True):
                 missing = []
                 if not role: missing.append("Target Role")
@@ -1513,82 +1471,156 @@ else:
                 if missing:
                     st.error(f"⚠️ MISSION ABORTED. Missing: {', '.join(missing)}")
                 else:
-                    applier = AutoApplier()
                     st.session_state['pilot_running'] = True
-                    start_time = datetime.utcnow()
+                    # Re-initialized below in loop logic
+
+        with col_right:
+            # --- MISSION CONTROL WIDGET (PERMANENT) ---
+            st.markdown("""
+            <div class="mission-header">
+                <span style="font-size: 1.5rem;">📡</span>
+                <h5>Mission Control Center</h5>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Sub-container for the active content
+            with st.container(border=True):
+                # Phase Indicator
+                phase_placeholder = st.empty()
+                
+                # Stats Row (Persistent placeholders)
+                s1, s2, s3, s4 = st.columns(4)
+                scrape_stat = s1.empty()
+                match_stat = s2.empty()
+                apply_stat = s3.empty()
+                status_stat = s4.empty()
+
+                def render_phases(active_idx):
+                    phases = ["Login", "Scan", "Match", "Apply"]
+                    icons = ["🔑", "📊", "🧠", "🚀"]
+                    html = '<div class="mission-phases">'
+                    for i, (p, icon) in enumerate(zip(phases, icons)):
+                        cls = "active" if i == active_idx else ("completed" if i < active_idx else "")
+                        html += f'<div class="phase-item {cls}"><div class="phase-dot">{icon}</div><div class="phase-label">{p}</div></div>'
+                    html += '</div>'
+                    phase_placeholder.markdown(html, unsafe_allow_html=True)
+
+                def update_stats_ui():
+                    scrape_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_scanned"]}</span><span class="m-stat-label">Scanned</span></div>', unsafe_allow_html=True)
+                    match_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_matches"]}</span><span class="m-stat-label">Matches</span></div>', unsafe_allow_html=True)
+                    apply_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_sent"]}</span><span class="m-stat-label">Applied</span></div>', unsafe_allow_html=True)
                     
-                    # SYSTEM TERMINAL
-                    with c_term:
-                         terminal = st.status("👨‍💻 Pilot Terminal Active", expanded=True)
-                         terminal.write("Initializing Hyper-Drive Sequence...")
-                         time.sleep(1)
-                         
-                         try:
-                             # Using the unified engine with USER SELECTION
-                             target_list = sel_portals if sel_portals else None
-                             
-                             for update in applier.run_hyper_automation(role, loc, sel_res_id, target_portals=target_list):
-                                     terminal.write(f"**[{update['step']}]** {update['status']}")
-                                     if update['step'] == "Finished":
-                                         terminal.update(label="✅ Mission Complete", state="complete", expanded=False)
-                                         st.success("Hyper-Drive Sequence Concluded Successfully.")
-                                         st.balloons()
-                                         
-                                         # --- MISSION REPORT ---
-                                         st.subheader("📝 Mission Report")
-                                         report_apps = db.query(Application, Job).join(Job, Application.job_id == Job.id)\
-                                             .filter(Application.applied_at >= start_time).all()
-                                         
-                                         if report_apps:
-                                             rpt_data = []
-                                             for app, job in report_apps:
-                                                 # Simple UTC to Local offset (User is in India +5:30)
-                                                 from datetime import timedelta
-                                                 local_time = app.applied_at + timedelta(hours=5, minutes=30)
-                                                 rpt_data.append({
-                                                     "Role": job.title,
-                                                     "Company": job.company,
-                                                     "Status": app.status,
-                                                     "Time": local_time.strftime("%H:%M:%S")
-                                                 })
-                                             st.dataframe(pd.DataFrame(rpt_data), use_container_width=True)
-                                         else:
-                                             st.info("No applications were sent during this mission.")
-                                             
-                         except Exception as e:
-                             terminal.update(label="❌ Mission Failed", state="error")
-                             st.error(f"Critical Failure: {e}")
-        
-        with c_term:
-            if 'pilot_running' not in st.session_state:
-                st.info("👈 System Standby. Waiting for command.")
+                    step = st.session_state["m_step"]
+                    msg = st.session_state["m_status"]
+                    active_msg = msg if len(msg) < 30 else msg[:27] + "..."
+                    status_stat.markdown(f'<div class="m-stat"><span class="m-stat-val" style="font-size:1.1rem; color:#34d399; font-weight:700;"><span class="status-pulse"></span>{step}</span><span class="m-stat-label">{active_msg}</span></div>', unsafe_allow_html=True)
+
+                render_phases(st.session_state['m_phase_idx'])
+                update_stats_ui()
+                st.write("") # Internal padding
+
+            # Space between Mission Control and Systems Log
+            for _ in range(3): st.write("")
+
+            # Terminal
+            log_expander = st.expander("🛠️ Internal Systems Briefing", expanded=False)
+            log_terminal = log_expander.empty()
+
+            # --- RUN AUTOMATION (If triggered) ---
+            if st.session_state.get('pilot_running', False):
+                applier = AutoApplier()
+                start_time = datetime.utcnow()
+                full_log = []
+                
+                phase_map = {
+                    "Login Verification": 0, "Auto-Login": 0, "Login Success": 0,
+                    "Scraping Jobs": 1, "Enrichment": 1,
+                    "Matching Jobs": 2,
+                    "Applying": 3, "Finished": 4
+                }
+                
+                try:
+                    for update in applier.run_hyper_automation(role, loc, sel_res_id, target_portals=sel_portals):
+                        step = update.get('step')
+                        status = update.get('status')
+                        
+                        # Update State
+                        st.session_state['m_step'] = step
+                        st.session_state['m_status'] = status
+                        st.session_state['m_phase_idx'] = phase_map.get(step, 0)
+                        
+                        # Parsing logic for stats
+                        if "Scraped" in status or "Found" in status:
+                            import re
+                            matches = re.findall(r'\d+', status)
+                            if matches: st.session_state['m_scanned'] = int(matches[0])
+                        
+                        if "matches" in status.lower() and step == "Matching Jobs":
+                            import re
+                            matches = re.findall(r'\d+', status)
+                            if matches: st.session_state['m_matches'] = int(matches[0])
+                        
+                        if status == "SUCCESS":
+                            st.session_state['m_sent'] += 1
+                        
+                        # Refresh UI Components
+                        render_phases(st.session_state['m_phase_idx'])
+                        update_stats_ui()
+                        
+                        full_log.append(f"[{datetime.now().strftime('%H:%M:%S')}] {step}: {status}")
+                        log_terminal.code("\n".join(full_log[-10:]))
+                        
+                        if step == "Finished":
+                            st.session_state['pilot_running'] = False
+                            st.balloons()
+                            st.success("Mission Concluded Successfully!")
+                            st.rerun()
+                            
+                except Exception as e:
+                    st.session_state['pilot_running'] = False
+                    st.error(f"Critical System Failure: {str(e)}")
+                    st.session_state['m_status'] = "FAILURE: " + str(e)
+                    update_stats_ui()
 
         st.divider()
 
         # --- 2. LIVE RADAR (Results) ---
         st.subheader("📡 Live Radar (Recent Finds)")
         
-        # Connection Health Check (Visual Only)
-        st.caption(f"Monitoring {len(sel_portals)} Channels")
-        
         # JOB LIST
         jobs = db.query(Job).order_by(Job.scraped_date.desc()).limit(20).all()
+
+        # Connection Health Check (Visual Only)
+        st.caption(f"Monitoring {len(sel_portals)} Channels • Scanned {len(jobs) if jobs else 0} Recent Positions")
         
         if not jobs:
             st.info("Radar is clear. Engage Hyper-Drive to populate.")
         else:
              for job in jobs:
-                 c_info, c_act = st.columns([5, 1])
-                 
-                 with c_info:
-                     st.markdown(f"**{job.title}** ")
-                     st.caption(f"{job.company} • {job.location} • {job.source}")
-
-                 with c_act:
-                     is_busy = st.session_state.get('pilot_running', False)
-                     btn_label = "Pilot Busy" if is_busy else "Apply"
+                 with st.container():
+                     # Use the existing CSS class .job-card
+                     st.markdown(f"""
+                     <div class="job-card">
+                        <div class="job-header">
+                            <span class="job-title">{job.title}</span>
+                            <span class="match-score-badge">{job.source}</span>
+                        </div>
+                        <div class="job-company">
+                            🏢 {job.company}
+                        </div>
+                        <div class="job-meta">
+                            <span class="job-pill">📍 {job.location}</span>
+                            <span class="job-pill">🔗 {job.url[:30]}...</span>
+                        </div>
+                     </div>
+                     """, unsafe_allow_html=True)
                      
-                     if st.button(btn_label, key=f"apply_{job.id}", use_container_width=True, disabled=is_busy):
+                     # Action Button Row
+                     c_btn_row, _ = st.columns([1, 4])
+                     is_busy = st.session_state.get('pilot_running', False)
+                     btn_label = "Pilot Busy" if is_busy else "Apply Now"
+                     
+                     if c_btn_row.button(btn_label, key=f"apply_{job.id}", use_container_width=True, disabled=is_busy):
                          with st.status(f"Applying to {job.company}...", expanded=True) as status:
                              try:
                                  applier = AutoApplier()
@@ -1602,7 +1634,7 @@ else:
                              except Exception as e:
                                  status.update(label=f"❌ Chrome Error: {str(e)}", state="error")
                                  st.error("Likely another browser is open. Close it and try again.")
-                 st.divider()
+                 st.write("") # Spacer
 
     elif menu == "🤝 Affiliate Program":
         st.header("🤝 Refer & Earn Program")
@@ -1610,12 +1642,8 @@ else:
 
         # --- ENSURE CODE EXISTS ---
         if not user.referral_code:
-            import importlib
-            import backend.utils.affiliate_manager
-            importlib.reload(backend.utils.affiliate_manager)
             from backend.utils.affiliate_manager import AffiliateManager
-            # Pass shared db session to prevent SQLite locks
-            user.referral_code = AffiliateManager.generate_unique_code(user.name, db=db)
+            user.referral_code = AffiliateManager.generate_unique_code(user.name)
             db.commit()
 
         # 1. THE HOOK
