@@ -2709,27 +2709,36 @@ else:
                 st.write("")
                 c1, c2 = st.columns([3, 1])
                 if c2.form_submit_button("💾 Save All Changes", type="primary", use_container_width=True):
-                    try:
-                        # Robust Save: Iterate session state to find updated answers
-                        count_saved = 0
-                        for key, val in st.session_state.items():
-                            if key.startswith("sa_qa_"):
-                                try:
-                                    q_id = int(key.replace("sa_qa_", ""))
-                                    # Fetch fresh object to ensure attachment
-                                    q_obj = db.query(QuestionAnswer).filter(QuestionAnswer.id == q_id).first()
-                                    if q_obj and val != q_obj.answer:
-                                        q_obj.answer = val
-                                        db.add(q_obj) # Ensure dirty
-                                        count_saved += 1
-                                except ValueError: pass
-                        
-                        db.commit()
-                        st.toast(f"Saved {count_saved} answers successfully!", icon="✅")
-                        time.sleep(1)
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"Save failed: {e}")
+                    with st.spinner("Saving answers..."):
+                        try:
+                            # Robust Save: Iterate session state
+                            count_saved = 0
+                            debug_log = []
+                            for key, val in st.session_state.items():
+                                if key.startswith("sa_qa_"):
+                                    try:
+                                        q_id = int(key.replace("sa_qa_", ""))
+                                        # Fetch fresh object to ensure attachment
+                                        q_obj = db.query(QuestionAnswer).filter(QuestionAnswer.id == q_id).first()
+                                        
+                                        if q_obj:
+                                            # Update regardless of equality check to be safe
+                                            q_obj.answer = str(val) if val is not None else ""
+                                            db.add(q_obj) 
+                                            count_saved += 1
+                                    except Exception as ex:
+                                        debug_log.append(f"Key {key} err: {ex}")
+                            
+                            db.commit()
+                            
+                            if debug_log:
+                                print("Save Debug:", debug_log)
+                                
+                            st.toast(f"Saved {count_saved} answers!", icon="✅")
+                            time.sleep(0.5)
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Save failed: {e}")
             st.markdown('</div>', unsafe_allow_html=True)
 
         # --- TAB 3: PORTAL KEYS (CREDENTIALS) ---
