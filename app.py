@@ -308,18 +308,112 @@ h1 {
     text-align: center;
 }
 
-/* ST OVERRIDES */
-[data-testid="stSidebar"] {
-    background: #0f172a;
+/* --- WIDGET GLOW UP (GLASSMORPHISM) --- */
+/* Inputs */
+.stTextInput input, .stSelectbox, .stMultiSelect, .stTextArea textarea {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    border-radius: 12px !important;
+    transition: all 0.2s ease;
 }
 
-.stButton button {
+.stTextInput input:focus, .stTextArea textarea:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 15px rgba(79, 70, 229, 0.3) !important;
+    background-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Dataframes / Tables */
+div[data-testid="stDataFrame"] {
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 12px;
+    padding: 10px;
+}
+
+div[data-testid="stTable"] {
+    background: transparent !important;
+}
+
+/* Metrics */
+div[data-testid="stMetricValue"] {
+    font-size: 2rem !important;
+    font-weight: 800 !important;
+    background: linear-gradient(90deg, #fff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+div[data-testid="stMetricLabel"] {
+    color: #94a3b8 !important;
+    font-size: 0.9rem !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 10px;
+    background: rgba(255,255,255,0.03);
+    padding: 10px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 40px;
+    white-space: pre-wrap;
+    background-color: transparent;
+    border-radius: 8px;
+    color: #cbd5e1;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: var(--primary) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+/* Sidebar Override */
+[data-testid="stSidebar"] {
+    background-color: #020617 !important;
+    border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Global Glass Card Class for Internal Use */
+.glass-card {
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+/* Button Refinement */
+.stButton button {
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    padding: 0.5rem 1rem !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    background: rgba(255,255,255,0.05);
+    color: white;
+    transition: all 0.2s;
+}
+
+.stButton button:hover {
+    border-color: var(--primary) !important;
+    background: rgba(79, 70, 229, 0.1);
+    transform: translateY(-2px);
 }
 
 button[kind="primary"] {
     background: var(--gradient-btn) !important;
     border: none !important;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
 }
 
 /* --- PRICING SECTION --- */
