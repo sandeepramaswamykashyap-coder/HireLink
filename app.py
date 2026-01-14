@@ -183,6 +183,64 @@ st.markdown("""<style>
     text-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
 }
 
+/* ADMIN CONSOLE - SCRAPER HEALTH */
+.status-card {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.status-card.online {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.status-card.offline {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.status-icon {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.status-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-badge.online {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+}
+
+.status-badge.offline {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
+.job-count {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
 /* GOOGLE FONTS */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;700;900&display=swap');
 
