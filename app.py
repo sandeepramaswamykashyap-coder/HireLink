@@ -2572,6 +2572,35 @@ else:
             st.markdown('</div>', unsafe_allow_html=True)
                     
             st.subheader("Saved Resumes")
+            
+            # --- DELETE DIALOG (Top Level in Tab) ---
+            if hasattr(st, "dialog"):
+                @st.dialog("Delete Resume?")
+                def confirm_delete_resume(res_id, res_name):
+                    st.write(f"Are you sure you want to permanently delete **{res_name}**?")
+                    st.warning("This action cannot be undone.")
+                    col_cancel, col_conf = st.columns(2)
+                    
+                    if col_conf.button("🗑️ Yes, Delete", type="primary", key=f"dlg_yes_{res_id}"):
+                         try:
+                             # Re-query inside dialog to be safe
+                             session_del = get_db_session()
+                             to_del = session_del.query(Resume).filter(Resume.id == res_id).first()
+                             if to_del:
+                                 if to_del.file_path and os.path.exists(to_del.file_path):
+                                     try: os.remove(to_del.file_path)
+                                     except: pass
+                                 session_del.delete(to_del)
+                                 session_del.commit()
+                                 st.toast("Deleted successfully!")
+                                 time.sleep(1)
+                                 st.rerun()
+                             session_del.close()
+                         except Exception as e:
+                             st.error(f"Error: {e}")
+                             
+                    if col_cancel.button("Cancel", key=f"dlg_no_{res_id}"):
+                        st.rerun()
             resumes = db.query(Resume).all()
             for r in resumes:
                 with st.expander(f"{r.name} - {r.email}"):
@@ -2604,35 +2633,9 @@ else:
                                 st.write(str(exp))
 
                     with c2:
-                        # DELETE CONFIRMATION POPOVER
-                        # Using st.popover (requires Streamlit 1.33+)
-                        # If older, we fallback to logic or just assume updated env (User has 'vibe coding' enabled)
-                        try:
-                            with st.popover("🗑️ Delete", help="Permanently delete this resume"):
-                                st.write("Are you sure?")
-                                if st.button("🚨 Yes, Delete", key=f"conf_del_{r.id}", type="primary"):
-                                    # 1. Delete File
-                                    if r.file_path and os.path.exists(r.file_path):
-                                        try:
-                                            os.remove(r.file_path)
-                                        except: pass
-                                    
-                                    # 2. Delete DB Record
-                                    db.delete(r)
-                                    db.commit()
-                                    st.toast("Resume deleted successfully!", icon="🗑️")
-                                    time.sleep(1)
-                                    st.rerun()
-                        except AttributeError:
-                            # Fallback for older Streamlit
-                            if st.button("🗑️ Delete (Confirm)", key=f"del_res_{r.id}"):
-                                # ... (Same delete logic)
-                                if r.file_path and os.path.exists(r.file_path): 
-                                    try: os.remove(r.file_path) 
-                                    except: pass
-                                db.delete(r)
-                                db.commit()
-                                st.rerun()
+                    with c2:
+                        if st.button("🗑️ Delete", key=f"del_btn_{r.id}"):
+                            confirm_delete_resume(r.id, r.name)
 
         # --- TAB 2: SMART ANSWERS ---
         with tab_smart:
