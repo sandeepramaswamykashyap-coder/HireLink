@@ -1947,10 +1947,10 @@ else:
     if menu == "🏠 Dashboard":
         # HERO SECTION
         st.markdown(f"""
-        <div style="padding: 2rem 0; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
-            <h1 style="margin:0; font-size: 3rem;">Hello, {user.name.split()[0]} 👋</h1>
-            <p style="color: #94a3b8; font-size: 1.2rem; margin-top: 10px;">
-                Your AI Recruiter is active. Here is your mission status.
+        <div style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); padding: 4rem 3rem; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 2rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);">
+            <h1 style="margin:0; font-size: 4rem; background: linear-gradient(90deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -2px;">Hello, {user.name.split()[0]} 👋</h1>
+            <p style="color: #cbd5e1; font-size: 1.3rem; margin-top: 15px; font-weight: 300;">
+                Your AI Recruiter is active. Mission status verified.
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -1962,7 +1962,8 @@ else:
             if tour_mode:
                 st.info("💡 **Dashboard:** This is your command center. See scraped jobs, active resumes, and application history.")
             
-            # 1. METRICS (Auto-styled by CSS)
+            # 1. METRICS (Glass Card)
+            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
             col1, col2, col3 = st.columns(3)
             total_jobs = db.query(Job).count()
             total_resumes = db.query(Resume).count()
@@ -1970,7 +1971,8 @@ else:
             
             col1.metric("Opportunities Found", total_jobs, delta="Total Scraped")
             col2.metric("Talent Profiles", total_resumes, delta="Active Resumes")
-            col3.metric("Applications Fire", total_apps, delta=f"{round((total_apps/total_jobs)*100 if total_jobs else 0, 1)}% Conversion")
+            col3.metric("Applications Fired", total_apps, delta=f"{round((total_apps/total_jobs)*100 if total_jobs else 0, 1)}% Conversion")
+            st.markdown('</div>', unsafe_allow_html=True)
             
             st.markdown("---")
             
@@ -1978,6 +1980,7 @@ else:
             c1, c2 = st.columns([2, 1])
             
             with c1:
+                st.markdown('<div class="glass-card">', unsafe_allow_html=True)
                 st.subheader("Recent Activity")
                 # Show last 5 logs or app status
                 recent_apps = db.query(Application).order_by(Application.applied_at.desc()).limit(10).all()
@@ -1991,8 +1994,10 @@ else:
                          st.write(f"{status_icon} {a.applied_at.strftime('%H:%M')} - **{title}**{company}")
                 else:
                     st.info("No activity yet.")
+                st.markdown('</div>', unsafe_allow_html=True)
                     
             with c2:
+                st.markdown('<div class="glass-card">', unsafe_allow_html=True)
                 st.subheader("System Health")
                 statuses = db.query(PortalStatus).all()
                 if statuses:
@@ -2001,9 +2006,11 @@ else:
                         use_container_width=True,
                         hide_index=True
                     )
+                st.markdown('</div>', unsafe_allow_html=True)
 
         # --- TAB 2: HISTORY ---
         with tab_hist:
+            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
             st.subheader("📜 Complete Application History")
             
             # Query ALL applications
@@ -2041,6 +2048,7 @@ else:
                 )
             else:
                 st.info("No applications found in history.")
+            st.markdown('</div>', unsafe_allow_html=True)
         if statuses:
             st.dataframe(pd.DataFrame([{"Portal": s.portal_name, "Status": s.status, "Last Scraped": s.last_scraped} for s in statuses]), use_container_width=True)
 
@@ -2078,7 +2086,8 @@ else:
         with col_left:
             st.markdown("#### 🛠️ Mission Config")
             
-            with st.container(border=True):
+            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+            # with st.container(border=True): # REMOVED for Glass Effect
                 role = st.text_input("Target Roles (comma-separated)", value=st.session_state['mission_role'], placeholder="e.g. Developer, Engineer", key="pilot_role")
                 loc = st.text_input("Locations (comma-separated)", value=st.session_state['mission_loc'], placeholder="e.g. Remote, Mumbai", key="pilot_loc")
                 
@@ -2098,6 +2107,7 @@ else:
 
             st.write("")
             st.write("### Ready to Launch?")
+            st.markdown('</div>', unsafe_allow_html=True) # Close Glass Card
             if st.button("🔥 ENGAGE HYPER-DRIVE", type="primary", use_container_width=True):
                 missing = []
                 if not role: missing.append("Target Role")
@@ -2121,7 +2131,8 @@ else:
             """, unsafe_allow_html=True)
             
             # Sub-container for the active content
-            with st.container(border=True):
+            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+            # with st.container(border=True):
                 # Phase Indicator
                 phase_placeholder = st.empty()
                 
@@ -2155,6 +2166,7 @@ else:
                 render_phases(st.session_state['m_phase_idx'])
                 update_stats_ui()
                 st.write("") # Internal padding
+            st.markdown('</div>', unsafe_allow_html=True)
 
             # Space between Mission Control and Systems Log
             for _ in range(3): st.write("")
@@ -2304,6 +2316,7 @@ else:
         st.markdown("---")
 
         # 2. STATS DASHBOARD
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
         st.subheader("💰 Rewards Overview")
         c1, c2, c3 = st.columns(3)
         c1.metric("Friends Reached", user.referral_count, delta="Total")
@@ -2313,6 +2326,7 @@ else:
         c3.metric("Service Credits", f"₹ {round(total_credits, 2)}", delta="Applied to bill")
 
         st.info(f"✨ You have **₹{round(user.earnings_balance, 2)}** in credits ready for your next renewal!")
+        st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown("---")
 
@@ -2359,6 +2373,7 @@ else:
         
         # --- TAB 1: RESUMES ---
         with tab_res:
+            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
             st.subheader("Resume Manager")
             uploaded_file = st.file_uploader("Upload Resume (PDF)", type="pdf")
             if uploaded_file:
@@ -2374,6 +2389,7 @@ else:
                 if resume:
                     st.success("Resume parsed successfully!")
                     st.json(resume.parsed_data)
+            st.markdown('</div>', unsafe_allow_html=True)
                     
             st.subheader("Saved Resumes")
             resumes = db.query(Resume).all()
