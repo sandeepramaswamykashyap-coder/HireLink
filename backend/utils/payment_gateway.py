@@ -41,7 +41,8 @@ class PaymentGateway:
                     "email": True
                 },
                 "reminder_enable": True,
-                "callback_url": "http://localhost:8501/?payment_success=true", # Redirect back to app
+                "reminder_enable": True,
+                "callback_url": os.getenv("APP_URL", "https://hirelink.tech") + "/?payment_success=true", 
                 "callback_method": "get"
             }
             return self.client.payment_link.create(data)
