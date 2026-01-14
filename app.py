@@ -1925,7 +1925,7 @@ else:
             st.session_state['mission_loc'] = loc
 
             all_p = ["LinkedIn", "Naukri", "Indeed", "Shine", "Foundit", "Internshala", "IIMJobs", "Wellfound", "Freshersworld", "Glassdoor"]
-                        sel_portals = st.multiselect("Active Channels", all_p, default=["LinkedIn"])
+            sel_portals = st.multiselect("Active Channels", all_p, default=["LinkedIn"])
 
             st.write("")
             st.write("### Ready to Launch?")
