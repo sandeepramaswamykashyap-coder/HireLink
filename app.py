@@ -953,6 +953,43 @@ def render_pricing(user_exists):
     lbl_period = "per month"
     if is_annual: lbl_period += " (billed annually)"
 
+    # --- FORCE CSS FOR PRICING CARDS (Fix for Transparent UI) ---
+    st.markdown("""
+    <style>
+    .pricing-card {
+        background: #1e293b !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 20px !important;
+        padding: 40px 30px !important;
+        width: 100% !important;
+        text-align: center !important;
+        position: relative !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: 480px !important;
+    }
+    .pricing-card:hover {
+        transform: translateY(-5px) !important;
+        border-color: #6366f1 !important;
+        box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2) !important;
+    }
+    .plan-name { font-size: 0.9rem !important; font-weight: 700 !important; color: #94a3b8 !important; letter-spacing: 0.1em !important; margin-bottom: 10px !important; }
+    .plan-slogan { font-size: 1rem !important; color: #cbd5e1 !important; margin-bottom: 20px !important; }
+    .price-tag { font-size: 3rem !important; font-weight: 800 !important; color: white !important; margin-bottom: 8px !important; }
+    .price-period { color: #64748b !important; margin-bottom: 30px !important; }
+    .pricing-features ul { list-style: none !important; padding: 0 !important; margin: 0 !important; text-align: left !important; }
+    .pricing-features li { padding: 8px 0 !important; color: #cbd5e1 !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
+    .pricing-features li:last-child { border-bottom: none !important; }
+    .most-popular-badge {
+        position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+        background: linear-gradient(90deg, #6366f1, #a855f7);
+        padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; color: white;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     # Grid with padding
     _, c1, c2, c3, _ = st.columns([0.2, 3, 3, 3, 0.2])
     
