@@ -2114,7 +2114,7 @@ else:
         total_resumes = session.query(backend.database.Resume).count()
         # Applications: Assuming 'applied' status or just count of entries in a hypothetical Applications table or tracked locally
         # Currently we might not have an 'Application' table, so let's check Job status 'APPLIED'
-        total_apps = session.query(backend.database.Job).filter(backend.database.Job.status == "APPLIED").count()
+        total_apps = session.query(backend.database.Application).count()
         session.close()
 
         # HERO SECTION
