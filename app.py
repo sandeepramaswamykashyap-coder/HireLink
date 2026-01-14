@@ -786,14 +786,16 @@ def save_smart_answer(qid_key):
                         q.answer = clean_val
                         db_local.add(q)
                         db_local.commit()
-                        st.toast("Saved", icon="💾")
+                        st.toast(f"Saved: {clean_val[:10]}...", icon="💾")
             except Exception as e:
+                st.error(f"DB Error Q{q_id}: {e}")
                 print(f"Save Error Q{q_id}: {e}")
             finally:
                 db_local.close()
         except ValueError:
             pass
     except Exception as e:
+        st.error(f"Callback System Error: {e}")
         print(f"Callback Error: {e}")
 
 # --- LANDING PAGE ---
