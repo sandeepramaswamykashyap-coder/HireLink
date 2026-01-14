@@ -2391,51 +2391,11 @@ else:
         """, unsafe_allow_html=True)
         
         # --- MAIN SPLIT LAYOUT ---
-        col_left, col_right = st.columns([1, 1.8], gap="large")
+        # --- VERTICAL LAYOUT START ---
+        # Left column removed (Mission Config moved to bottom)
 
-        with col_left:
-            st.markdown("""
-            <div class="mission-header">
-                <span style="font-size: 1.5rem;">🛠️</span>
-                <h5>Mission Config</h5>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            with st.container(border=True):
-                role = st.text_input("Target Roles (comma-separated)", value=st.session_state['mission_role'], placeholder="e.g. Developer, Engineer", key="pilot_role")
-                loc = st.text_input("Locations (comma-separated)", value=st.session_state['mission_loc'], placeholder="e.g. Remote, Mumbai", key="pilot_loc")
-                
-                if resumes:
-                    sel_res_name = st.selectbox("Identity (Resume)", list(res_opts.keys()))
-                    sel_res_id = res_opts[sel_res_name]
-                else:
-                    st.error("❌ No Identity Found")
-                    sel_res_id = None
-                
-                # Save Sync State
-                st.session_state['mission_role'] = role
-                st.session_state['mission_loc'] = loc
-
-                all_p = ["LinkedIn", "Naukri", "Indeed", "Shine", "Foundit", "Internshala", "IIMJobs", "Wellfound", "Freshersworld", "Glassdoor"]
-                sel_portals = st.multiselect("Active Channels", all_p, default=["LinkedIn"])
-
-                st.write("")
-                st.write("### Ready to Launch?")
-                
-                if st.button("🔥 ENGAGE HYPER-DRIVE", type="primary", use_container_width=True):
-                    missing = []
-                    if not role: missing.append("Target Role")
-                    if not loc: missing.append("Location")
-                    if not sel_res_id: missing.append("Active Resume")
-                    if not sel_portals: missing.append("Active Portals")
-                    
-                    if missing:
-                        st.error(f"⚠️ MISSION ABORTED. Missing: {', '.join(missing)}")
-                    else:
-                        st.session_state['pilot_running'] = True
-                        # Re-initialized below in loop logic
-
-        with col_right:
+        # Mission Control (Top)
+        if True: # Wrapper to maintain indentation for now
             # --- MISSION CONTROL WIDGET (PERMANENT) ---
             st.markdown("""
             <div class="mission-header">
@@ -2490,6 +2450,56 @@ else:
                 render_phases(st.session_state['m_phase_idx'])
                 update_stats_ui()
                 st.write("") # Internal padding
+
+            # --- MISSION CONFIG (BOTTOM) ---
+            st.write("")
+            st.write("")
+            st.markdown("""
+            <div class="mission-header">
+                <span style="font-size: 1.5rem;">🛠️</span>
+                <h5>Mission Config</h5>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            with st.container(border=True):
+                col_inp_1, col_inp_2 = st.columns(2)
+                with col_inp_1:
+                    role = st.text_input("Target Roles", value=st.session_state['mission_role'], placeholder="e.g. Developer, Engineer", key="pilot_role_v2")
+                with col_inp_2:
+                    loc = st.text_input("Locations", value=st.session_state['mission_loc'], placeholder="e.g. Remote, Mumbai", key="pilot_loc_v2")
+                
+                st.write("")
+                col_inp_3, col_inp_4 = st.columns(2)
+                with col_inp_3:
+                    if resumes:
+                        sel_res_name = st.selectbox("Identity (Resume)", list(res_opts.keys()), key="res_sel_v2")
+                        sel_res_id = res_opts[sel_res_name]
+                    else:
+                        st.error("❌ No Identity Found")
+                        sel_res_id = None
+                
+                with col_inp_4:
+                    all_p = ["LinkedIn", "Naukri", "Indeed", "Shine", "Foundit", "Internshala", "IIMJobs", "Wellfound", "Freshersworld", "Glassdoor"]
+                    sel_portals = st.multiselect("Active Channels", all_p, default=["LinkedIn"], key="portal_sel_v2")
+
+                # Save Sync State
+                st.session_state['mission_role'] = role
+                st.session_state['mission_loc'] = loc
+
+                st.write("")
+                st.write("### Ready to Launch?")
+                
+                if st.button("🔥 ENGAGE HYPER-DRIVE", type="primary", use_container_width=True, key="engage_btn_v2"):
+                    missing = []
+                    if not role: missing.append("Target Role")
+                    if not loc: missing.append("Location")
+                    if not sel_res_id: missing.append("Active Resume")
+                    if not sel_portals: missing.append("Active Portals")
+                    
+                    if missing:
+                        st.error(f"⚠️ MISSION ABORTED. Missing: {', '.join(missing)}")
+                    else:
+                        st.session_state['pilot_running'] = True
 
             # Space between Mission Control and Systems Log
             for _ in range(3): st.write("")
