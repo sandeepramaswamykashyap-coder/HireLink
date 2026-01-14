@@ -2692,6 +2692,9 @@ else:
                     st.progress(progress)
                     st.caption(f"Knowledge Base Completion: {int(progress*100)}% ({filled_count}/{total_count} answers)")
                     
+                    # Local capture of updates
+                    updates_map = {} 
+                    
                     for cat in categories:
                         with st.expander(f"📁 {cat.replace('_', ' ').title()}", expanded=False):
                             cat_questions = [q for q in qa_list if q.category == cat]
@@ -2703,42 +2706,48 @@ else:
                                     label = "🔴 " + label
                                     help_text = "Required for almost every application."
                                     
-                                val = st.text_input(label, value=q.answer or "", key=f"sa_qa_{q.id}", help=help_text)
-                                q.answer = val
+                                # Use unique key but capture return value directly
+                                new_val = st.text_input(label, value=q.answer or "", key=f"sa_qa_{q.id}", help=help_text)
+                                updates_map[q.id] = new_val
                                 
                 st.write("")
                 c1, c2 = st.columns([3, 1])
                 if c2.form_submit_button("💾 Save All Changes", type="primary", use_container_width=True):
                     with st.spinner("Saving answers..."):
                         try:
-                            # Robust Save: Iterate session state
+                            # Debug Log File
+                            with open("debug_save.txt", "a") as f:
+                                f.write(f"\n--- Save Attempt {datetime.now()} ---\n")
+                                f.write(f"Updates Map Size: {len(updates_map)}\n")
+                            
                             count_saved = 0
-                            debug_log = []
-                            for key, val in st.session_state.items():
-                                if key.startswith("sa_qa_"):
-                                    try:
-                                        q_id = int(key.replace("sa_qa_", ""))
-                                        # Fetch fresh object to ensure attachment
-                                        q_obj = db.query(QuestionAnswer).filter(QuestionAnswer.id == q_id).first()
+                            
+                            # Re-fetch objects to ensure session attachment
+                            for qid, val in updates_map.items():
+                                # Paranoia: Re-fetch by ID from current DB session
+                                fresh_q = db.query(QuestionAnswer).filter(QuestionAnswer.id == qid).first()
+                                if fresh_q:
+                                    # Force string conversion and strip
+                                    clean_val = str(val).strip() if val else ""
+                                    
+                                    # Log diffs
+                                    if fresh_q.answer != clean_val:
+                                        with open("debug_save.txt", "a") as f:
+                                            f.write(f"Updating Q{qid}: '{fresh_q.answer}' -> '{clean_val}'\n")
                                         
-                                        if q_obj:
-                                            # Update regardless of equality check to be safe
-                                            q_obj.answer = str(val) if val is not None else ""
-                                            db.add(q_obj) 
-                                            count_saved += 1
-                                    except Exception as ex:
-                                        debug_log.append(f"Key {key} err: {ex}")
+                                        fresh_q.answer = clean_val
+                                        db.add(fresh_q)
+                                        count_saved += 1
                             
                             db.commit()
                             
-                            if debug_log:
-                                print("Save Debug:", debug_log)
-                                
                             st.toast(f"Saved {count_saved} answers!", icon="✅")
-                            time.sleep(0.5)
+                            time.sleep(1)
                             st.rerun()
                         except Exception as e:
                             st.error(f"Save failed: {e}")
+                            with open("debug_save.txt", "a") as f:
+                                f.write(f"ERROR: {e}\n")
             st.markdown('</div>', unsafe_allow_html=True)
 
         # --- TAB 3: PORTAL KEYS (CREDENTIALS) ---
