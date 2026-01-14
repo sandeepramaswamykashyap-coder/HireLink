@@ -824,44 +824,27 @@ def render_floating_chat():
 render_floating_chat()
 
 # --- GLOBAL DIALOGS ---
-if hasattr(st, "dialog"):
-    @st.dialog("Delete Resume?")
-    def confirm_delete_resume(res_id, res_name):
-        st.write(f"Are you sure you want to permanently delete **{res_name}**?")
-        try:
-             # Re-query inside dialog to be safe
-             session_del = get_db_session()
-             to_del = session_del.query(backend.database.Resume).filter(backend.database.Resume.id == res_id).first()
-             session_del.close()
-        except: pass
-        
-        st.warning("This action cannot be undone.")
-        col_cancel, col_conf = st.columns(2)
-        
-        if col_conf.button("🗑️ Yes, Delete", type="primary", key=f"dlg_yes_{res_id}"):
-                try:
-                    # Re-query inside dialog to be safe
-                    session_del = get_db_session()
-                    to_del = session_del.query(backend.database.Resume).filter(backend.database.Resume.id == res_id).first()
-                    if to_del:
-                        if to_del.file_path and os.path.exists(to_del.file_path):
-                            try: os.remove(to_del.file_path)
-                            except: pass
-                        session_del.delete(to_del)
-                        session_del.commit()
-                        st.toast("Deleted successfully!")
-                        time.sleep(1)
-                        st.rerun()
-                    session_del.close()
-                except Exception as e:
-                    st.error(f"Error: {e}")
-                    
-        if col_cancel.button("Cancel", key=f"dlg_no_{res_id}"):
-            st.rerun()
-else:
-    # Fallback for older Streamlit
-    def confirm_delete_resume(res_id, res_name):
-        st.warning("Please update Streamlit to use this feature.")
+# --- GLOBAL HELPER: RESUME DELETION ---
+def confirm_delete_resume(res_id, res_name):
+    """
+    Deletes a resume from the database.
+    Confirmation is handled by the UI before calling this.
+    """
+    try:
+        session_del = get_db_session()
+        to_del = session_del.query(backend.database.Resume).filter(backend.database.Resume.id == res_id).first()
+        if to_del:
+            if to_del.file_path and os.path.exists(to_del.file_path):
+                try: os.remove(to_del.file_path)
+                except: pass
+            session_del.delete(to_del)
+            session_del.commit()
+            st.toast(f"Deleted {res_name} successfully!")
+            time.sleep(1)
+            # st.rerun() # UI usually reruns itself
+        session_del.close()
+    except Exception as e:
+        st.error(f"Error deleting resume: {e}")
 
 # --- GLOBAL HELPER: INSTANT SAVE CALLBACK ---
 def save_smart_answer(qid_key):
@@ -2833,7 +2816,8 @@ else:
                 
                 raw_categories = list(set([q.category for q in qa_list]))
                 # Sort based on priority map, defaulting to 100 for others (sorted alphabetically among themselves)
-                categories = sorted(raw_categories, key=lambda x: (CATEGORY_PRIORITY.get(x.lower(), 100), x))
+                # Sort based on priority map, defaulting to 100 for others (sorted alphabetically among themselves)
+                categories = sorted(raw_categories, key=lambda x: (CATEGORY_PRIORITY.get((x or "").lower(), 100), (x or "")))
                 
                 # Progress Bar
                 filled_count = len([q for q in qa_list if q.answer and len(q.answer) > 0])
