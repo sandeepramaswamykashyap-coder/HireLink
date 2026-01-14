@@ -508,7 +508,7 @@ def render_landing_page(user_exists=False):
                  st.rerun()
 
     st.markdown(f"""
-<div style='text-align: center; background: #22c55e; color: white; padding: 5px; font-weight: bold; border-radius: 4px; margin-bottom: 20px;'>DEPLOYMENT v3.0 - LIVE</div>
+<div style='text-align: center; background: #9333ea; color: white; padding: 5px; font-weight: bold; border-radius: 4px; margin-bottom: 20px;'>DEPLOYMENT v3.1 - LEGAL PAGES ADDED</div>
 <div class="landing-wrapper">
 <div class="landing-hero">
 <div class="landing-title" style="font-family: 'Outfit', sans-serif !important; color: white !important; font-size: 6rem !important; font-weight: 900 !important; line-height: 1.1 !important; margin-bottom: 25px !important;">Automate Your <span class="gradient-text">Dream Job</span> Search today.</div>
