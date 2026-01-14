@@ -2737,44 +2737,55 @@ else:
             st.subheader("Saved Resumes")
             
             # (Dialog moved to global scope)
-            resumes = db.query(Resume).all()
+            # Filter resumes by the current user's email
+            resumes = db.query(Resume).filter(Resume.email == user.email).all()
+            
+            if not resumes:
+                st.info("No resumes found. Upload one above!")
+            
             for r in resumes:
-                with st.expander(f"{r.name} - {r.email}"):
-                    c1, c2 = st.columns([3, 1])
-                with st.expander(f"{r.name} - {r.email}"):
-                    data = r.parsed_data or {}
-                    st.markdown(f"**👤 Name:** {data.get('name', 'N/A')}")
-                    st.markdown(f"**📧 Email:** {data.get('email', 'N/A')}")
-                    st.markdown(f"**📱 Phone:** {data.get('phone', 'N/A')}")
-                    
-                    if data.get('skills'):
-                        st.markdown("**🛠️ Skills:**")
-                        # Create wrapped pill-like display
-                        skills_html = f"""
-                        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
-                            {''.join([f'<span style="background-color:#2b2d42; color:white; padding:4px 10px; border-radius:12px; font-size:0.85rem; border:1px solid rgba(255,255,255,0.1);">{s}</span>' for s in data.get('skills', [])])}
+                with st.container():
+                    st.markdown(f"""
+                    <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div>
+                                <h4 style="margin: 0; color: white;">{r.name or 'Unknown Candidate'}</h4>
+                                <p style="margin: 5px 0 0 0; color: #94a3b8; font-size: 0.9rem;">{r.email} • {r.phone or 'No Phone'}</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="background: rgba(79, 70, 229, 0.2); color: #818cf8; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem;">Parsed ID: {r.id}</span>
+                            </div>
                         </div>
-                        """
-                        st.markdown(skills_html, unsafe_allow_html=True)
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    # Collapsible Details
+                    with st.expander("View Parsed Details"):
+                        data = r.parsed_data or {}
                         
-                    if data.get('experience'):
-                        st.markdown("---")
-                        st.markdown("**💼 Experience:**")
-                        # Handle if experience is list or string
-                        exp = data.get('experience')
-                        if isinstance(exp, list):
-                            for e in exp:
-                                st.markdown(f"- **{e.get('role', 'Role')}** at {e.get('company', 'Company')} ({e.get('years', '')})")
-                        else:
-                            st.write(str(exp))
+                        if data.get('skills'):
+                            st.write("**🛠️ Skills**")
+                            st.markdown(f"""
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
+                                {''.join([f'<span style="background-color:#2b2d42; color:white; padding:4px 10px; border-radius:12px; font-size:0.85rem; border:1px solid rgba(255,255,255,0.1);">{s}</span>' for s in data.get('skills', [])])}
+                            </div>
+                            """, unsafe_allow_html=True)
+                            
+                        if data.get('experience'):
+                            st.divider()
+                            st.write("**💼 Experience**")
+                            exp = data.get('experience')
+                            if isinstance(exp, list):
+                                for e in exp:
+                                    st.caption(f"**{e.get('role', 'Role')}** at {e.get('company', 'Company')} ({e.get('years', '')})")
+                            else:
+                                st.write(str(exp))
 
-                    st.markdown("---")
-                    # Footer Actions
-                    # Using columns to align right
-                    _, col_del = st.columns([4, 1])
-                    with col_del:
-                        if st.button("🗑️ Delete", key=f"del_btn_{r.id}"):
-                            confirm_delete_resume(r.id, r.name)
+                    # Actions
+                    col_act_1, col_act_2 = st.columns([0.85, 0.15])
+                    with col_act_2:
+                         if st.button("🗑️ Delete", key=f"del_{r.id}", type="secondary"):
+                             confirm_delete_resume(r.id, r.name)
 
         # --- TAB 2: SMART ANSWERS ---
         with tab_smart:
