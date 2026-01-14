@@ -448,6 +448,10 @@ button[kind="primary"] {
 
 db = next(get_db())
 
+def get_db_session():
+    from backend.database import SessionLocal
+    return SessionLocal()
+
 def launch_login_browser():
     from backend.utils import selenium_utils
     # Reload removed
