@@ -80,8 +80,11 @@ h1 {
 .gradient-text {
     background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-weight: 800;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
 }
 
 /* --- DASHBOARD COMPONENTS --- */
@@ -216,6 +219,7 @@ button[kind="primary"] {
     background: var(--gradient-btn) !important;
     border: none !important;
 }
+
 /* --- PRICING SECTION --- */
 .pricing-section {
     padding: 60px 20px;
