@@ -52,4 +52,5 @@ EXPOSE 8501
 HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
 
 # 10. Start Application
-CMD ["python3", "-m", "streamlit", "run", "app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+# Use shell form to allow environment variable expansion
+CMD streamlit run app.py --server.port $PORT --server.address 0.0.0.0
