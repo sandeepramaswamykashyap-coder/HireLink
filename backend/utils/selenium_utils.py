@@ -19,6 +19,7 @@ def setup_driver(headless=True, profile_dir=None, detach=False):
     """Setup Chrome Driver with anti-detection options and optional profile persistence"""
     # --- SIMPLIFIED STABLE CONFIGURATION ---
     # Matches debug_chrome.py which was successful
+    options = Options()
     
     # 1. Base Options
     options.add_argument('--no-sandbox')
