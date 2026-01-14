@@ -53,4 +53,86 @@ class EmailNotifier:
             
         except Exception as e:
             logger.error(f"Failed to send email: {e}")
+    def send_session_report(self, to_email, session_data):
+        """
+        Sends a detailed session report with a table of actions.
+        session_data = {
+            'total': int,
+            'success': int,
+            'logs': [{'title': str, 'company': str, 'status': str, 'portal': str}]
+        }
+        """
+        if not self.enabled:
+            logger.warning("EmailNotifier: SMTP credentials not set. Skipping report.")
+            return False
+            
+        try:
+            msg = MIMEMultipart()
+            msg['From'] = self.username
+            msg['To'] = to_email
+            msg['Subject'] = f"📊 Session Report: {session_data['success']} Applications Sent"
+
+            # Build Table Rows
+            rows = ""
+            for log in session_data.get('logs', []):
+                color = "#d1fae5" if log['status'] == "Success" else "#fee2e2"
+                text_color = "#065f46" if log['status'] == "Success" else "#991b1b"
+                rows += f"""
+                <tr style="border-bottom: 1px solid #e5e7eb;">
+                    <td style="padding: 12px;">{log['title']}</td>
+                    <td style="padding: 12px;">{log['company']}</td>
+                    <td style="padding: 12px;">{log.get('portal', 'N/A')}</td>
+                    <td style="padding: 12px;"><span style="background-color: {color}; color: {text_color}; padding: 4px 8px; border-radius: 9999px; font-size: 12px; font-weight: bold;">{log['status']}</span></td>
+                </tr>
+                """
+
+            body = f"""
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #1e3a8a;">Job Pilot Session Report</h2>
+                <p>Here is the summary of your recent autonomous application session.</p>
+                
+                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <div style="background: #f3f4f6; padding: 15px; border-radius: 8px;">
+                        <span style="display: block; font-size: 12px; color: #6b7280; font-weight: bold;">TOTAL PROCESSED</span>
+                        <span style="font-size: 24px; font-weight: bold; color: #111827;">{session_data['total']}</span>
+                    </div>
+                    <div style="background: #ecfdf5; padding: 15px; border-radius: 8px;">
+                        <span style="display: block; font-size: 12px; color: #065f46; font-weight: bold;">SUCCESSFUL</span>
+                        <span style="font-size: 24px; font-weight: bold; color: #059669;">{session_data['success']}</span>
+                    </div>
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                    <thead>
+                        <tr style="background-color: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+                            <th style="padding: 12px;">Role</th>
+                            <th style="padding: 12px;">Company</th>
+                            <th style="padding: 12px;">Portal</th>
+                            <th style="padding: 12px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rows}
+                    </tbody>
+                </table>
+                <br>
+                <p><em>Keep aiming high! 🚀</em></p>
+                <p style="font-size: 12px; color: #9ca3af;">HireLink Technologies Pvt. Ltd.</p>
+            </div>
+            """
+            
+            msg.attach(MIMEText(body, 'html'))
+            
+            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
+            server.starttls()
+            server.login(self.username, self.password)
+            text = msg.as_string()
+            server.sendmail(self.username, to_email, text)
+            server.quit()
+            
+            logger.info(f"Session report sent to {to_email}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to send session report: {e}")
             return False

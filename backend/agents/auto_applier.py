@@ -107,8 +107,8 @@ class AutoApplier:
         
     def start_browser(self):
         if not self.driver:
-            logger.info("Starting AutoApplier browser session (Headless)...")
-            self.driver = setup_driver(headless=True, detach=False)
+            logger.info("Starting AutoApplier browser session (Visible)...")
+            self.driver = setup_driver(headless=False, detach=False)
             
     def _click_radio(self, parent, value_text):
         """Helper to click Yes/No radio buttons"""
@@ -328,16 +328,21 @@ class AutoApplier:
         finally:
             db.close()
 
-    def run_hyper_automation(self, keywords, location, resume_id, target_portals=None):
+    def run_hyper_automation(self, keywords, location, resume_id, target_portals=None, user_email=None):
         """
         Unified 'One-Click' engine:
         1. Verifies logins for SELECTED portals.
         2. Scrapes new jobs matching keywords/location for LOGGED IN portals only.
         3. Matches these jobs against the selected resume.
         4. Automatically applies to the best matches.
+        5. Sends an email report if user_email is provided.
         """
         from backend.utils.scraper_utils import run_scraper
         from backend.agents.job_matcher import JobMatcher
+        from backend.utils.notifier import EmailNotifier
+        
+        # Session Logging
+        session_logs = []
         
         yield {"step": "Login Verification", "status": "Running...", "progress": 10}
         
@@ -366,6 +371,9 @@ class AutoApplier:
         else:
              yield {"step": "Login Success", "status": f"Active Sessions: {', '.join(active_portals)}", "progress": 25}
 
+        # --- RELEASE BROWSER FOR SCRAPERS ---
+        self.close_browser()
+
         yield {"step": "Scraping Jobs", "status": f"Scraping {', '.join(active_portals)}...", "progress": 30}
         new_jobs_count = run_scraper(active_portals, keywords, location)
         
@@ -389,58 +397,55 @@ class AutoApplier:
             yield {"step": "Applying", "status": f"[{i+1}/{total_matches}] Applying to {job.title} @ {job.company}...", "progress": 80 + int(((i+1)/total_matches)*19)}
             try:
                 # Use lambda to emit status updates via yield
-                def status_emitter(msg):
-                   # We can't yield from here directly in Python 3.9 inside a nested function called by a sync function
-                   # So we cheat: We just log it, and rely on the fact that apply_to_job is synchronous.
-                   # WAIT. We can't yield.
-                   # So we need to change apply_to_job to NOT be a generator but take a callback.
-                   # And here we execute the callback.
-                   pass
-                   
-                # Re-design:
-                # We simply yield a "Starting" message and "Finished" message here.
-                # Granular updates require apply_to_job to be a generator.
-                
-                # Let's try the GENERATOR approach which is cleaner but requires refactor.
-                # Rename apply_to_job -> _apply_to_job_gen
-                
-                # But to just FIX the syntax error quickly and get *some* logs:
-                # We will define a list, pass an append callback, and then yield the list contents? No, not real time.
-                
-                # REAL FIX:
-                # 1. Rename apply_to_job to _apply_to_job_core(..., status_callback) returning bool.
-                # 2. apply_to_job(...) calling _apply_to_job_core(..., callback=logger.info)
-                # 3. run_hyper_automation calling _apply_to_job_core(..., callback=yield_wrapper)
-                
-                # Since I cannot refactor the whole file easily in one go safely without breaking lines,
-                # I will use the status_callback=None pattern I added, but I will NOT pass 'yield'.
-                # I will pass a helper function.
-                
-                def emit_status(msg):
-                    # This helper cannot yield to the outer generator.
-                    # This is the fundamental issue with callbacks in generators.
-                    logger.info(f"[STREAM] {msg}")
-                    
-                # For now, to unblock, we remove the syntax error and settle for less granular logs in the UI
-                # UNLESS we do the generator refactor.
-                
-                # Let's do the generator refactor properly.
-                
                 # STEP 1: Call _apply_to_job_gen which I will define below.
                 success = False
+                final_status_msg = "Failed" # Default
+                
                 for msg in self._apply_to_job_gen(job.id, resume_id):
                     yield {"step": "Applying", "status": msg, "progress": 80 + int(((i+1)/total_matches)*19)}
-                    if msg == "SUCCESS": success = True
+                    if msg == "SUCCESS": 
+                        success = True
+                        final_status_msg = "Success"
+                    if msg == "FAILURE":
+                        final_status_msg = "Failed"
                 
                 if success: success_count += 1
+                
+                session_logs.append({
+                    'title': job.title,
+                    'company': job.company,
+                    'portal': job.source,
+                    'status': final_status_msg
+                })
 
             except Exception as e:
                 logger.error(f"Hyper-Automation: Failed to apply: {e}")
+                session_logs.append({
+                    'title': job.title,
+                    'company': job.company,
+                    'portal': job.source,
+                    'status': "Error"
+                })
         
         if total_matches == 0:
             yield {"step": "Finished", "status": "No new matching jobs found. All scanned roles were either low-quality or already applied to.", "progress": 100}
         else:
             yield {"step": "Finished", "status": f"Hyper-Automation Mission Concluded. Processed {total_matches} candidates, successfully sent {success_count} applications. 🚀", "progress": 100}
+            
+            # --- SEND EMAIL REPORT ---
+            if user_email and session_logs:
+                yield {"step": "Reporting", "status": "Sending session email report...", "progress": 100}
+                notifier = EmailNotifier()
+                session_data = {
+                    'total': total_matches,
+                    'success': success_count,
+                    'logs': session_logs
+                }
+                notifier.send_session_report(user_email, session_data)
+                yield {"step": "Reporting", "status": "Report Sent! Check your inbox.", "progress": 100}
+        
+        # --- FINAL CLEANUP ---
+        self.close_browser()
 
 
     def find_smart_answer(self, label_text):
@@ -541,6 +546,7 @@ class AutoApplier:
             # 3. Navigation
             try:
                 yield "Navigating to Job URL..."
+                logger.info(f"Pilot: Navigating to {job_data['url']}")
                 self.driver.get(job_data['url'])
                 random_sleep(3, 5)
                 
@@ -558,9 +564,11 @@ class AutoApplier:
                         btn = self.driver.find_element(By.XPATH, xp)
                         if btn.is_displayed():
                             yield "⚡ QUICK WIN detected! Sending application instantly..."
+                            logger.info(f"Pilot: Quick Win detected via {xp}")
                             btn.click()
                             random_sleep(3, 5)
                             # Log and return
+                            logger.info("Pilot: Application sent via Quick Win. Mission Success.")
                             yield "SUCCESS"
                             return
                     except: continue
@@ -581,12 +589,14 @@ class AutoApplier:
                         for el in elements:
                             if el.is_displayed():
                                 apply_element = el
+                                logger.info(f"Pilot: Found apply button candidate via {xp}")
                                 break
                         if apply_element: break
                     except: continue
 
                 if apply_element:
                     yield f"Found Apply Button ({apply_element.tag_name}). Clicking..."
+                    logger.info("Pilot: Clicking apply button...")
                     self.driver.execute_script("arguments[0].style.border='3px solid red';", apply_element)
                     random_sleep(1, 2)
                     try: apply_element.click()
@@ -594,27 +604,21 @@ class AutoApplier:
                     random_sleep(4, 6)
                     
                     # --- COVER LETTER DECISION ---
-                    generated_cl = self.cl_gen.generate(
-                        job_title=job.title,
-                        company_name=job.company,
-                        candidate_name=resume.name,
-                        skills=job.skills or resume.parsed_data.get('skills', []),
-                        resume_text=resume.raw_text
-                    )
+                    # ...
                     
-                    if generated_cl:
-                         candidate_profile["cover_letter"] = generated_cl
-                         
                     # --- UNIVERSAL FORM FILLING HANDOFF ---
                     yield "Engaging Autonomous Pilot for Form Completion..."
+                    logger.info("Pilot: Handing off to LLMFormFiller...")
                     from backend.agents.llm_form_filler import LLMFormFiller
                     filler = LLMFormFiller(self.driver)
                     
                     if filler.fill_form(candidate_profile, smart_answers=smart_answers):
                         yield "AI Agent successfully processed form actions."
+                        logger.info("Pilot: Form filler reports success.")
                         
                         # Check for Success Indicators (URL change, Success Message)
                         random_sleep(3, 5)
+                        import time
                         ss_path = f"data/screenshots/app_{job_id}_{int(time.time())}.png"
                         os.makedirs("data/screenshots", exist_ok=True)
                         self.driver.save_screenshot(ss_path)
@@ -634,19 +638,23 @@ class AutoApplier:
                             db.add(new_app)
                             db.commit()
                             yield "Mission Success! Application recorded. 🚀"
+                            logger.info(f"Pilot: Mission Successful for {job.title}. Application recorded in DB.")
                             yield "SUCCESS"
                             return
                         else:
                             yield "Application initiated, but final confirmation not found on page."
-                            yield "SUCCESS" # Soft success if pilot did its job
+                            logger.warning(f"Pilot: No final confirmation found for {job.title}. Marking as Failure for transparency.")
+                            yield "FAILURE"
                             return
                     else:
                         yield "AI Agent stalled or found no actionable forms."
+                        logger.warning(f"Pilot: Form filler failed or found no forms for {job.title}")
                         yield "FAILURE"
                         return
 
                 else:
                    yield "No Apply or Easy-Apply buttons found on this page."
+                   logger.warning(f"Pilot: Could not find any apply buttons for {job.title} at {job_data['url']}")
                    yield "FAILURE"
                    return
                     
