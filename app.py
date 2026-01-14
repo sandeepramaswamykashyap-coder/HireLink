@@ -2575,7 +2575,7 @@ else:
             resumes = db.query(Resume).all()
             for r in resumes:
                 with st.expander(f"{r.name} - {r.email}"):
-                    c1, c2 = st.columns([4, 1])
+                    c1, c2 = st.columns([3, 1])
                     with c1:
                         data = r.parsed_data or {}
                         st.markdown(f"**👤 Name:** {data.get('name', 'N/A')}")
