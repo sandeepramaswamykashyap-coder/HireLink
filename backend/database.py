@@ -139,7 +139,7 @@ class PortalCredential(Base):
     updated_at = Column(DateTime, default=datetime.utcnow)
 
 # Setup Database
-if DATABASE_URL.startswith("sqlite"):
+if "sqlite" in DATABASE_URL:
     engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 else:
     engine = create_engine(DATABASE_URL)
