@@ -8,6 +8,8 @@ pandas
 # AI & LLM
 google-generativeai
 nltk
+scikit-learn
+numpy
 
 # Browser Automation (Selenium)
 selenium==4.15.2
