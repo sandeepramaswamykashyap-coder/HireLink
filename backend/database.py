@@ -169,10 +169,43 @@ def migrate_db():
     except Exception as e:
         logger.warning(f"Migration check failed: {e}")
 
+def seed_admin():
+    """
+    Ensures the default admin user exists and has the correct password.
+    """
+    try:
+        db = SessionLocal()
+        admin_email = "sandeepramaswamykashyap@gmail.com"
+        admin = db.query(AppUser).filter_by(email=admin_email).first()
+        
+        if not admin:
+            logger.info("Seeding Admin User...")
+            admin = AppUser(
+                name="Sandeep Ramaswamy Kashyap", 
+                email=admin_email, 
+                password="admin", 
+                is_admin=True, 
+                is_onboarded=True,
+                subscription_plan="PRO_PLUS"
+            )
+            db.add(admin)
+        else:
+            # Force update permissions and password
+            admin.is_admin = True
+            admin.password = "admin"
+            admin.subscription_plan = "PRO_PLUS"
+            logger.info("Updated Admin permissions and password.")
+            
+        db.commit()
+        db.close()
+    except Exception as e:
+        logger.error(f"Failed to seed admin: {e}")
+
 def init_db():
     logger.info(f"Initializing database at {DB_PATH}")
     migrate_db() # Run migration checks before create_all
     Base.metadata.create_all(bind=engine)
+    seed_admin() # Ensure admin exists
     
     # SEED DEFAULT QUESTIONS
     db = SessionLocal()
