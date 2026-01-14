@@ -967,7 +967,8 @@ def render_pricing(user_exists):
         box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
         display: flex !important;
         flex-direction: column !important;
-        min-height: 480px !important;
+        min-height: 600px !important;
+        justify-content: space-between !important;
     }
     .pricing-card:hover {
         transform: translateY(-5px) !important;
