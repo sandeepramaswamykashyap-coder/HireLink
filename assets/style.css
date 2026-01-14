@@ -216,3 +216,122 @@ button[kind="primary"] {
     background: var(--gradient-btn) !important;
     border: none !important;
 }
+/* --- PRICING SECTION --- */
+.pricing-section {
+    padding: 60px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pricing-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+}
+
+.pricing-card {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto 20px auto;
+    text-align: center;
+    position: relative;
+    transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    min-height: 480px;
+}
+
+.pricing-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+}
+
+.pricing-header {
+    margin-bottom: 30px;
+}
+
+.plan-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+}
+
+.price-tag {
+    font-size: 3rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.pricing-features {
+    text-align: left;
+    margin-bottom: 40px;
+    flex-grow: 1;
+}
+
+.pricing-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pricing-features li {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+}
+
+.pricing-features li::before {
+    content: "✓";
+    color: #10b981;
+    font-weight: 800;
+}
+
+/* MISSION CONTROL UI */
+.mission-header {
+    background: linear-gradient(90deg, #1e1b4b 0%, #312e81 100%);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    border-radius: 12px;
+    padding: 15px 25px;
+    margin-bottom: 20px;
+}
+
+.m-stat {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px 10px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.m-stat:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+}
+
+.m-stat-val {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: white;
+}
+
+.m-stat-label {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 600;
+}

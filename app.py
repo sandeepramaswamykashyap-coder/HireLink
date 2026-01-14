@@ -136,60 +136,55 @@ def render_landing_page(user_exists=False):
                  st.session_state['show_login'] = True
                  st.rerun()
 
-    st.markdown(f"""
-    <div class="landing-wrapper">
-        <div class="landing-hero">
-            <h1 class="landing-title">Automate Your <span class="gradient-text">Dream Job</span> Search today.</h1>
-            <p class="landing-subtitle">Stop manually applying. Let our AI Agent find, filter, and apply to thousands of jobs for you while you sleep.</p>
-            <div class="landing-trust">
-                <span>⭐️⭐️⭐️⭐️⭐️ Trusted by 5,000+ Job Seekers</span>
-                <span class="trust-badge">🔒 Secure & Private</span>
-            </div>
-            
-            <div style="display: flex; justify-content: center; gap: 20px; margin-top: 40px;">
-                <a href="/?show_onboarding=true" target="_self" style="text-decoration: none;">
-                    <button style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-weight: 700; cursor: pointer; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);">
-                        Start Applying Now 🚀
-                    </button>
-                </a>
-            </div>
-        </div>
-
-        <div class="landing-features">
-            <div class="feature-card">
-                <span class="feature-icon">🔍</span>
-                <h3>Smart Search</h3>
-                <p>We scrape LinkedIn, Naukri, and Indeed deeply to find the hidden gems.</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">⚡️</span>
-                <h3>Auto-Apply</h3>
-                <p>Our AI Agent fills out complex forms and applies on your behalf 24/7.</p>
-            </div>
-            <div class="feature-card">
-                <span class="feature-icon">🧠</span>
-                <h3>AI Resume Match</h3>
-                <p>Advanced matching engine ensures you only apply to high-relevance roles.</p>
-            </div>
-        </div>
-
-        <div class="landing-portals" style="text-align: center; margin: 80px 0;">
-            <h2 style="font-size: 2.5rem; margin-bottom: 40px;">Supported <span class="gradient-text">Platforms</span> 🌐</h2>
-            <div class="portal-grid">
-                <div class="portal-item"><b>LinkedIn</b></div>
-                <div class="portal-item"><b>Naukri</b></div>
-                <div class="portal-item"><b>Indeed</b></div>
-                <div class="portal-item"><b>Shine</b></div>
-                <div class="portal-item"><b>Foundit</b></div>
-                <div class="portal-item"><b>Internshala</b></div>
-                <div class="portal-item"><b>IIMJobs</b></div>
-                <div class="portal-item"><b>Freshersworld</b></div>
-                <div class="portal-item"><b>Wellfound</b></div>
-                <div class="portal-item"><b>Glassdoor</b></div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"""<div class="landing-wrapper">
+<div class="landing-hero">
+<h1 class="landing-title">Automate Your <span class="gradient-text">Dream Job</span> Search today.</h1>
+<p class="landing-subtitle">Stop manually applying. Let our AI Agent find, filter, and apply to thousands of jobs for you while you sleep.</p>
+<div class="landing-trust">
+<span>⭐️⭐️⭐️⭐️⭐️ Trusted by 5,000+ Job Seekers</span>
+<span class="trust-badge">🔒 Secure & Private</span>
+</div>
+<div style="display: flex; justify-content: center; gap: 20px; margin-top: 40px;">
+<a href="/?show_onboarding=true" target="_self" style="text-decoration: none;">
+<button style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-weight: 700; cursor: pointer; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);">
+Start Applying Now 🚀
+</button>
+</a>
+</div>
+</div>
+<div class="landing-features">
+<div class="feature-card">
+<span class="feature-icon">🔍</span>
+<h3>Smart Search</h3>
+<p>We scrape LinkedIn, Naukri, and Indeed deeply to find the hidden gems.</p>
+</div>
+<div class="feature-card">
+<span class="feature-icon">⚡️</span>
+<h3>Auto-Apply</h3>
+<p>Our AI Agent fills out complex forms and applies on your behalf 24/7.</p>
+</div>
+<div class="feature-card">
+<span class="feature-icon">🧠</span>
+<h3>AI Resume Match</h3>
+<p>Advanced matching engine ensures you only apply to high-relevance roles.</p>
+</div>
+</div>
+<div class="landing-portals" style="text-align: center; margin: 80px 0;">
+<h2 style="font-size: 2.5rem; margin-bottom: 40px;">Supported <span class="gradient-text">Platforms</span> 🌐</h2>
+<div class="portal-grid">
+<div class="portal-item"><b>LinkedIn</b></div>
+<div class="portal-item"><b>Naukri</b></div>
+<div class="portal-item"><b>Indeed</b></div>
+<div class="portal-item"><b>Shine</b></div>
+<div class="portal-item"><b>Foundit</b></div>
+<div class="portal-item"><b>Internshala</b></div>
+<div class="portal-item"><b>IIMJobs</b></div>
+<div class="portal-item"><b>Freshersworld</b></div>
+<div class="portal-item"><b>Wellfound</b></div>
+<div class="portal-item"><b>Glassdoor</b></div>
+</div>
+</div>
+</div>""", unsafe_allow_html=True)
 
     # Note: Using HTML buttons above to maintain tight layout control. 
     # The session state transitions will be handled by our existing query param / logic.
