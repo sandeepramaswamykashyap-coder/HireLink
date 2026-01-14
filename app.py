@@ -2397,12 +2397,17 @@ else:
                 # Phase Indicator
                 phase_placeholder = st.empty()
                 
+                st.write("")
+                
                 # Stats Row (Persistent placeholders)
-                s1, s2, s3, s4 = st.columns(4)
+                s1, s2, s3 = st.columns(3)
                 scrape_stat = s1.empty()
                 match_stat = s2.empty()
                 apply_stat = s3.empty()
-                status_stat = s4.empty()
+                
+                st.write("")
+                # Status Banner (Full Width)
+                status_stat = st.empty()
 
                 def render_phases(active_idx):
                     phases = ["Login", "Scan", "Match", "Apply"]
@@ -2421,8 +2426,13 @@ else:
                     
                     step = st.session_state["m_step"]
                     msg = st.session_state["m_status"]
-                    active_msg = msg if len(msg) < 30 else msg[:27] + "..."
-                    status_stat.markdown(f'<div class="m-stat"><span class="m-stat-val" style="font-size:1.1rem; color:#34d399; font-weight:700;"><span class="status-pulse"></span>{step}</span><span class="m-stat-label">{active_msg}</span></div>', unsafe_allow_html=True)
+                    # Expanded Status Banner
+                    status_stat.markdown(f'''
+                        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 12px 20px; text-align: center; margin-top: 10px;">
+                            <span style="color: #34d399; font-weight: 700; font-size: 1rem; margin-right: 10px;">{step}</span>
+                            <span style="color: #d1fae5; font-size: 0.9rem;">{msg}</span>
+                        </div>
+                    ''', unsafe_allow_html=True)
 
                 render_phases(st.session_state['m_phase_idx'])
                 update_stats_ui()
