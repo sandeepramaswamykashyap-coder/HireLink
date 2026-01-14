@@ -998,10 +998,10 @@ def check_and_show_signup_modal():
                             new_user = AppUser(
                                 name=name, 
                                 email=email, 
-                                password=password, 
                                 subscription_plan=plan_info['name'],
                                 is_onboarded=False # Gated until pay? Or user exists now.
                             )
+                            new_user.set_password(password)
                             db.add(new_user)
                             db.commit()
                             
@@ -1068,6 +1068,7 @@ def render_onboarding():
             with st.form("step1_form"):
                 name = st.text_input("FULL NAME *", placeholder="e.g. John Doe")
                 email = st.text_input("EMAIL *", placeholder="e.g. john@example.com")
+                password = st.text_input("CREATE PASSWORD *", type="password", help="Use this to login later")
                 loc = st.text_input("CURRENT LOCATION *", placeholder="e.g. New York, USA")
                 linkedin = st.text_input("LINKEDIN PROFILE *", placeholder="https://www.linkedin.com/in/username")
                 website = st.text_input("PERSONAL WEBSITE", placeholder="https://yourportfolio.com")
@@ -1075,10 +1076,11 @@ def render_onboarding():
                 
                 st.write("")
                 if st.form_submit_button("NEXT STEP", type="primary", use_container_width=True):
-                    if name and email and loc and linkedin:
+                    if name and email and password and loc and linkedin:
                         # Save to Session State Temp
                         st.session_state['ob_name'] = name
                         st.session_state['ob_email'] = email
+                        st.session_state['ob_password'] = password
                         st.session_state['ob_loc'] = loc
                         st.session_state['ob_linkedin'] = linkedin
                         st.session_state['ob_website'] = website
@@ -1241,28 +1243,50 @@ def render_onboarding():
                 instructions = st.text_area("You can set them up later :)", placeholder="e.g. - Senior roles only - No crypto/web3 - No visa needed - Highlight startup exp")
                 
                 st.write("")
-                if st.form_submit_button("FINISH SETUP", type="primary", use_container_width=True):
-                    # FINAL SAVE TO DB
-                    is_first_user = db.query(backend.database.AppUser).count() == 0
-                    
-                    user = backend.database.AppUser(
-                        name=st.session_state.get('ob_name'),
-                        email=st.session_state.get('ob_email'),
-                        curr_loc=st.session_state.get('ob_loc'),
-                        linkedin=st.session_state.get('ob_linkedin'),
-                        website=st.session_state.get('ob_website'),
-                        github=st.session_state.get('ob_github'),
-                        target_roles=st.session_state.get('ob_roles'),
-                        target_cities=st.session_state.get('ob_cities'),
-                        skip_companies=st.session_state.get('ob_skip'),
-                        work_mode=work_mode,
-                        instructions=instructions,
-                        is_onboarded=False,
-                        is_admin=is_first_user, # Grant Admin to first user
-                        subscription_plan=st.session_state.get('selected_plan', 'TRIAL')
-                    )
-                    db.add(user)
-                    db.commit()
+                    if st.form_submit_button("FINISH SETUP", type="primary", use_container_width=True):
+                        # FINAL SAVE TO DB
+                        ob_email = st.session_state.get('ob_email')
+                        existing_user = db.query(backend.database.AppUser).filter_by(email=ob_email).first()
+                        
+                        if existing_user:
+                            # Update Existing
+                            user = existing_user
+                            user.name = st.session_state.get('ob_name')
+                            user.curr_loc = st.session_state.get('ob_loc')
+                            user.linkedin = st.session_state.get('ob_linkedin')
+                            user.website = st.session_state.get('ob_website')
+                            user.github = st.session_state.get('ob_github')
+                            user.target_roles = st.session_state.get('ob_roles')
+                            user.target_cities = st.session_state.get('ob_cities')
+                            user.skip_companies = st.session_state.get('ob_skip')
+                            user.work_mode = work_mode
+                            user.instructions = instructions
+                            user.is_onboarded = True or user.is_onboarded # Keep true if true
+                            # Don't update password for existing users here (security)
+                        else:
+                            # Create New
+                            is_first_user = db.query(backend.database.AppUser).count() == 0
+                            user = backend.database.AppUser(
+                                name=st.session_state.get('ob_name'),
+                                email=ob_email,
+                                curr_loc=st.session_state.get('ob_loc'),
+                                linkedin=st.session_state.get('ob_linkedin'),
+                                website=st.session_state.get('ob_website'),
+                                github=st.session_state.get('ob_github'),
+                                target_roles=st.session_state.get('ob_roles'),
+                                target_cities=st.session_state.get('ob_cities'),
+                                skip_companies=st.session_state.get('ob_skip'),
+                                work_mode=work_mode,
+                                instructions=instructions,
+                                is_onboarded=True, # Done
+                                is_admin=is_first_user,
+                                subscription_plan=st.session_state.get('selected_plan', 'TRIAL')
+                            )
+                            # Set Password
+                            user.set_password(st.session_state.get('ob_password', 'ChangeMe123'))
+                            db.add(user)
+                        
+                        db.commit()
 
                     # --- APPLY REFERRAL ---
                     if st.session_state.get('captured_ref'):
@@ -1396,7 +1420,7 @@ if not user or st.session_state.get('force_landing', True):
                     try:
                         u = db_login.query(AppUser).filter_by(email=email).first()
                         
-                        if u and u.password == password:
+                        if u and u.check_password(password):
                             # We detach the object from the session so it can be stored in session_state
                             # (Though detaching is complex, keeping it simple: just store ID/Name)
                             # Actually, we store 'u' object. This might be problematic if session closes.

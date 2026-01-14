@@ -96,6 +96,40 @@ class AppUser(Base):
     referral_count = Column(Integer, default=0) # Quick count
     payout_method = Column(String) # UPI/Bank details
 
+    def set_password(self, plain_password):
+        import hashlib
+        # Generate a random salt
+        salt = os.urandom(32).hex()
+        # Hash the password with the salt
+        key = hashlib.pbkdf2_hmac(
+            'sha256', 
+            plain_password.encode('utf-8'), 
+            salt.encode('utf-8'), 
+            100000
+        )
+        # Store as salt$dash
+        self.password = f"{salt}${key.hex()}"
+
+    def check_password(self, plain_password):
+        import hashlib
+        try:
+            if not self.password or '$' not in self.password:
+                # Fallback for legacy plain text passwords (auto-migrate on login could be added here, but for now just check equality)
+                return self.password == plain_password
+            
+            salt, stored_hash = self.password.split('$')
+            key = hashlib.pbkdf2_hmac(
+                'sha256', 
+                plain_password.encode('utf-8'), 
+                salt.encode('utf-8'), 
+                100000
+            )
+            return key.hex() == stored_hash
+        except Exception as e:
+            logger.error(f"Password check failed: {e}")
+            return False
+
+
 class ReferralTransaction(Base):
     __tablename__ = 'referral_transactions'
     id = Column(Integer, primary_key=True)
@@ -180,16 +214,16 @@ def seed_admin():
             admin = AppUser(
                 name="Sandeep Ramaswamy Kashyap", 
                 email=admin_email, 
-                password="admin", 
                 is_admin=True, 
                 is_onboarded=True,
                 subscription_plan="PRO_PLUS"
             )
+            admin.set_password("admin")
             db.add(admin)
         else:
             # Force update permissions and password
             admin.is_admin = True
-            admin.password = "admin"
+            admin.set_password("admin")
             admin.subscription_plan = "PRO_PLUS"
             logger.info("Updated Admin permissions and password.")
             
