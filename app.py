@@ -718,6 +718,46 @@ def render_floating_chat():
 # Invoke it
 render_floating_chat()
 
+# --- GLOBAL DIALOGS ---
+if hasattr(st, "dialog"):
+    @st.dialog("Delete Resume?")
+    def confirm_delete_resume(res_id, res_name):
+        st.write(f"Are you sure you want to permanently delete **{res_name}**?")
+        try:
+             # Re-query inside dialog to be safe
+             session_del = get_db_session()
+             to_del = session_del.query(backend.database.Resume).filter(backend.database.Resume.id == res_id).first()
+             session_del.close()
+        except: pass
+        
+        st.warning("This action cannot be undone.")
+        col_cancel, col_conf = st.columns(2)
+        
+        if col_conf.button("🗑️ Yes, Delete", type="primary", key=f"dlg_yes_{res_id}"):
+                try:
+                    # Re-query inside dialog to be safe
+                    session_del = get_db_session()
+                    to_del = session_del.query(backend.database.Resume).filter(backend.database.Resume.id == res_id).first()
+                    if to_del:
+                        if to_del.file_path and os.path.exists(to_del.file_path):
+                            try: os.remove(to_del.file_path)
+                            except: pass
+                        session_del.delete(to_del)
+                        session_del.commit()
+                        st.toast("Deleted successfully!")
+                        time.sleep(1)
+                        st.rerun()
+                    session_del.close()
+                except Exception as e:
+                    st.error(f"Error: {e}")
+                    
+        if col_cancel.button("Cancel", key=f"dlg_no_{res_id}"):
+            st.rerun()
+else:
+    # Fallback for older Streamlit
+    def confirm_delete_resume(res_id, res_name):
+        st.warning("Please update Streamlit to use this feature.")
+
 # --- LANDING PAGE ---
 def render_landing_page(user_exists=False):
     # --- GOOGLE ANALYTICS (GA4) ---
@@ -2573,34 +2613,7 @@ else:
                     
             st.subheader("Saved Resumes")
             
-            # --- DELETE DIALOG (Top Level in Tab) ---
-            if hasattr(st, "dialog"):
-                @st.dialog("Delete Resume?")
-                def confirm_delete_resume(res_id, res_name):
-                    st.write(f"Are you sure you want to permanently delete **{res_name}**?")
-                    st.warning("This action cannot be undone.")
-                    col_cancel, col_conf = st.columns(2)
-                    
-                    if col_conf.button("🗑️ Yes, Delete", type="primary", key=f"dlg_yes_{res_id}"):
-                         try:
-                             # Re-query inside dialog to be safe
-                             session_del = get_db_session()
-                             to_del = session_del.query(Resume).filter(Resume.id == res_id).first()
-                             if to_del:
-                                 if to_del.file_path and os.path.exists(to_del.file_path):
-                                     try: os.remove(to_del.file_path)
-                                     except: pass
-                                 session_del.delete(to_del)
-                                 session_del.commit()
-                                 st.toast("Deleted successfully!")
-                                 time.sleep(1)
-                                 st.rerun()
-                             session_del.close()
-                         except Exception as e:
-                             st.error(f"Error: {e}")
-                             
-                    if col_cancel.button("Cancel", key=f"dlg_no_{res_id}"):
-                        st.rerun()
+            # (Dialog moved to global scope)
             resumes = db.query(Resume).all()
             for r in resumes:
                 with st.expander(f"{r.name} - {r.email}"):
