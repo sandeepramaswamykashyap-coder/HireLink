@@ -2645,22 +2645,16 @@ else:
             db.commit()
 
         # 1. THE HOOK
+        # 1. THE HOOK
         st.markdown(f"""
-        <div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 30px; border-radius: 20px; color: white; margin-bottom: 30px; box-shadow: 0 10px 30px -5px rgba(79, 70, 229, 0.4);">
+        <div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 30px; border-radius: 20px; color: white; margin-bottom: 20px; box-shadow: 0 10px 30px -5px rgba(79, 70, 229, 0.4);">
             <h2 style="color: white; margin:0;">Give 20%, Get ₹500 ✨</h2>
-            <p style="font-size: 1.1rem; opacity: 0.9;">Invite your friends to HireLink. They get <b>20% OFF</b> their first plan, and you get <b>₹500 Credit</b> applied to your next renewal.</p>
-            <div style="display: flex; align-items: center; gap: 15px; margin-top: 20px;">
-                <div style="background: rgba(255,255,255,0.1); padding: 12px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); flex-grow: 1; font-family: monospace; font-size: 1.2rem;">
-                    https://www.hirelink.tech/register?ref={user.referral_code}
-                </div>
-            </div>
+            <p style="font-size: 1.1rem; opacity: 0.9; margin-top: 10px;">Invite your friends to HireLink. They get <b>20% OFF</b> their first plan, and you get <b>₹500 Credit</b> applied to your next renewal.</p>
         </div>
         """, unsafe_allow_html=True)
         
-        # Click to Copy (using streamlit button for now)
-        if st.button("📋 Copy Referral Link", type="primary", use_container_width=True):
-            st.toast("Referral Link Copied to Clipboard! (Simulated)")
-            st.session_state['referral_link_copied'] = True
+        st.caption("👇 Copy your unique referral link:")
+        st.code(f"https://www.hirelink.tech/register?ref={user.referral_code}", language="text")
 
         st.markdown("---")
 
