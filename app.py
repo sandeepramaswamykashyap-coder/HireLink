@@ -1047,8 +1047,8 @@ def render_pricing(user_exists):
         </div>
         """, unsafe_allow_html=True)
 
-    # Spacer between Cards and Buttons
-    st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
+    # Spacer between Cards and Buttons (Robust)
+    st.markdown("<div style='height: 60px; width: 100%; clear: both; visibility: hidden;'>SPACER</div>", unsafe_allow_html=True)
 
     # Separate row for buttons to ensure perfect horizontal alignment
     _, b1, b2, b3, _ = st.columns([0.2, 3, 3, 3, 0.2])
