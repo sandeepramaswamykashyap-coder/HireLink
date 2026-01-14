@@ -2709,10 +2709,27 @@ else:
                 st.write("")
                 c1, c2 = st.columns([3, 1])
                 if c2.form_submit_button("💾 Save All Changes", type="primary", use_container_width=True):
-                    db.commit()
-                    st.toast("Smart Answers saved successfully!", icon="✅")
-                    time.sleep(1)
-                    st.rerun()
+                    try:
+                        # Robust Save: Iterate session state to find updated answers
+                        count_saved = 0
+                        for key, val in st.session_state.items():
+                            if key.startswith("sa_qa_"):
+                                try:
+                                    q_id = int(key.replace("sa_qa_", ""))
+                                    # Fetch fresh object to ensure attachment
+                                    q_obj = db.query(QuestionAnswer).filter(QuestionAnswer.id == q_id).first()
+                                    if q_obj and val != q_obj.answer:
+                                        q_obj.answer = val
+                                        db.add(q_obj) # Ensure dirty
+                                        count_saved += 1
+                                except ValueError: pass
+                        
+                        db.commit()
+                        st.toast(f"Saved {count_saved} answers successfully!", icon="✅")
+                        time.sleep(1)
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Save failed: {e}")
             st.markdown('</div>', unsafe_allow_html=True)
 
         # --- TAB 3: PORTAL KEYS (CREDENTIALS) ---
