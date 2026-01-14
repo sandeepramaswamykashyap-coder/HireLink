@@ -66,6 +66,24 @@ import time
 if "ref" in st.query_params:
     st.session_state['captured_ref'] = st.query_params["ref"]
 
+# --- LEGAL PAGES ROUTING (Razorpay Compliance) ---
+if "page" in st.query_params:
+    page_id = st.query_params["page"]
+    from backend.config import legal_content
+    
+    legal_map = {
+        "privacy": legal_content.PRIVACY_POLICY,
+        "terms": legal_content.TERMS_AND_CONDITIONS,
+        "refund": legal_content.REFUND_POLICY,
+        "shipping": legal_content.SHIPPING_POLICY,
+        "contact": legal_content.CONTACT_US
+    }
+    
+    if page_id in legal_map:
+        st.markdown(f'<a href="/" target="_self" style="text-decoration:none;">← Back to Home</a>', unsafe_allow_html=True)
+        st.markdown(legal_map[page_id])
+        st.stop()  # Stop rendering the rest of the app
+
 # Load Custom CSS
 # Load Custom CSS
 st.markdown("""<style>
@@ -562,6 +580,20 @@ Start Applying Now 🚀
                 <p style="margin:0; font-size: 0.9rem;">Stackable Rewards</p>
             </div>
         </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # --- FOOTER (Razorpay Compliance) ---
+    st.markdown("""
+    <div style="margin-top: 80px; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; color: #94a3b8; font-size: 0.9rem;">
+        <div style="margin-bottom: 20px;">
+            <a href="/?page=privacy" target="_self" style="color: #94a3b8; margin: 0 15px; text-decoration: none;">Privacy Policy</a>
+            <a href="/?page=terms" target="_self" style="color: #94a3b8; margin: 0 15px; text-decoration: none;">Terms & Conditions</a>
+            <a href="/?page=refund" target="_self" style="color: #94a3b8; margin: 0 15px; text-decoration: none;">Refund Policy</a>
+            <a href="/?page=shipping" target="_self" style="color: #94a3b8; margin: 0 15px; text-decoration: none;">Shipping Policy</a>
+            <a href="/?page=contact" target="_self" style="color: #94a3b8; margin: 0 15px; text-decoration: none;">Contact Us</a>
+        </div>
+        <p>&copy; 2026 HireLink Technologies Pvt. Ltd. All rights reserved.</p>
     </div>
     """, unsafe_allow_html=True)
 
