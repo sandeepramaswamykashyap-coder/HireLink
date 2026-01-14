@@ -147,25 +147,22 @@ else:
 
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+from sqlalchemy import inspect # Add import
+
 def migrate_db():
     """
-    Simple auto-migration to fix schema drift (specifically missing 'password' column).
+    Auto-migration to fix schema drift using Inspector to avoid transaction abuse.
     """
     try:
-        with engine.connect() as conn:
-            # Check if column exists (SQLite and Postgres syntax differs, taking simple approach)
-             # Try simple query
-            try:
-                conn.execute("SELECT password FROM users_v2 LIMIT 1")
-            except Exception:
-                # Likely missing column
-                logger.info("Migration: 'password' column missing in users_v2. Attempting to add it.")
-                try:
-                    conn.execute("ALTER TABLE users_v2 ADD COLUMN password VARCHAR")
-                    logger.info("Migration: Successfully added 'password' column.")
-                except Exception as e:
-                     logger.warning(f"Migration: Failed to add column: {e}")
-            
+        inspector = inspect(engine)
+        if inspector.has_table("users_v2"):
+            columns = [c['name'] for c in inspector.get_columns("users_v2")]
+            if "password" not in columns:
+                logger.info("Migration: 'password' column missing in users_v2. Adding it.")
+                with engine.connect() as conn:
+                    with conn.begin(): # Transaction
+                        conn.execute("ALTER TABLE users_v2 ADD COLUMN password VARCHAR")
+                logger.info("Migration: Successfully added 'password' column.")
     except Exception as e:
         logger.warning(f"Migration check failed: {e}")
 
