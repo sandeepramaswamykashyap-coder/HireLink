@@ -508,7 +508,7 @@ def render_landing_page(user_exists=False):
                  st.rerun()
 
     st.markdown(f"""
-<div style='text-align: center; background: #06b6d4; color: white; padding: 5px; font-weight: bold; border-radius: 4px; margin-bottom: 20px;'>DEPLOYMENT v3.3 - FOOTER FIXED</div>
+<div style='text-align: center; background: #06b6d4; color: white; padding: 5px; font-weight: bold; border-radius: 4px; margin-bottom: 20px;'>DEPLOYMENT v3.4 - GATED ONBOARDING</div>
 <div class="landing-wrapper">
 <div class="landing-hero">
 <div class="landing-title" style="font-family: 'Outfit', sans-serif !important; color: white !important; font-size: 6rem !important; font-weight: 900 !important; line-height: 1.1 !important; margin-bottom: 25px !important;">Automate Your <span class="gradient-text">Dream Job</span> Search today.</div>
@@ -518,7 +518,7 @@ def render_landing_page(user_exists=False):
 <span class="trust-badge">🔒 Secure & Private</span>
 </div>
 <div style="display: flex; justify-content: center; gap: 20px; margin-top: 40px;">
-<a href="/?show_onboarding=true" target="_self" style="text-decoration: none;">
+<a href="#plans" target="_self" style="text-decoration: none;">
 <button style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-weight: 700; cursor: pointer; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);">
 Start Applying Now 🚀
 </button>
@@ -679,7 +679,7 @@ def render_pricing(user_exists):
         pay_modal()
 
     st.markdown("""
-    <div class="pricing-section">
+    <div id="plans" class="pricing-section">
         <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 5px;">Plans for Every Career Stage</h2>
         <p style="text-align: center; color: #94a3b8; margin-bottom: 30px;">Start for free, upgrade when you're ready to speed up.</p>
     </div>
@@ -824,8 +824,8 @@ def render_pricing(user_exists):
     with b2:
         if st.button("Choose Starter", key="btn_starter", use_container_width=True):
              if not user_exists:
-                 st.session_state['selected_plan'] = 'STARTER'
-                 st.session_state['show_onboarding'] = True
+                 # GATED: Require Signup + Pay
+                 st.session_state['pending_signup_plan'] = {'name': 'STARTER', 'amount': p_starter}
                  st.rerun()
              else:
                  link_data = pg.create_payment_link(p_starter, "STARTER", user.email)
@@ -841,8 +841,8 @@ def render_pricing(user_exists):
     with b3:
         if st.button("Choose Pro", key="btn_pro", type="primary", use_container_width=True):
              if not user_exists:
-                 st.session_state['selected_plan'] = 'PRO'
-                 st.session_state['show_onboarding'] = True
+                 # GATED: Require Signup + Pay
+                 st.session_state['pending_signup_plan'] = {'name': 'PRO', 'amount': p_pro}
                  st.rerun()
              else:
                  link_data = pg.create_payment_link(p_pro, "PRO", user.email)
@@ -925,6 +925,56 @@ def check_and_show_payment_modal():
                 st.rerun()
                 
         pay_modal()
+
+def check_and_show_signup_modal():
+    if 'pending_signup_plan' in st.session_state:
+        plan_info = st.session_state['pending_signup_plan']
+        
+        @st.dialog(f"Create Account to Upgrade 🚀")
+        def signup_modal():
+            st.markdown(f"To get **{plan_info['name']}** access, please secure your account.")
+            
+            with st.form("signup_pay_form"):
+                name = st.text_input("Full Name", placeholder="John Doe")
+                email = st.text_input("Email Address", placeholder="john@example.com")
+                password = st.text_input("Create Password", type="password")
+                
+                if st.form_submit_button("Create & Proceed to Payment", type="primary"):
+                    if name and email and password:
+                        from backend.database import AppUser
+                        # Check exist
+                        if db.query(AppUser).filter(AppUser.email == email).first():
+                            st.error("Email already registered. Please login.")
+                        else:
+                            # Create User
+                            new_user = AppUser(
+                                name=name, 
+                                email=email, 
+                                password=password, 
+                                subscription_plan=plan_info['name'],
+                                is_onboarded=False # Gated until pay? Or user exists now.
+                            )
+                            db.add(new_user)
+                            db.commit()
+                            
+                            # Generate Link
+                            link_data = pg.create_payment_link(plan_info['amount'], plan_info['name'], email)
+                            if link_data:
+                                # Transition to Payment State
+                                st.session_state['pending_payment'] = {
+                                     "url": link_data.get('short_url'),
+                                     "plan": plan_info['name'],
+                                     "amount": plan_info['amount'],
+                                     "email": email
+                                }
+                                del st.session_state['pending_signup_plan']
+                                st.rerun()
+                            else:
+                                st.error("Payment Gateway Error")
+                    else:
+                        st.error("All fields required.")
+                        
+        signup_modal()
 
 # --- ONBOARDING LOGIC ---
 def render_onboarding():
@@ -1288,6 +1338,14 @@ if not user or st.session_state.get('force_landing', True):
                      else:
                          st.error("Invalid credentials.")
              
+             st.markdown("""
+             <div style="text-align: center; margin: 15px 0; color: #64748b;">OR</div>
+             <button style="width: 100%; background: white; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 500; cursor: pointer; transition: 0.2s;" onclick="alert('Google Login coming soon!')">
+                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" height="20">
+                 Sign in with Google
+             </button>
+             """, unsafe_allow_html=True)
+             
              with c_btn2:
                  if st.button("Back", use_container_width=True):
                      del st.session_state['show_login']
@@ -1299,6 +1357,7 @@ if not user or st.session_state.get('force_landing', True):
         render_landing_page(user_exists=(user is not None))
 else:
     # --- CHECK FOR PENDING PAYMENTS ---
+    check_and_show_signup_modal()
     check_and_show_payment_modal()
 
     # Sidebar
