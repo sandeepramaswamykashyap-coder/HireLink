@@ -2640,7 +2640,7 @@ else:
             <p style="font-size: 1.1rem; opacity: 0.9;">Invite your friends to HireLink. They get <b>20% OFF</b> their first plan, and you get <b>₹500 Credit</b> applied to your next renewal.</p>
             <div style="display: flex; align-items: center; gap: 15px; margin-top: 20px;">
                 <div style="background: rgba(255,255,255,0.1); padding: 12px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); flex-grow: 1; font-family: monospace; font-size: 1.2rem;">
-                    https://hirelink.ai/register?ref={user.referral_code}
+                    https://www.hirelink.tech/register?ref={user.referral_code}
                 </div>
             </div>
         </div>
