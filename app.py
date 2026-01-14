@@ -967,7 +967,9 @@ def render_pricing(user_exists):
         box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
         display: flex !important;
         flex-direction: column !important;
-        min-height: 350px !important;
+        height: 500px !important;
+        min-height: 500px !important;
+        max-height: 500px !important;
         justify-content: space-between !important;
     }
     .pricing-card-redux:hover {
