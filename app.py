@@ -607,7 +607,18 @@ def render_floating_chat():
     </style>
     """, unsafe_allow_html=True)
 
-    with st.popover("💬", help="AI Assistant"):
+    # Fallback for older Streamlit versions
+    try:
+        chat_container_widget = st.popover("💬", help="AI Assistant")
+    except AttributeError:
+        # Fallback: Use an expander in the sidebar or bottom
+        # Since we are floating, an expander might look weird if not handled.
+        # Let's just use a fixed expander at the bottom if possible, or revert to sidebar logic.
+        # Easiest: Use st.expander in the main flow, but we are already floating.
+        # Let's force a sidebar expander as fallback.
+        chat_container_widget = st.sidebar.expander("💬 Chat (Fallback)", expanded=st.session_state.get("chat_open", False))
+
+    with chat_container_widget:
         st.markdown("#### 🤖 HireLink Pilot")
         st.caption("Ask me anything about jobs or hiring.")
         

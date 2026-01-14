@@ -2,7 +2,7 @@
 # Only includes packages essential for the core application logic.
 
 # Web & Dashboard
-streamlit==1.30.0
+streamlit==1.35.0
 pandas
 
 # AI & LLM
