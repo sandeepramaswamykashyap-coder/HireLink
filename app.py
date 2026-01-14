@@ -797,6 +797,10 @@ Start Applying Now 🚀
     </div>
     """, unsafe_allow_html=True)
 
+def render_pricing(user_exists):
+    # Wrapper to handle Modal + Grid
+    if 'pending_payment' in st.session_state:
+        pay_modal()
     render_pricing_logic(user_exists)
 
 # --- GLOBAL DIALOG DEFINITION ---
