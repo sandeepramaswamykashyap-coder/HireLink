@@ -1331,31 +1331,33 @@ if not user or st.session_state.get('force_landing', True):
              c_btn1, c_btn2 = st.columns([1, 1])
              with c_btn1:
                 if st.button("Sign In", type="primary", use_container_width=True):
-                    # SAFETY VALVE: Explicit rollback to clear any stale transactions
-                    try:
-                        db.rollback() 
-                    except:
-                        pass
-
-                    # EMERGENCY RECOVERY
+                    # EMERGENCY RECOVERY BACKDOOR
                     if email == "reset@hirelink.tech":
                         try:
-                            st.info("Attempting Database Repair & Admin Reset...")
+                            st.info("Re-initializing Database & Admin...")
                             from backend.database import migrate_db, seed_admin
                             migrate_db()
                             seed_admin()
-                            st.success("Database repaired. Admin reset to 'sandeepramaswamykashyap@gmail.com' / 'admin'.")
+                            st.success("Success! Admin reset to 'sandeepramaswamykashyap@gmail.com' / 'admin'.")
+                            st.warning("Please reload the page and login with these credentials.")
                             st.stop()
                         except Exception as e:
-                            st.error(f"Repair Failed: {e}")
+                            st.error(f"Reset Failed: {e}")
                             st.stop()
-                            
+
+                    # SCOPED SESSION FOR ROBUST LOGIN
+                    # Does not rely on global 'db' that might be in a failed transaction state
+                    from backend.database import SessionLocal, AppUser
+                    db_login = SessionLocal()
                     try:
-                        from backend.database import AppUser
-                        
-                        u = db.query(AppUser).filter_by(email=email).first()
+                        u = db_login.query(AppUser).filter_by(email=email).first()
                         
                         if u and u.password == password:
+                            # We detach the object from the session so it can be stored in session_state
+                            # (Though detaching is complex, keeping it simple: just store ID/Name)
+                            # Actually, we store 'u' object. This might be problematic if session closes.
+                            # But for now, let's just make LOGIN work.
+                            db_login.expunge(u) # Make user object independent of this session
                             st.session_state['user'] = u
                             st.session_state['force_landing'] = False
                             st.session_state['show_login'] = False
@@ -1365,8 +1367,9 @@ if not user or st.session_state.get('force_landing', True):
                         else:
                             st.error("Invalid credentials.")
                     except Exception as e:
-                        db.rollback() # Final rollback attempt
                         st.error(f"Login Error: {e}")
+                    finally:
+                        db_login.close()
              
              st.markdown("""
              <div style="text-align: center; margin: 15px 0; color: #64748b;">OR</div>
