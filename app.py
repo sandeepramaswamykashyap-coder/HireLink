@@ -2598,7 +2598,7 @@ else:
                     if "Scraped" in status or "Found" in status:
                         import re
                         matches = re.findall(r'\d+', status)
-                            if matches: st.session_state['m_scanned'] = int(matches[0])
+                        if matches: st.session_state['m_scanned'] = int(matches[0])
                         
                         if "matches" in status.lower() and step == "Matching Jobs":
                             import re
