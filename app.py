@@ -90,7 +90,7 @@ if 'backend.utils.llm_client' in sys.modules:
 
 from backend.agents.auto_applier import AutoApplier
 
-from backend.database import init_db, get_db, Job, Resume, Application, PortalStatus, QuestionAnswer, Coupon, PortalCredential
+from backend.database import init_db, get_db, Job, Resume, Application, PortalStatus, QuestionAnswer, Coupon, PortalCredential, SessionLocal
 # FORCE DB INIT to create new tables
 init_db()
 from backend.scrapers.naukri import NaukriScraper
