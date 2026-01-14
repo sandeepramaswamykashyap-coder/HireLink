@@ -508,7 +508,7 @@ def render_landing_page(user_exists=False):
                  st.rerun()
 
     st.markdown(f"""
-<div style='text-align: center; background: #eab308; color: black; padding: 5px; font-weight: bold; border-radius: 4px; margin-bottom: 20px;'>DEPLOYMENT v3.2 - DETAILED LEGAL</div>
+<div style='text-align: center; background: #06b6d4; color: white; padding: 5px; font-weight: bold; border-radius: 4px; margin-bottom: 20px;'>DEPLOYMENT v3.3 - FOOTER FIXED</div>
 <div class="landing-wrapper">
 <div class="landing-hero">
 <div class="landing-title" style="font-family: 'Outfit', sans-serif !important; color: white !important; font-size: 6rem !important; font-weight: 900 !important; line-height: 1.1 !important; margin-bottom: 25px !important;">Automate Your <span class="gradient-text">Dream Job</span> Search today.</div>
@@ -583,6 +583,8 @@ Start Applying Now 🚀
     </div>
     """, unsafe_allow_html=True)
 
+    render_pricing(user_exists)
+
     # --- FOOTER (Razorpay Compliance) ---
     st.markdown("""
     <div style="margin-top: 80px; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; color: #94a3b8; font-size: 0.9rem;">
@@ -596,8 +598,6 @@ Start Applying Now 🚀
         <p>&copy; 2026 HireLink Technologies Pvt. Ltd. All rights reserved.</p>
     </div>
     """, unsafe_allow_html=True)
-
-    render_pricing(user_exists)
 
 def render_pricing(user_exists):
     # --- PAYMENT MODAL ---
