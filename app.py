@@ -6,11 +6,17 @@ import nltk
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
-    nltk.download('punkt', quiet=True)
+    try:
+        nltk.download('punkt', quiet=True)
+    except (FileExistsError, Exception):
+        pass  # Already downloaded or concurrent download in progress
 try:
     nltk.data.find('tokenizers/punkt_tab')
 except LookupError:
-    nltk.download('punkt_tab', quiet=True)
+    try:
+        nltk.download('punkt_tab', quiet=True)
+    except (FileExistsError, Exception):
+        pass  # Already downloaded or concurrent download in progress
 # -------------------------------------------------
 import pandas as pd
 import threading
