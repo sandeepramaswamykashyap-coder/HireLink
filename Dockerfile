@@ -10,15 +10,16 @@ RUN apt-get update && apt-get install -y \
     unzip \
     curl \
     libnss3 \
-    libgconf-2-4 \
     libfontconfig1 \
     libxss1 \
     libasound2 \
     libxtst6 \
-    libappindicator3-1 \
     libatk-bridge2.0-0 \
     libgtk-3-0 \
     libgbm1 \
+    libpangocairo-1.0-0 \
+    libpango-1.0-0 \
+    libcups2 \
     --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
