@@ -350,41 +350,40 @@ div[data-testid="stMetricLabel"] {
     font-size: 0.9rem !important;
     text-transform: uppercase;
     letter-spacing: 1px;
-}
-
-/* Tabs - AGGRESSIVE OVERRIDE */
+/* Tabs - FULL WIDTH SEGMENTED CONTROL */
 .stTabs [data-baseweb="tab-list"] {
-    gap: 30px !important;
+    gap: 8px !important;
     background: rgba(255,255,255,0.03) !important;
-    padding: 20px !important;
-    border-radius: 24px !important;
+    padding: 8px !important;
+    border-radius: 12px !important;
     border: 1px solid rgba(255,255,255,0.05) !important;
     display: flex !important;
-    justify-content: center !important; /* Center the tabs */
 }
 
 .stTabs [data-baseweb="tab"] {
-    height: 60px !important;
+    height: 50px !important;
     white-space: pre-wrap !important;
     background-color: transparent !important;
-    border-radius: 16px !important;
-    color: #cbd5e1 !important;
+    border-radius: 8px !important;
+    color: #94a3b8 !important;
     font-weight: 600 !important;
     transition: all 0.2s !important;
-    padding: 0 40px !important; 
-    font-size: 1.2rem !important;
-    border: 1px solid transparent !important;
+    font-size: 1rem !important;
+    border: none !important;
+    flex-grow: 1 !important; /* Expand to fill space */
+    text-align: center !important;
+    justify-content: center !important;
 }
 
 .stTabs [data-baseweb="tab"]:hover {
     background-color: rgba(255,255,255,0.05) !important;
-    border-color: rgba(255,255,255,0.1) !important;
+    color: white !important;
 }
 
 .stTabs [aria-selected="true"] {
-    background-color: var(--primary) !important;
+    background-color: #4f46e5 !important; /* Indigo Primary */
     color: white !important;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3) !important;
 }
 
 /* Sidebar Override */
