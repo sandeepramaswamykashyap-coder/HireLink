@@ -66,6 +66,13 @@ except LookupError:
         nltk.download('punkt_tab', quiet=True)
     except (FileExistsError, Exception):
         pass  # Already downloaded or concurrent download in progress
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    try:
+        nltk.download('stopwords', quiet=True)
+    except (FileExistsError, Exception):
+        pass
 # -------------------------------------------------
 import pandas as pd
 import threading
