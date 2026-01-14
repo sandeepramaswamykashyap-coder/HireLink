@@ -797,84 +797,93 @@ Start Applying Now 🚀
     </div>
     """, unsafe_allow_html=True)
 
-def render_pricing(user_exists):
-    # --- PAYMENT MODAL ---
-    if 'pending_payment' in st.session_state:
-        pp = st.session_state['pending_payment']
-        
-        @st.dialog("Complete Your Upgrade 🚀")
-        def pay_modal():
-            st.write(f"You are upgrading to **{pp['plan']}**")
-            
-            # Show Price breakdown
-            original_amt = pp.get('original_amount', pp['amount'])
-            current_amt = pp['amount']
-            
-            if current_amt < original_amt:
-                st.markdown(f"Original Price: ~~₹{original_amt}~~")
-                st.markdown(f"**Discounted Price: ₹{current_amt}** ✅")
+    render_pricing_logic(user_exists)
+
+# --- GLOBAL DIALOG DEFINITION ---
+if hasattr(st, "dialog"):
+    payment_dialog = st.dialog("Complete Your Upgrade 🚀")
+elif hasattr(st, "experimental_dialog"):
+    payment_dialog = st.experimental_dialog("Complete Your Upgrade 🚀")
+else:
+    # Fallback for very old Streamlit
+    def payment_dialog(func):
+        return func
+
+@payment_dialog
+def pay_modal():
+    if 'pending_payment' not in st.session_state: return
+    pp = st.session_state['pending_payment']
+    
+    st.write(f"You are upgrading to **{pp['plan']}**")
+    
+    # Show Price breakdown
+    original_amt = pp.get('original_amount', pp['amount'])
+    current_amt = pp['amount']
+    
+    if current_amt < original_amt:
+        st.markdown(f"Original Price: ~~₹{original_amt}~~")
+        st.markdown(f"**Discounted Price: ₹{current_amt}** ✅")
+    else:
+        st.write(f"Total: **₹{current_amt}**")
+    
+    st.markdown("---")
+    
+    # --- COUPON SECTION (Inside Checkout) ---
+    with st.expander("🎁 Have a Promo Code?", expanded=False):
+        c_in, c_btn = st.columns([2.5, 1.2])
+        code_input = c_in.text_input("Enter Code", label_visibility="collapsed", placeholder="PROMO2024").strip().upper()
+        if c_btn.button("Apply"):
+            session = get_db_session() # Use helper
+            coupon = session.query(backend.database.Coupon).filter(backend.database.Coupon.code == code_input).first()
+            if coupon:
+                # Apply Discount
+                if 'original_amount' not in pp:
+                        pp['original_amount'] = pp['amount'] # Store base price
+                
+                # Check expiry/usage logic here ideally
+                discount_val = (coupon.discount_percent / 100) * pp['original_amount']
+                new_price = int(pp['original_amount'] - discount_val)
+                pp['amount'] = new_price
+                pp['coupon_applied'] = code_input
+                st.success(f"Applied {coupon.code}!")
             else:
-                st.write(f"Total: **₹{current_amt}**")
-            
-            st.markdown("---")
-            
-            # --- COUPON SECTION (Inside Checkout) ---
-            with st.expander("🎁 Have a Promo Code?", expanded=False):
-                c_in, c_btn = st.columns([2.5, 1.2])
-                code_input = c_in.text_input("Enter Code", label_visibility="collapsed", placeholder="PROMO2024").strip().upper()
-                if c_btn.button("Apply"):
-                    coupon = db.query(backend.database.Coupon).filter(backend.database.Coupon.code == code_input).first()
-                    if coupon:
-                        # Apply Discount
-                        if 'original_amount' not in pp:
-                             pp['original_amount'] = pp['amount'] # Store base price
-                             
-                        base = pp['original_amount']
-                        disc_amt = int(base * (1 - coupon.discount_percent/100))
-                        
-                        # Regenerate Link with new price
-                        # Note: We need email here. 'user' object is outside scope, logic fix needed.
-                        # Assuming user email is available or stored in pp if needed.
-                        # Actually 'user' is available in render_pricing scope if we pass or query it.
-                        # But wait, create_payment_link needs user email.
-                        # Let's assume pp needs 'email' too.
-                        
-                        pp['amount'] = disc_amt
-                        pp['applied_coupon'] = coupon.code
-                        
-                        # Update Live Payment Link
-                        new_link = pg.create_payment_link(disc_amt, pp['plan'], pp['email']) 
-                        if new_link:
-                             pp['url'] = new_link.get('short_url')
-                             
-                        st.session_state['pending_payment'] = pp
-                        st.success(f"Applied {coupon.discount_percent}% OFF!")
-                        st.rerun()
-                    else:
-                        st.error("Invalid Code")
+                st.error("Invalid Code")
+            session.close()
+            st.rerun()
 
-            st.link_button(f"💳 Pay Now ₹{current_amt}", pp['url'], type="primary", use_container_width=True)
-            
-            # Mock Success for Demo
-            if st.button("Simulate Payment Success (Dev Mode)"):
-                update_user_plan(pp['plan'])
-                
-                # Record Coupon Usage if any
-                if 'applied_coupon' in pp:
-                     u = db.query(backend.database.AppUser).filter(backend.database.AppUser.email == pp['email']).first()
-                     if u: 
-                         u.used_coupon_code = pp['applied_coupon']
-                         db.commit()
-                         
-                st.success("Payment Verified! Upgraded.")
-                del st.session_state['pending_payment']
-                st.rerun()
-                
-            if st.button("Cancel"):
-                del st.session_state['pending_payment']
-                st.rerun()
+    if st.button(f"Pay ₹{pp['amount']} Now", type="primary", use_container_width=True):
+        st.link_button("Proceed to Gateway", pp['url']) # Use link_button if URL is ready, or redirect?
+        # Actually pp['url'] is the link. We should show it or auto-redirect.
+        # Since st.link_button is static, we render it.
+        pass
+    
+    st.link_button(f"Pay ₹{pp['amount']} Securely", pp['url'], type="primary", use_container_width=True)
 
-        pay_modal()
+    # Mock Success for Demo
+    if st.button("Simulate Payment Success (Dev Mode)"):
+        # We need update_user_plan available globally or import it
+        # Assuming update_user_plan is global
+        update_user_plan(pp['plan'])
+        
+        # Record Coupon Usage
+        if 'applied_coupon' in pp:
+                session = get_db_session()
+                u = session.query(backend.database.AppUser).filter(backend.database.AppUser.email == pp['email']).first()
+                if u: 
+                    u.used_coupon_code = pp['applied_coupon']
+                    session.commit()
+                session.close() # Important
+                    
+        st.success("Payment Verified! Upgraded.")
+        del st.session_state['pending_payment']
+        st.rerun()
+        
+    if st.button("Cancel"):
+        del st.session_state['pending_payment']
+        st.rerun()
+
+
+def render_pricing_logic(user_exists):
 
     st.markdown("""
     <div id="plans" class="pricing-section">
