@@ -2395,125 +2395,130 @@ else:
         # Left column removed (Mission Config moved to bottom)
 
         # Mission Control (Top)
-        if True: # Wrapper to maintain indentation for now
-            # --- MISSION CONTROL WIDGET (PERMANENT) ---
-            st.markdown("""
-            <div class="mission-header">
-                <span style="font-size: 1.5rem;">📡</span>
-                <h5>Mission Control Center v2</h5>
-            </div>
-            """, unsafe_allow_html=True)
+        # --- MISSION CONTROL WIDGET (PERMANENT) ---
+        st.markdown("""
+        <div class="mission-header">
+            <span style="font-size: 1.5rem;">📡</span>
+            <h5>Mission Control Center v2</h5>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Sub-container for the active content
+        # Sub-container for the active content
+        with st.container(border=True):
+            # Phase Indicator
+            phase_placeholder = st.empty()
             
-            # Sub-container for the active content
-            # Sub-container for the active content
-            with st.container(border=True):
-                # Phase Indicator
-                phase_placeholder = st.empty()
-                
-                st.write("")
-                
-                # Stats Row (Persistent placeholders)
-                s1, s2, s3 = st.columns(3)
-                scrape_stat = s1.empty()
-                match_stat = s2.empty()
-                apply_stat = s3.empty()
-                
-                st.write("")
-                # Status Banner (Full Width)
-                status_stat = st.empty()
-
-                def render_phases(active_idx):
-                    phases = ["Login", "Scan", "Match", "Apply"]
-                    icons = ["🔑", "📊", "🧠", "🚀"]
-                    html = '<div class="mission-phases">'
-                    for i, (p, icon) in enumerate(zip(phases, icons)):
-                        cls = "active" if i == active_idx else ("completed" if i < active_idx else "")
-                        html += f'<div class="phase-item {cls}"><div class="phase-dot">{icon}</div><div class="phase-label">{p}</div></div>'
-                    html += '</div>'
-                    phase_placeholder.markdown(html, unsafe_allow_html=True)
-
-                def update_stats_ui():
-                    scrape_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_scanned"]}</span><span class="m-stat-label">Scanned</span></div>', unsafe_allow_html=True)
-                    match_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_matches"]}</span><span class="m-stat-label">Matches</span></div>', unsafe_allow_html=True)
-                    apply_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_sent"]}</span><span class="m-stat-label">Applied</span></div>', unsafe_allow_html=True)
-                    
-                    step = st.session_state["m_step"]
-                    msg = st.session_state["m_status"]
-                    # Expanded Status Banner
-                    status_stat.markdown(f'''
-                        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 12px 20px; text-align: center; margin-top: 10px;">
-                            <span style="color: #34d399; font-weight: 700; font-size: 1rem; margin-right: 10px;">{step}</span>
-                            <span style="color: #d1fae5; font-size: 0.9rem;">{msg}</span>
-                        </div>
-                    ''', unsafe_allow_html=True)
-
-                render_phases(st.session_state['m_phase_idx'])
-                update_stats_ui()
-                st.write("") # Internal padding
-
-            # --- MISSION CONFIG (BOTTOM) ---
             st.write("")
-            st.write("")
-            st.markdown("""
-            <div class="mission-header">
-                <span style="font-size: 1.5rem;">🛠️</span>
-                <h5>Mission Config</h5>
-            </div>
-            """, unsafe_allow_html=True)
             
-            with st.container(border=True):
-                col_inp_1, col_inp_2 = st.columns(2)
-                with col_inp_1:
-                    role = st.text_input("Target Roles", value=st.session_state['mission_role'], placeholder="e.g. Developer, Engineer", key="pilot_role_v2")
-                with col_inp_2:
-                    loc = st.text_input("Locations", value=st.session_state['mission_loc'], placeholder="e.g. Remote, Mumbai", key="pilot_loc_v2")
+            # Stats Row (Persistent placeholders)
+            s1, s2, s3 = st.columns(3)
+            scrape_stat = s1.empty()
+            match_stat = s2.empty()
+            apply_stat = s3.empty()
+            
+            st.write("")
+            # Status Banner (Full Width)
+            status_stat = st.empty()
+
+            def render_phases(active_idx):
+                phases = ["Login", "Scan", "Match", "Apply"]
+                icons = ["🔑", "📊", "🧠", "🚀"]
+                html = '<div class="mission-phases">'
+                for i, (p, icon) in enumerate(zip(phases, icons)):
+                    cls = "active" if i == active_idx else ("completed" if i < active_idx else "")
+                    html += f'<div class="phase-item {cls}"><div class="phase-dot">{icon}</div><div class="phase-label">{p}</div></div>'
+                html += '</div>'
+                phase_placeholder.markdown(html, unsafe_allow_html=True)
+
+            def update_stats_ui():
+                scrape_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_scanned"]}</span><span class="m-stat-label">Scanned</span></div>', unsafe_allow_html=True)
+                match_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_matches"]}</span><span class="m-stat-label">Matches</span></div>', unsafe_allow_html=True)
+                apply_stat.markdown(f'<div class="m-stat"><span class="m-stat-val">{st.session_state["m_sent"]}</span><span class="m-stat-label">Applied</span></div>', unsafe_allow_html=True)
                 
-                st.write("")
-                col_inp_3, col_inp_4 = st.columns(2)
-                with col_inp_3:
-                    if resumes:
-                        sel_res_name = st.selectbox("Identity (Resume)", list(res_opts.keys()), key="res_sel_v2")
-                        sel_res_id = res_opts[sel_res_name]
-                    else:
-                        st.error("❌ No Identity Found")
-                        sel_res_id = None
+                step = st.session_state["m_step"]
+                msg = st.session_state["m_status"]
+                # Expanded Status Banner
+                status_stat.markdown(f'''
+                    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 12px 20px; text-align: center; margin-top: 10px;">
+                        <span style="color: #34d399; font-weight: 700; font-size: 1rem; margin-right: 10px;">{step}</span>
+                        <span style="color: #d1fae5; font-size: 0.9rem;">{msg}</span>
+                    </div>
+                ''', unsafe_allow_html=True)
+
+            render_phases(st.session_state['m_phase_idx'])
+            update_stats_ui()
+            st.write("") # Internal padding
+
+        # Space between Mission Control and Systems Log
+        st.write("")
+        st.divider() # VISUAL SEPARATOR
+        st.write("DEBUG: VERTICAL LAYOUT ENGAGED") 
+        st.write("")
+
+        # --- MISSION CONFIG (BOTTOM) ---
+        st.write("")
+        st.write("")
+        st.markdown("""
+        <div class="mission-header">
+            <span style="font-size: 1.5rem;">🛠️</span>
+            <h5>Mission Config</h5>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        with st.container(border=True):
+            col_inp_1, col_inp_2 = st.columns(2)
+            with col_inp_1:
+                role = st.text_input("Target Roles", value=st.session_state['mission_role'], placeholder="e.g. Developer, Engineer", key="pilot_role_v2")
+            with col_inp_2:
+                loc = st.text_input("Locations", value=st.session_state['mission_loc'], placeholder="e.g. Remote, Mumbai", key="pilot_loc_v2")
+            
+            st.write("")
+            col_inp_3, col_inp_4 = st.columns(2)
+            with col_inp_3:
+                if resumes:
+                    sel_res_name = st.selectbox("Identity (Resume)", list(res_opts.keys()), key="res_sel_v2")
+                    sel_res_id = res_opts[sel_res_name]
+                else:
+                    st.error("❌ No Identity Found")
+                    sel_res_id = None
+            
+            with col_inp_4:
+                all_p = ["LinkedIn", "Naukri", "Indeed", "Shine", "Foundit", "Internshala", "IIMJobs", "Wellfound", "Freshersworld", "Glassdoor"]
+                sel_portals = st.multiselect("Active Channels", all_p, default=["LinkedIn"], key="portal_sel_v2")
+
+            # Save Sync State
+            st.session_state['mission_role'] = role
+            st.session_state['mission_loc'] = loc
+
+            st.write("")
+            st.write("### Ready to Launch?")
+            
+            if st.button("🔥 ENGAGE HYPER-DRIVE", type="primary", use_container_width=True, key="engage_btn_v2"):
+                missing = []
+                if not role: missing.append("Target Role")
+                if not loc: missing.append("Location")
+                if not sel_res_id: missing.append("Active Resume")
+                if not sel_portals: missing.append("Active Portals")
                 
-                with col_inp_4:
-                    all_p = ["LinkedIn", "Naukri", "Indeed", "Shine", "Foundit", "Internshala", "IIMJobs", "Wellfound", "Freshersworld", "Glassdoor"]
-                    sel_portals = st.multiselect("Active Channels", all_p, default=["LinkedIn"], key="portal_sel_v2")
+                if missing:
+                    st.error(f"⚠️ MISSION ABORTED. Missing: {', '.join(missing)}")
+                else:
+                    st.session_state['pilot_running'] = True
 
-                # Save Sync State
-                st.session_state['mission_role'] = role
-                st.session_state['mission_loc'] = loc
+        # Space between Mission Control and Systems Log
+        for _ in range(3): st.write("")
 
-                st.write("")
-                st.write("### Ready to Launch?")
-                
-                if st.button("🔥 ENGAGE HYPER-DRIVE", type="primary", use_container_width=True, key="engage_btn_v2"):
-                    missing = []
-                    if not role: missing.append("Target Role")
-                    if not loc: missing.append("Location")
-                    if not sel_res_id: missing.append("Active Resume")
-                    if not sel_portals: missing.append("Active Portals")
-                    
-                    if missing:
-                        st.error(f"⚠️ MISSION ABORTED. Missing: {', '.join(missing)}")
-                    else:
-                        st.session_state['pilot_running'] = True
+        # Terminal
+        log_expander = st.expander("🛠️ Internal Systems Briefing", expanded=False)
+        log_terminal = log_expander.empty()
 
-            # Space between Mission Control and Systems Log
-            for _ in range(3): st.write("")
-
-            # Terminal
-            log_expander = st.expander("🛠️ Internal Systems Briefing", expanded=False)
-            log_terminal = log_expander.empty()
-
-            # --- RUN AUTOMATION (If triggered) ---
-            if st.session_state.get('pilot_running', False):
-                applier = AutoApplier()
-                start_time = datetime.utcnow()
-                full_log = []
-                
+        # --- RUN AUTOMATION (If triggered) ---
+        if st.session_state.get('pilot_running', False):
+            applier = AutoApplier()
+            start_time = datetime.utcnow()
+            full_log = []
+            
                 phase_map = {
                     "Login Verification": 0, "Auto-Login": 0, "Login Success": 0,
                     "Scraping Jobs": 1, "Enrichment": 1,
