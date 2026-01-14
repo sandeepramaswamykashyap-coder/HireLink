@@ -216,8 +216,8 @@ h1 {
     background: radial-gradient(circle at center, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
 }
 
-h1.landing-title {
-    font-size: 5.5rem !important;
+.landing-title {
+    font-size: 12rem !important;
     /* Specificity Fix + Increased Size */
     font-weight: 900 !important;
     line-height: 1.1 !important;
