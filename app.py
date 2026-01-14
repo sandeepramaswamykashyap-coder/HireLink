@@ -758,6 +758,44 @@ else:
     def confirm_delete_resume(res_id, res_name):
         st.warning("Please update Streamlit to use this feature.")
 
+# --- GLOBAL HELPER: INSTANT SAVE CALLBACK ---
+def save_smart_answer(qid_key):
+    """
+    Callback to save Smart Answer immediately on change.
+    Args:
+        qid_key (str): The session_state key (e.g., 'sa_qa_123')
+    """
+    try:
+        # Standardize session key access
+        if qid_key not in st.session_state:
+            return
+
+        new_val = st.session_state[qid_key]
+        try:
+            q_id = int(qid_key.replace("sa_qa_", ""))
+            
+            # New Session for atomic update
+            # Use global SessionLocal definition
+            db_local = SessionLocal()
+            try:
+                q = db_local.query(QuestionAnswer).filter(QuestionAnswer.id == q_id).first()
+                if q:
+                    # Dirty write - optimize later if needed
+                    clean_val = str(new_val).strip()
+                    if q.answer != clean_val:
+                        q.answer = clean_val
+                        db_local.add(q)
+                        db_local.commit()
+                        st.toast("Saved", icon="💾")
+            except Exception as e:
+                print(f"Save Error Q{q_id}: {e}")
+            finally:
+                db_local.close()
+        except ValueError:
+            pass
+    except Exception as e:
+        print(f"Callback Error: {e}")
+
 # --- LANDING PAGE ---
 def render_landing_page(user_exists=False):
     # --- GOOGLE ANALYTICS (GA4) ---
@@ -2660,94 +2698,59 @@ else:
             st.markdown("This is the **brain** of your agent. The more questions you answer here, the accurately it can fill forms.")
             st.info("ℹ️ **Note**: You may encounter similar or duplicate questions. Please answer them all—redundancy helps the AI apply correctly to different portals.")
             
-            with st.form("smart_answers_form"):
-                 # Fetch all questions
-                qa_list = db.query(QuestionAnswer).all()
-                if not qa_list:
-                    st.warning("No questions found in knowledge base. Please run migration or contact admin.")
-                else:
-                    # Group by Category with Priority Sorting
-                    # Define Priority (Lower # = Higher Priority/Top of list)
-                    CATEGORY_PRIORITY = {
-                        "contact": 1,
-                        "personal": 2,
-                        "experience": 3,
-                        "education": 4,
-                        "skills": 5,
-                        "screening": 6,
-                        "compliance": 7,
-                        "legal": 8,
-                        "behavioral": 9,
-                        "situational": 10
-                    }
-                    
-                    raw_categories = list(set([q.category for q in qa_list]))
-                    # Sort based on priority map, defaulting to 100 for others (sorted alphabetically among themselves)
-                    categories = sorted(raw_categories, key=lambda x: (CATEGORY_PRIORITY.get(x.lower(), 100), x))
-                    
-                    # Progress Bar
-                    filled_count = len([q for q in qa_list if q.answer and len(q.answer) > 0])
-                    total_count = len(qa_list)
-                    progress = filled_count / total_count
-                    st.progress(progress)
-                    st.caption(f"Knowledge Base Completion: {int(progress*100)}% ({filled_count}/{total_count} answers)")
-                    
-                    # Local capture of updates
-                    updates_map = {} 
-                    
-                    for cat in categories:
-                        with st.expander(f"📁 {cat.replace('_', ' ').title()}", expanded=False):
-                            cat_questions = [q for q in qa_list if q.category == cat]
-                            for q in cat_questions:
-                                # Visual cues for key fields
-                                label = q.question
-                                help_text = None
-                                if "name" in label.lower() or "email" in label.lower() or "phone" in label.lower():
-                                    label = "🔴 " + label
-                                    help_text = "Required for almost every application."
-                                    
-                                # Use unique key but capture return value directly
-                                new_val = st.text_input(label, value=q.answer or "", key=f"sa_qa_{q.id}", help=help_text)
-                                updates_map[q.id] = new_val
-                                
-                st.write("")
-                c1, c2 = st.columns([3, 1])
-                if c2.form_submit_button("💾 Save All Changes", type="primary", use_container_width=True):
-                    with st.spinner("Saving answers..."):
-                        try:
-                            # Debug Log File
-                            with open("debug_save.txt", "a") as f:
-                                f.write(f"\n--- Save Attempt {datetime.now()} ---\n")
-                                f.write(f"Updates Map Size: {len(updates_map)}\n")
+            # --- INSTANT SAVE PATTERN (No Form) ---
+            # Fetch all questions
+            qa_list = db.query(QuestionAnswer).all()
+            if not qa_list:
+                st.warning("No questions found in knowledge base. Please run migration or contact admin.")
+            else:
+                # Group by Category with Priority Sorting
+                # Define Priority (Lower # = Higher Priority/Top of list)
+                CATEGORY_PRIORITY = {
+                    "contact": 1,
+                    "personal": 2,
+                    "experience": 3,
+                    "education": 4,
+                    "skills": 5,
+                    "screening": 6,
+                    "compliance": 7,
+                    "legal": 8,
+                    "behavioral": 9,
+                    "situational": 10
+                }
+                
+                raw_categories = list(set([q.category for q in qa_list]))
+                # Sort based on priority map, defaulting to 100 for others (sorted alphabetically among themselves)
+                categories = sorted(raw_categories, key=lambda x: (CATEGORY_PRIORITY.get(x.lower(), 100), x))
+                
+                # Progress Bar
+                filled_count = len([q for q in qa_list if q.answer and len(q.answer) > 0])
+                total_count = len(qa_list)
+                progress = filled_count / total_count
+                st.progress(progress)
+                st.caption(f"Knowledge Base Completion: {int(progress*100)}% ({filled_count}/{total_count} answers)")
+                
+                for cat in categories:
+                    with st.expander(f"📁 {cat.replace('_', ' ').title()}", expanded=False):
+                        cat_questions = [q for q in qa_list if q.category == cat]
+                        for q in cat_questions:
+                            # Visual cues for key fields
+                            label = q.question
+                            help_text = None
+                            if "name" in label.lower() or "email" in label.lower() or "phone" in label.lower():
+                                label = "🔴 " + label
+                                help_text = "Required for almost every application."
                             
-                            count_saved = 0
+                            key = f"sa_qa_{q.id}"
+                            st.text_input(
+                                label, 
+                                value=q.answer or "", 
+                                key=key, 
+                                help=help_text,
+                                on_change=save_smart_answer,
+                                args=(key,)
+                            )
                             
-                            # Re-fetch objects to ensure session attachment
-                            for qid, val in updates_map.items():
-                                # Paranoia: Re-fetch by ID from current DB session
-                                fresh_q = db.query(QuestionAnswer).filter(QuestionAnswer.id == qid).first()
-                                if fresh_q:
-                                    # Force string conversion and strip
-                                    clean_val = str(val).strip() if val else ""
-                                    
-                                    # Log diffs
-                                    if fresh_q.answer != clean_val:
-                                        with open("debug_save.txt", "a") as f:
-                                            f.write(f"Updating Q{qid}: '{fresh_q.answer}' -> '{clean_val}'\n")
-                                        
-                                        fresh_q.answer = clean_val
-                                        db.add(fresh_q)
-                                        count_saved += 1
-                            
-                            db.commit()
-                            
-                            st.toast(f"Saved {count_saved} answers!", icon="✅")
-                            time.sleep(1)
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"Save failed: {e}")
-                            with open("debug_save.txt", "a") as f:
-                                f.write(f"ERROR: {e}\n")
             st.markdown('</div>', unsafe_allow_html=True)
 
         # --- TAB 3: PORTAL KEYS (CREDENTIALS) ---
