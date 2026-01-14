@@ -570,48 +570,76 @@ def launch_login_browser():
              st.error(f"Failed to launch browser: {e}")
 
 
-# --- GLOBAL CHATBOT (Visible to All) ---
-with st.sidebar:
-    st.write("") # Spacer
+# --- FLOATING CHATBOT (Bubble) ---
+def render_floating_chat():
+    # CSS to float the popover button to bottom-right
+    st.markdown("""
+    <style>
+    /* Float the Popover Container */
+    [data-testid="stPopover"] {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9000;
+    }
     
-    # We use expanded=False by default to avoid clutter, unless user is chatting
-    with st.expander("💬 HireLink Assistant", expanded=st.session_state.get("chat_open", False)):
-        if "messages" not in st.session_state:
-            st.session_state["messages"] = [{"role": "assistant", "content": "Hi! Are you here to hire or get hired?"}]
-        
-        # History
-        for msg in st.session_state.messages:
-            role_icon = "🤖" if msg["role"] == "assistant" else "👤"
-            st.caption(f"{role_icon} {msg['content']}")
-            
-        # Quick Actions
-        if len(st.session_state.messages) < 2:
-            c1, c2 = st.columns(2)
-            if c1.button("Hiring", use_container_width=True, key="btn_hire_gl"):
-                st.session_state.messages.append({"role": "user", "content": "I'm an Employer"})
-                st.session_state["chat_open"] = True
-                st.rerun()
-            if c2.button("Job", use_container_width=True, key="btn_work_gl"):
-                st.session_state.messages.append({"role": "user", "content": "I'm a Candidate"})
-                st.session_state["chat_open"] = True
-                st.rerun()
+    /* Style the Button to match "Bubble" look */
+    [data-testid="stPopover"] button {
+        width: 60px;
+        height: 60px;
+        border-radius: 30px;
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        box-shadow: 0 4px 20px rgba(79, 70, 229, 0.5);
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        transition: transform 0.2s;
+    }
+    
+    [data-testid="stPopover"] button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 25px rgba(79, 70, 229, 0.7);
+    }
+    
+    /* Popover Content Window */
+    /* Note: Streamlit popovers are absolute positioned by the library, 
+       but we can try to style the content if needed. */
+    </style>
+    """, unsafe_allow_html=True)
 
+    with st.popover("💬", help="AI Assistant"):
+        st.markdown("#### 🤖 HireLink Pilot")
+        st.caption("Ask me anything about jobs or hiring.")
+        
+        if "messages" not in st.session_state:
+            st.session_state["messages"] = [{"role": "assistant", "content": "Hi! How can I help you today?"}]
+        
+        # History Container
+        chat_container = st.container(height=300)
+        with chat_container:
+            for msg in st.session_state.messages:
+                # Use standard chat message for better aligned UX inside popover
+                with st.chat_message(msg["role"]):
+                    st.write(msg["content"])
+                    
         # Input
-        chat_val = st.text_input("Message...", key="chat_msg_input_gl")
-        if st.button("Send", key="chat_send_btn_gl", use_container_width=True) and chat_val:
-            st.session_state.messages.append({"role": "user", "content": chat_val})
-            st.session_state["chat_open"] = True
-            
-            # Inference
-            try:
+        prompt = st.text_input("Message...", key="float_chat_input")
+        send_clicked = st.button("Send", key="float_chat_send", use_container_width=True)
+        
+        if send_clicked and prompt:
+             try:
+                st.session_state.messages.append({"role": "user", "content": prompt})
+                
                 from backend.agents.assistant import HireLinkAssistant
                 agent = HireLinkAssistant()
-                with st.spinner("."):
-                    resp = agent.get_response(chat_val, st.session_state.messages[:-1])
+                resp = agent.get_response(prompt, st.session_state.messages[:-1]) 
                 st.session_state.messages.append({"role": "assistant", "content": resp})
-                st.rerun()
-            except Exception as e:
-                st.error("Offline")
+                st.rerun() 
+             except:
+                 st.error("AI Offline")
+
+# Invoke it
+render_floating_chat()
 
 # --- LANDING PAGE ---
 def render_landing_page(user_exists=False):
