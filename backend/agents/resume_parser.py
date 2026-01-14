@@ -7,6 +7,7 @@ import re
 from backend.utils.logger import logger
 from backend.database import Resume, get_db
 from backend.utils.llm_client import LLMClient
+from datetime import datetime
 import json
 
 # Safe Data Transfer Object (POJO)
@@ -187,21 +188,41 @@ class ResumeParserV2:
         from backend.database import SessionLocal
         db = SessionLocal()
         try:
-            resume = Resume(
-                name=data.get('name'),
-                email=data.get('email'),
-                phone=data.get('phone'),
-                raw_text=text,
-                parsed_data=data,
-                file_path=file_path
-            )
-            db.add(resume)
-            db.commit()
-            db.refresh(resume) # Get ID
+            # DEDUPLICATION CHECK
+            existing_resume = None
+            if data.get('email'):
+                existing_resume = db.query(Resume).filter(Resume.email == data.get('email')).first()
+            
+            if existing_resume:
+                logger.info(f"♻️ Updating existing resume for {data.get('email')}")
+                # Update fields
+                existing_resume.name = data.get('name')
+                existing_resume.phone = data.get('phone')
+                existing_resume.raw_text = text
+                existing_resume.parsed_data = data
+                existing_resume.file_path = file_path
+                existing_resume.created_at = datetime.utcnow() # Touch timestamp
+                
+                db.commit()
+                db.refresh(existing_resume)
+                resume = existing_resume
+            else:
+                logger.info(f"✨ Creating new resume for {data.get('email')}")
+                resume = Resume(
+                    name=data.get('name'),
+                    email=data.get('email'),
+                    phone=data.get('phone'),
+                    raw_text=text,
+                    parsed_data=data,
+                    file_path=file_path
+                )
+                db.add(resume)
+                db.commit()
+                db.refresh(resume) # Get ID
             
             # CRITICAL: Create Safe Return Object (POJO) to avoid Separation logic issues
             safe_resume = SimpleResume(resume.id, data)
-            logger.info(f"Parsed and saved resume for {data.get('name')}")
+            logger.info(f"Parsed and saved/updated resume for {data.get('name')}")
             
             return safe_resume # Return POJO, NOT the SQLAlchemy object
             
