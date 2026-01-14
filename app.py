@@ -2055,6 +2055,15 @@ else:
 # ... (Rest of app) ...
 
     if menu == "🏠 Dashboard":
+        # Metric Calculations
+        session = get_db_session()
+        total_jobs = session.query(backend.database.Job).count()
+        total_resumes = session.query(backend.database.Resume).count()
+        # Applications: Assuming 'applied' status or just count of entries in a hypothetical Applications table or tracked locally
+        # Currently we might not have an 'Application' table, so let's check Job status 'APPLIED'
+        total_apps = session.query(backend.database.Job).filter(backend.database.Job.status == "APPLIED").count()
+        session.close()
+
         # HERO SECTION
         st.markdown(f"""
         <div style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); padding: 4rem 3rem; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 2rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);">
