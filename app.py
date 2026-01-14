@@ -971,6 +971,7 @@ def render_pricing(user_exists):
         min-height: 500px !important;
         max-height: 500px !important;
         justify-content: space-between !important;
+        margin-top: 20px !important;
     }
     .pricing-card-redux:hover {
         transform: translateY(-5px) !important;
