@@ -2237,6 +2237,9 @@ else:
             st.subheader("Resume Manager")
             uploaded_file = st.file_uploader("Upload Resume (PDF)", type="pdf")
             if uploaded_file:
+                if not os.path.exists("data/resumes"):
+                    os.makedirs("data/resumes", exist_ok=True)
+                
                 file_path = os.path.join("data/resumes", uploaded_file.name)
                 with open(file_path, "wb") as f:
                     f.write(uploaded_file.getbuffer())
