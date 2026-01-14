@@ -67,6 +67,7 @@ class AppUser(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     email = Column(String)
+    password = Column(String) # ADDED
     is_onboarded = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -144,10 +145,33 @@ if "sqlite" in DATABASE_URL:
 else:
     engine = create_engine(DATABASE_URL)
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def migrate_db():
+    """
+    Simple auto-migration to fix schema drift (specifically missing 'password' column).
+    """
+    try:
+        with engine.connect() as conn:
+            # Check if column exists (SQLite and Postgres syntax differs, taking simple approach)
+             # Try simple query
+            try:
+                conn.execute("SELECT password FROM users_v2 LIMIT 1")
+            except Exception:
+                # Likely missing column
+                logger.info("Migration: 'password' column missing in users_v2. Attempting to add it.")
+                try:
+                    conn.execute("ALTER TABLE users_v2 ADD COLUMN password VARCHAR")
+                    logger.info("Migration: Successfully added 'password' column.")
+                except Exception as e:
+                     logger.warning(f"Migration: Failed to add column: {e}")
+            
+    except Exception as e:
+        logger.warning(f"Migration check failed: {e}")
 
 def init_db():
     logger.info(f"Initializing database at {DB_PATH}")
+    migrate_db() # Run migration checks before create_all
     Base.metadata.create_all(bind=engine)
     
     # SEED DEFAULT QUESTIONS

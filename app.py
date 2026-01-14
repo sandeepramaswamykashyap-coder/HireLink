@@ -1327,16 +1327,27 @@ if not user or st.session_state.get('force_landing', True):
              c_btn1, c_btn2 = st.columns([1, 1])
              with c_btn1:
                  if st.button("Sign In", type="primary", use_container_width=True):
-                     from backend.database import AppUser
-                     u = db.query(AppUser).filter_by(email=email).first()
-                     if u and u.password == password: 
-                         st.session_state['force_landing'] = False
-                         st.session_state['show_login'] = False
-                         st.success(f"Welcome back, {u.name}!")
-                         time.sleep(1)
-                         st.rerun()
-                     else:
-                         st.error("Invalid credentials.")
+                    try:
+                        import backend.database
+                        st.warning(f"DEBUG INFO: DB={backend.database.DB_PATH}")
+                        # Assuming AppUser is imported or available in this scope
+                        u = db.query(AppUser).filter_by(email=email).first()
+                        if u:
+                            st.warning(f"DEBUG: Found User {u.email} | ID {u.id} | Pass in DB: '{u.password}'")
+                        else:
+                            st.warning("DEBUG: User not found in DB.")
+
+                        if u and u.password == password:
+                            st.session_state['user'] = u
+                            st.session_state['force_landing'] = False
+                            st.session_state['show_login'] = False
+                            st.success(f"Welcome back, {u.name}!")
+                            time.sleep(1)
+                            st.rerun()
+                        else:
+                            st.error("Invalid credentials.")
+                    except Exception as e:
+                        st.error(f"An error occurred during login: {e}")
              
              st.markdown("""
              <div style="text-align: center; margin: 15px 0; color: #64748b;">OR</div>
