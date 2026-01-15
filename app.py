@@ -1905,10 +1905,13 @@ if not user or st.session_state.get('force_landing', True):
         render_onboarding()
     else:
         render_landing_page(user_exists=(user is not None))
+        check_and_show_payment_modal() # Ensure modal triggers on landing page too
 else:
-    # --- CHECK FOR PENDING PAYMENTS ---
     check_and_show_signup_modal()
     check_and_show_payment_modal()
+
+    # Sidebar
+    st.sidebar.header("Navigation")
 
     # Sidebar
     st.sidebar.header("Navigation")
