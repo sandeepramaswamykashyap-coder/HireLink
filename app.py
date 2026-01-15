@@ -1308,19 +1308,21 @@ def render_pricing_logic(user_exists):
                  # GATED: Require Signup + Pay
                  st.session_state['pending_signup_plan'] = {'name': 'PRO', 'amount': p_pro}
                  st.rerun()
-             else:
-                 link_data = pg.create_payment_link(p_pro, "PRO", user.email)
-                 if link_data:
-                     st.session_state['pending_payment'] = {
-                         "url": link_data.get('short_url'),
-                         "plan": "PRO",
-                         "amount": p_pro,
-                         "billing_cycle": "ANNUAL" if is_annual else "MONTHLY",
-                         "email": user.email
-                     }
-                     st.rerun()
-                 else:
-                     st.error("Failed to generate payment link. Check Razorpay keys.")
+            else:
+                with st.spinner("Creating Secure Payment Link..."):
+                    link_data = pg.create_payment_link(p_pro, "PRO", user.email)
+                
+                if link_data:
+                    st.session_state['pending_payment'] = {
+                        "url": link_data.get('short_url'),
+                        "plan": "PRO",
+                        "amount": p_pro,
+                        "billing_cycle": "ANNUAL" if is_annual else "MONTHLY",
+                        "email": user.email
+                    }
+                    st.rerun()
+                else:
+                    st.error(f"Payment Link Failed: {getattr(pg, 'last_error', 'Unknown Error')}")
 
     # --- SPACER BELOW BUTTONS (User Request) ---
     st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
