@@ -1,6 +1,11 @@
 import streamlit as st
 st.set_page_config(page_title="HireLink v1.0.0", layout="wide", initial_sidebar_state="expanded")
 
+
+# --- CORE INITIALIZATION ---
+from backend.database import init_db
+init_db() # Run migrations on every startup to ensure schema is robust
+
 # --- RESUME SEEDING DATA (Sanitized) ---
 SEED_RESUME_DATA = {
     "name": "SANDEEP KASHYAP",
@@ -1882,10 +1887,9 @@ if not user or st.session_state.get('force_landing', True):
              </button>
              """, unsafe_allow_html=True)
              
-             with c_btn2:
-                 if st.button("Back", use_container_width=True):
-                     del st.session_state['show_login']
-                     st.rerun()
+             if st.button("Back", use_container_width=True):
+                 del st.session_state['show_login']
+                 st.rerun()
              
     elif st.session_state.get('show_onboarding', False):
         render_onboarding()
