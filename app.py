@@ -11,52 +11,9 @@ def run_once_init():
 
 run_once_init()
 
-# --- RESUME SEEDING DATA (Sanitized) ---
-SEED_RESUME_DATA = {
-    "name": "SANDEEP KASHYAP",
-    "email": "sandeepramaswamykashyap@gmail.com",
-    "phone": "+91 6366325217",
-    "skills": ["UAT Planning & Execution", "Process Automation", "AI Agent Workflow Design", "Google Anti Gravity", "Technical Analysis"],
-    "experience": [{"role": "Manager - HR Digital Services", "company": "Standard Chartered", "years": "2019-Now"}],
-    "raw_full": """{"name": "SANDEEP KASHYAP", "email": "sandeepramaswamykashyap@gmail.com", "phone": "+91 6366325217", "summary": "Extensive Experience: 13+ years...", "skills": ["UAT Planning & Execution", "Process Automation in Recruitment", "AI Agent Workflow Design", "Google Anti Gravity", "Vibe Coding"], "experience": [{"role": "Manager - HR Digital Services", "company": "Standard Chartered Global Business Service", "years": "February 2019 - Now"}, {"role": "Team Lead - Client On-Boarding", "company": "Wipro Ltd", "years": "January 2015 - February 2019"}]}"""
-}
+# --- RESUME SEEDING DATA ---
+# Removed to prevent PII leakage. Use manual profile creation.
 
-def auto_seed_resume():
-    try:
-        from backend.database import SessionLocal, Resume, AppUser
-        import json
-        db = SessionLocal()
-        
-        # Check if user exists
-        user = db.query(AppUser).filter_by(email=SEED_RESUME_DATA['email']).first()
-        if user:
-             # Check if resume exists
-             res = db.query(Resume).filter_by(email=SEED_RESUME_DATA['email']).first()
-             if not res:
-                 print(f"⚠️ Seeding Resume for {user.name}...")
-                 new_res = Resume(
-                     name=SEED_RESUME_DATA['name'],
-                     email=SEED_RESUME_DATA['email'],
-                     phone=SEED_RESUME_DATA['phone'],
-                     parsed_data=json.loads(SEED_RESUME_DATA['raw_full']),
-                     raw_text=SEED_RESUME_DATA['raw_full'],
-                     file_path="manual_seed_v1"
-                 )
-                 db.add(new_res)
-                 db.commit()
-                 print("✅ Resume Seeded!")
-             else:
-                 # Force Update with new details
-                 res.parsed_data = json.loads(SEED_RESUME_DATA['raw_full'])
-                 res.raw_text = SEED_RESUME_DATA['raw_full']
-                 db.commit()
-                 print("✅ Resume Updated.")
-        db.close()
-    except Exception as e:
-        print(f"Seed Error: {e}")
-
-# Run Seed
-# auto_seed_resume() # DISABLED TO PREVENT ZOMBIE RESUMES
 
 # --- END SEED ---
 

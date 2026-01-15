@@ -216,19 +216,19 @@ def seed_admin():
     """
     try:
         db = SessionLocal()
-        admin_email = "sandeepramaswamykashyap@gmail.com"
+        admin_email = "admin@hirelink.com"
         admin = db.query(AppUser).filter_by(email=admin_email).first()
         
         if not admin:
             logger.info("Seeding Admin User...")
             admin = AppUser(
-                name="Sandeep Ramaswamy Kashyap", 
+                name="System Admin", 
                 email=admin_email, 
                 is_admin=True, 
                 is_onboarded=True,
                 subscription_plan="PRO_PLUS"
             )
-            admin.set_password("admin")
+            admin.set_password("admin123") # Slightly stronger default default
             db.add(admin)
         else:
             # Force update permissions and password
