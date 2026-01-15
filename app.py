@@ -1354,79 +1354,78 @@ def update_user_plan(plan, billing_cycle="MONTHLY"):
         time.sleep(1)
 
 
+# --- ROBUST GLOBAL DIALOG DEFINITION ---
+# Defining dialog at global scope prevents "Could not find fragment" errors on rerun
+if hasattr(st, "dialog"):
+    dlg_decorator = st.dialog("Complete Your Upgrade 🚀")
+else:
+    dlg_decorator = st.experimental_dialog("Complete Your Upgrade 🚀")
+
+@dlg_decorator
+def pay_modal():
+    if 'pending_payment' not in st.session_state:
+        st.error("Session expired. Please try again.")
+        return
+
+    pp = st.session_state['pending_payment']
+    st.write(f"You are upgrading to **{pp['plan']}**")
+    
+    # Show Price breakdown
+    original_amt = pp.get('original_amount', pp['amount'])
+    current_amt = pp['amount']
+    
+    if current_amt < original_amt:
+        st.markdown(f"Original Price: ~~₹{original_amt}~~")
+        st.markdown(f"**Discounted Price: ₹{current_amt}** ✅")
+    else:
+        st.write(f"Total: **₹{current_amt}**")
+    
+    st.markdown("---")
+    
+    # --- COUPON SECTION (Inside Checkout) ---
+    with st.expander("🎁 Have a Promo Code?", expanded=False):
+        c_in, c_btn = st.columns([2.5, 1.2])
+        code_input = c_in.text_input("Enter Code", label_visibility="collapsed", placeholder="PROMO2024").strip().upper()
+        if c_btn.button("Apply"):
+            from backend.database import Coupon
+            coupon = db.query(Coupon).filter(Coupon.code == code_input).first()
+            if coupon:
+                # Apply Discount
+                if 'original_amount' not in pp:
+                        pp['original_amount'] = pp['amount'] # Store base price
+                        
+                base = pp['original_amount']
+                disc_amt = int(base * (1 - coupon.discount_percent/100))
+                
+                pp['amount'] = disc_amt
+                pp['applied_coupon'] = coupon.code
+                
+                # Update Live Payment Link
+                new_link = pg.create_payment_link(disc_amt, pp['plan'], pp['email']) 
+                if new_link:
+                        pp['url'] = new_link.get('short_url')
+                        
+                st.session_state['pending_payment'] = pp
+                st.success(f"Applied {coupon.discount_percent}% OFF!")
+                st.rerun()
+            else:
+                st.error("Invalid Code")
+
+    # Robust Button (HTML Link)
+    st.markdown(f'''
+    <a href="{pp['url']}" target="_blank" style="text-decoration: none;">
+        <button style="width: 100%; background: #FF4B4B; color: white; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer;">
+            💳 Pay Now ₹{current_amt}
+        </button>
+    </a>
+    ''', unsafe_allow_html=True)
+
+
 def check_and_show_payment_modal():
     if 'pending_payment' in st.session_state:
-        pp = st.session_state['pending_payment']
-        
-        # Robust Dialog Selection
-        if hasattr(st, "dialog"):
-            dlg = st.dialog("Complete Your Upgrade 🚀")
-        else:
-            dlg = st.experimental_dialog("Complete Your Upgrade 🚀")
-            
-        @dlg
-        def pay_modal():
-            st.write(f"You are upgrading to **{pp['plan']}**")
-            
-            # Show Price breakdown
-            original_amt = pp.get('original_amount', pp['amount'])
-            current_amt = pp['amount']
-            
-            if current_amt < original_amt:
-                st.markdown(f"Original Price: ~~₹{original_amt}~~")
-                st.markdown(f"**Discounted Price: ₹{current_amt}** ✅")
-            else:
-                st.write(f"Total: **₹{current_amt}**")
-            
-            st.markdown("---")
-            
-            # --- COUPON SECTION (Inside Checkout) ---
-            with st.expander("🎁 Have a Promo Code?", expanded=False):
-                c_in, c_btn = st.columns([2.5, 1.2])
-                code_input = c_in.text_input("Enter Code", label_visibility="collapsed", placeholder="PROMO2024").strip().upper()
-                if c_btn.button("Apply"):
-                    from backend.database import Coupon
-                    coupon = db.query(Coupon).filter(Coupon.code == code_input).first()
-                    if coupon:
-                        # Apply Discount
-                        if 'original_amount' not in pp:
-                             pp['original_amount'] = pp['amount'] # Store base price
-                             
-                        base = pp['original_amount']
-                        disc_amt = int(base * (1 - coupon.discount_percent/100))
-                        
-                        pp['amount'] = disc_amt
-                        pp['applied_coupon'] = coupon.code
-                        
-                        # Update Live Payment Link
-                        new_link = pg.create_payment_link(disc_amt, pp['plan'], pp['email']) 
-                        if new_link:
-                             pp['url'] = new_link.get('short_url')
-                             
-                        st.session_state['pending_payment'] = pp
-                        st.success(f"Applied {coupon.discount_percent}% OFF!")
-                        st.rerun()
-                    else:
-                        st.error("Invalid Code")
-
-            # Debug URL visibility
-            # st.caption(f"Payment Link: {pp['url']}")
-            
-            # Robust Button (HTML Link)
-            st.markdown(f"""
-            <a href="{pp['url']}" target="_blank" style="text-decoration: none;">
-                <button style="width: 100%; background: #FF4B4B; color: white; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer;">
-                    💳 Pay Now ₹{current_amt}
-                </button>
-            </a>
-            """, unsafe_allow_html=True)
-            
-
-                
         try:
             pay_modal()
         except Exception:
-            # Prevent "Only one dialog is allowed" error if multiple triggered
             pass
 
 def check_and_show_signup_modal():
