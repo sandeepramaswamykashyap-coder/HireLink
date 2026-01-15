@@ -1327,6 +1327,9 @@ def render_pricing_logic(user_exists):
                  link_data = pg.create_payment_link(p_pro, "PRO", user.email)
                  if link_data:
                      st.session_state['pending_payment'] = {
+                         "url": link_data.get('short_url'),
+                         "plan": "PRO",
+                         "amount": p_pro,
                          "email": user.email
                      }
                      st.rerun()
@@ -2014,7 +2017,7 @@ else:
             st.markdown("---")
             
             # Charts Row
-            c_chart1, c_chart2 = st.columns([2, 1])
+            c_chart1, c_chart2 = st.columns(2)
             
             with c_chart1:
                 st.subheader("📈 User Growth")
@@ -2501,7 +2504,7 @@ else:
         # Space between Mission Control and Systems Log
         st.write("")
         st.divider() # VISUAL SEPARATOR
-        st.write("DEBUG: VERTICAL LAYOUT ENGAGED") 
+
         st.write("")
 
         # --- MISSION CONFIG (BOTTOM) ---
@@ -2651,12 +2654,30 @@ else:
         # 2. STATS DASHBOARD
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
         st.subheader("💰 Rewards Overview")
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Friends Reached", user.referral_count, delta="Total")
-        c2.metric("Active Referrals", db.query(backend.database.AppUser).filter(backend.database.AppUser.referred_by_id == user.id, backend.database.AppUser.subscription_plan != "TRIAL").count(), delta="Paying")
-        # Estimate total earned (Commissions paid out + balance)
+        # Calculate Stats Logic (Force Reload 1)
+        active_refs = db.query(backend.database.AppUser).filter(backend.database.AppUser.referred_by_id == user.id, backend.database.AppUser.subscription_plan != "TRIAL").count()
         total_credits = db.query(func.sum(backend.database.ReferralTransaction.amount)).filter(backend.database.ReferralTransaction.referrer_id == user.id).scalar() or 0
-        c3.metric("Service Credits", f"₹ {round(total_credits, 2)}", delta="Applied to bill")
+
+        # Render Widgets
+        st.markdown(f"""
+        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+            <div style="flex: 1; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px 10px; text-align: center;">
+                <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Friends Reached</div>
+                <div style="font-size: 1.8rem; font-weight: 800; color: white;">{user.referral_count}</div>
+                <div style="color: #4ade80; font-size: 0.8rem; margin-top: 5px;">Total</div>
+            </div>
+            <div style="flex: 1; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px 10px; text-align: center;">
+                <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Active Referrals</div>
+                <div style="font-size: 1.8rem; font-weight: 800; color: white;">{active_refs}</div>
+                <div style="color: #4ade80; font-size: 0.8rem; margin-top: 5px;">Paying</div>
+            </div>
+            <div style="flex: 1; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px 10px; text-align: center;">
+                <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Service Credits</div>
+                <div style="font-size: 1.8rem; font-weight: 800; color: white;">₹{round(total_credits, 2)}</div>
+                <div style="color: #4ade80; font-size: 0.8rem; margin-top: 5px;">Lifetime Earned</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
         st.info(f"✨ You have **₹{round(user.earnings_balance, 2)}** in credits ready for your next renewal!")
         st.markdown('</div>', unsafe_allow_html=True)

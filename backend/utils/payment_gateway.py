@@ -13,7 +13,7 @@ class PaymentGateway:
             self.client = razorpay.Client(auth=(self.key_id, self.key_secret))
             self.mock_mode = False
         
-    def create_payment_link(self, amount, plan_name, user_email, user_phone="9999999999"):
+    def create_payment_link(self, amount, plan_name, user_email, user_phone="9876543210"):
         """
         Creates a payment link. 
         Amount should be in INR (integer). We multiply by 100 for paise.
