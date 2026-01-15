@@ -1400,7 +1400,17 @@ def check_and_show_payment_modal():
                     else:
                         st.error("Invalid Code")
 
-            st.link_button(f"💳 Pay Now ₹{current_amt}", pp['url'], type="primary", use_container_width=True)
+            # Debug URL visibility
+            # st.caption(f"Payment Link: {pp['url']}")
+            
+            # Robust Button (HTML Link)
+            st.markdown(f"""
+            <a href="{pp['url']}" target="_blank" style="text-decoration: none;">
+                <button style="width: 100%; background: #FF4B4B; color: white; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer;">
+                    💳 Pay Now ₹{current_amt}
+                </button>
+            </a>
+            """, unsafe_allow_html=True)
             
 
                 
