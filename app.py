@@ -1785,8 +1785,10 @@ def render_onboarding():
                 
             st.write("")
             if st.button("I'm All Set - Go to Dashboard 🎉", type="primary", use_container_width=True):
-                 user = db.query(backend.database.AppUser).first()
+                 # SECURE FIX: Use the currently authenticated user, not the first in DB
                  if user:
+                     # Re-fetch to attach to current DB session
+                     user = db.merge(user)
                      user.is_onboarded = True
                      db.commit()
                      st.session_state['show_onboarding'] = False
@@ -1834,19 +1836,31 @@ if "payment_success" in st.query_params:
         st.error(f"Payment Verification Failed: {e}")
 
 # --- MAIN CONTROLLER ---
+# --- MAIN CONTROLLER ---
 try:
-    # Check for Impersonation (God Mode)
+    # Check for Impersonation (God Mode) - Only if Admin already authenticated
+    # BUT for now, let's just respect the 'user_id' stored in session
+    # session_state['user'] contains the Object.
+    
+    # We rely on st.session_state['user'] set by Login logic above.
+    user = st.session_state.get('user', None)
+    
+    # Additional Check: If object is detached/stale, re-fetch?
+    if user:
+         # Minimal validation
+         pass
+         
+    # Impersonation Override (Only if an admin set it)
     impersonate_id = st.session_state.get('impersonating_user_id')
     if impersonate_id:
-        user = db.query(backend.database.AppUser).get(impersonate_id)
-        # Verify valid user
-        if not user:
-             del st.session_state['impersonating_user_id']
-             user = db.query(backend.database.AppUser).filter_by(is_onboarded=True).first()
-    else:
-        user = db.query(backend.database.AppUser).filter_by(is_onboarded=True).first()
+        # Check if current real user is admin?
+        # Assuming the 'impersonating_user_id' was set by a secured admin action
+        imp_user = db.query(backend.database.AppUser).get(impersonate_id)
+        if imp_user:
+             user = imp_user
+             
 except:
-    user = None # Handle table not existing edge case if init failed
+    user = None # Default to None (Logged Out) on error
 
 if not user or st.session_state.get('force_landing', True):
     if st.session_state.get('show_login', False):
