@@ -1304,10 +1304,10 @@ def render_pricing_logic(user_exists):
 
     with b3:
         if st.button("Choose Pro", key="btn_pro", type="primary", use_container_width=True):
-             if not user_exists:
-                 # GATED: Require Signup + Pay
-                 st.session_state['pending_signup_plan'] = {'name': 'PRO', 'amount': p_pro}
-                 st.rerun()
+            if not user_exists:
+                # GATED: Require Signup + Pay
+                st.session_state['pending_signup_plan'] = {'name': 'PRO', 'amount': p_pro}
+                st.rerun()
             else:
                 with st.spinner("Creating Secure Payment Link..."):
                     link_data = pg.create_payment_link(p_pro, "PRO", user.email)
