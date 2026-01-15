@@ -1333,10 +1333,10 @@ def update_user_plan(plan, billing_cycle="MONTHLY"):
         
         # Calculate Expiry
         if plan == 'FREE':
-             user.subscription_expiry = None
+            user.subscription_expiry = None
         else:
-             days = 365 if billing_cycle == "ANNUAL" else 30
-             user.subscription_expiry = datetime.utcnow() + timedelta(days=days)
+            days = 365 if billing_cycle == "ANNUAL" else 30
+            user.subscription_expiry = datetime.utcnow() + timedelta(days=days)
              
             # --- REFERRAL LOGIC ---
             # Credit Referrer if applicable (and upgrading from Free/Trial)
