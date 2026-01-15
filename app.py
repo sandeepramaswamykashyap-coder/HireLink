@@ -1414,7 +1414,11 @@ def check_and_show_payment_modal():
             
 
                 
-        pay_modal()
+        try:
+            pay_modal()
+        except Exception:
+            # Prevent "Only one dialog is allowed" error if multiple triggered
+            pass
 
 def check_and_show_signup_modal():
     if 'pending_signup_plan' in st.session_state:
