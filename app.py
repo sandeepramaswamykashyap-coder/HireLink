@@ -1871,6 +1871,12 @@ if not user or st.session_state.get('force_landing', True):
                         st.error(f"Login Error: {e}")
                     finally:
                         db_login.close()
+                    
+                    with st.expander("Forgot Password?"):
+                        st.info("Please contact your System Administrator to reset your credentials.")
+                        st.caption("Admin Email: admin@hirelink.com")
+                        if st.query_params.get("sys_admin_reset") != "true":
+                             st.markdown("**Admin Locked Out?** use the `?sys_admin_reset=true` recovery link.")
              
              st.markdown("""
              <div style="text-align: center; margin: 15px 0; color: #64748b;">OR</div>
@@ -2158,21 +2164,22 @@ else:
                         col_conf, col_cancel = st.columns([1, 1])
                         if col_conf.button("⚠️ YES, DELETE", key=f"conf_yes_{u.id}", type="primary"):
                             if u.id == user.id:
-                                st.error("You cannot delete yourself!")
+                                st.error("Cannot delete yourself.")
                             else:
                                 db.delete(u)
                                 db.commit()
-                                st.success(f"Deleted {u.name}")
+                                st.success("User Deleted.")
                                 del st.session_state[del_key]
                                 st.rerun()
-                                
+                        
                         if col_cancel.button("Cancel", key=f"conf_no_{u.id}"):
-                            st.session_state[del_key] = False
+                            del st.session_state[del_key]
                             st.rerun()
+                            
                     else:
-                        c_act_1, c_act_2 = st.columns(2)
+                        c_act1, c_act2, c_act3 = st.columns(3) # Added a third column for the new button
                         # Impersonate Button
-                        if c_act_1.button("👁️ Login As", key=f"imp_{u.id}"):
+                        if c_act1.button("👁️ Login As", key=f"imp_{u.id}"):
                              st.session_state['impersonating_user_id'] = u.id
                              st.session_state['force_landing'] = False # Ensure we don't get stuck on landing
                              st.rerun()
