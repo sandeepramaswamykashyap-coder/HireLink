@@ -1300,7 +1300,7 @@ def render_pricing_logic(user_exists):
                      }
                      st.rerun()
                  else:
-                     st.error("Failed to generate payment link. Check Razorpay keys.")
+                     st.error(f"Payment Link Failed: {getattr(pg, 'last_error', 'Unknown Error')}")
 
     with b3:
         if st.button("Choose Pro", key="btn_pro", type="primary", use_container_width=True):
