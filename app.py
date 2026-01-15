@@ -4,7 +4,12 @@ st.set_page_config(page_title="HireLink v1.0.0", layout="wide", initial_sidebar_
 
 # --- CORE INITIALIZATION ---
 from backend.database import init_db
-init_db() # Run migrations on every startup to ensure schema is robust
+
+@st.cache_resource
+def run_once_init():
+    init_db() # Run migrations on every startup to ensure schema is robust
+
+run_once_init()
 
 # --- RESUME SEEDING DATA (Sanitized) ---
 SEED_RESUME_DATA = {
