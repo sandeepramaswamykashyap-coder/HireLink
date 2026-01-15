@@ -87,6 +87,7 @@ class AppUser(Base):
     
     # Subscription
     subscription_plan = Column(String, default="TRIAL") # STARTER, PRO, PRO_PLUS, TRIAL
+    subscription_expiry = Column(DateTime) # Expiry date for the plan
     used_coupon_code = Column(String) # Track which coupon they used
     
     # --- AFFILIATE FIELDS ---
@@ -197,6 +198,13 @@ def migrate_db():
                     with conn.begin(): # Transaction
                         conn.execute(text("ALTER TABLE users_v2 ADD COLUMN password VARCHAR"))
                 logger.info("Migration: Successfully added 'password' column.")
+            
+            if "subscription_expiry" not in columns:
+                logger.info("Migration: 'subscription_expiry' column missing in users_v2. Adding it.")
+                with engine.connect() as conn:
+                    with conn.begin(): # Transaction
+                        conn.execute(text("ALTER TABLE users_v2 ADD COLUMN subscription_expiry DATETIME"))
+                logger.info("Migration: Successfully added 'subscription_expiry' column.")
     except Exception as e:
         logger.warning(f"Migration check failed: {e}")
 

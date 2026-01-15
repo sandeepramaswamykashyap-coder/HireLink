@@ -1054,7 +1054,7 @@ def pay_modal():
     else:
         st.write(f"Total: **₹{current_amt}**")
     
-    st.markdown("---")
+
     
     # --- COUPON SECTION (Inside Checkout) ---
     with st.expander("🎁 Have a Promo Code?", expanded=False):
@@ -1290,6 +1290,7 @@ def render_pricing_logic(user_exists):
                          "url": link_data.get('short_url'),
                          "plan": "STARTER",
                          "amount": p_starter,
+                         "billing_cycle": "ANNUAL" if is_annual else "MONTHLY",
                          "email": user.email
                      }
                      st.rerun()
@@ -1307,6 +1308,7 @@ def render_pricing_logic(user_exists):
                          "url": link_data.get('short_url'),
                          "plan": "PRO",
                          "amount": p_pro,
+                         "billing_cycle": "ANNUAL" if is_annual else "MONTHLY",
                          "email": user.email
                      }
                      st.rerun()
@@ -1314,15 +1316,23 @@ def render_pricing_logic(user_exists):
     # --- SPACER BELOW BUTTONS (User Request) ---
     st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
 
-def update_user_plan(plan):
+def update_user_plan(plan, billing_cycle="MONTHLY"):
     # Helper to update DB for existing user
     user = db.query(backend.database.AppUser).first()
     if user:
         user.subscription_plan = plan
+        
+        # Calculate Expiry
+        if plan == 'FREE':
+             user.subscription_expiry = None
+        else:
+             days = 365 if billing_cycle == "ANNUAL" else 30
+             user.subscription_expiry = datetime.utcnow() + timedelta(days=days)
+        
         db.commit()
         st.session_state['force_landing'] = False
         st.balloons()
-        st.success(f"Plan updated to {plan}!")
+        st.success(f"Plan updated to {plan} ({billing_cycle})! Valid for {days} days.")
         time.sleep(1)
 
 
@@ -1330,7 +1340,13 @@ def check_and_show_payment_modal():
     if 'pending_payment' in st.session_state:
         pp = st.session_state['pending_payment']
         
-        @st.dialog("Complete Your Upgrade 🚀")
+        # Robust Dialog Selection
+        if hasattr(st, "dialog"):
+            dlg = st.dialog("Complete Your Upgrade 🚀")
+        else:
+            dlg = st.experimental_dialog("Complete Your Upgrade 🚀")
+            
+        @dlg
         def pay_modal():
             st.write(f"You are upgrading to **{pp['plan']}**")
             
@@ -1776,7 +1792,7 @@ if "payment_success" in st.query_params:
         # Check if we were expecting a payment
         if 'pending_payment' in st.session_state:
              pp = st.session_state['pending_payment']
-             update_user_plan(pp['plan']) # Function is defined above, so this is safe
+             update_user_plan(pp['plan'], pp.get('billing_cycle', 'MONTHLY')) # Function is defined above, so this is safe
              
              # Clear state
              del st.session_state['pending_payment']
