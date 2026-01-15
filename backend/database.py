@@ -180,7 +180,7 @@ if "sqlite" in DATABASE_URL:
 else:
     engine = create_engine(DATABASE_URL)
 
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 from sqlalchemy import inspect, text # Add text import
 
