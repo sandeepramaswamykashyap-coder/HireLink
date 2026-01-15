@@ -1338,17 +1338,17 @@ def update_user_plan(plan, billing_cycle="MONTHLY"):
              days = 365 if billing_cycle == "ANNUAL" else 30
              user.subscription_expiry = datetime.utcnow() + timedelta(days=days)
              
-             # --- REFERRAL LOGIC ---
-             # Credit Referrer if applicable (and upgrading from Free/Trial)
-             if user.referred_by_id:
-                 referrer = db.query(backend.database.AppUser).filter_by(id=user.referred_by_id).first()
-                 if referrer:
-                     current_bal = referrer.earnings_balance or 0
-                     referrer.earnings_balance = current_bal + 500
-                     referrer.referral_count = (referrer.referral_count or 0) + 1
-                     print(f"💰 Referral Reward: {referrer.email} credited ₹500")
-         
-         db.commit()
+            # --- REFERRAL LOGIC ---
+            # Credit Referrer if applicable (and upgrading from Free/Trial)
+            if user.referred_by_id:
+                referrer = db.query(backend.database.AppUser).filter_by(id=user.referred_by_id).first()
+                if referrer:
+                    current_bal = referrer.earnings_balance or 0
+                    referrer.earnings_balance = current_bal + 500
+                    referrer.referral_count = (referrer.referral_count or 0) + 1
+                    print(f"💰 Referral Reward: {referrer.email} credited ₹500")
+
+        db.commit()
         st.session_state['force_landing'] = False
         st.balloons()
         st.success(f"Plan updated to {plan} ({billing_cycle})! Valid for {days} days.")
