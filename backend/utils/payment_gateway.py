@@ -8,6 +8,7 @@ class PaymentGateway:
         self.key_secret = os.getenv("RAZORPAY_KEY_SECRET")
         self.client = None
         self.mock_mode = True
+        self.last_error = None
 
         if self.key_id and self.key_secret:
             self.client = razorpay.Client(auth=(self.key_id, self.key_secret))
@@ -47,6 +48,7 @@ class PaymentGateway:
             }
             return self.client.payment_link.create(data)
         except Exception as e:
+            self.last_error = str(e)
             print(f"Razorpay Error: {e}")
             return None
 
