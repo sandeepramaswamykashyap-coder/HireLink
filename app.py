@@ -1919,6 +1919,7 @@ if not user or st.session_state.get('force_landing', True):
                     with st.expander("Forgot Password?"):
                         # RESET FLOW UI
                         rst_email = st.text_input("Enter your registered email", key="rst_email")
+                        st.caption("Issues? Contact: **support@hirelink.tech**")
                         if st.button("Send Reset Link", key="btn_rst_send"):
                              from backend.utils.notifier import EmailNotifier
                              from backend.database import SessionLocal, AppUser
