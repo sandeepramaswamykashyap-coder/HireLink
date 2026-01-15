@@ -96,6 +96,10 @@ class AppUser(Base):
     earnings_balance = Column(Float, default=0.0) # Wallet
     referral_count = Column(Integer, default=0) # Quick count
     payout_method = Column(String) # UPI/Bank details
+    
+    # Password Reset
+    reset_token = Column(String)
+    reset_token_expiry = Column(DateTime)
 
     def set_password(self, plain_password):
         import hashlib
@@ -207,6 +211,21 @@ def migrate_db():
                         # SQLite also accepts it.
                         conn.execute(text("ALTER TABLE users_v2 ADD COLUMN subscription_expiry TIMESTAMP"))
                 logger.info("Migration: Successfully added 'subscription_expiry' column.")
+            
+            if "reset_token" not in columns:
+                logger.info("Migration: 'reset_token' column missing in users_v2. Adding it.")
+                with engine.connect() as conn:
+                    with conn.begin(): # Transaction
+                        conn.execute(text("ALTER TABLE users_v2 ADD COLUMN reset_token VARCHAR"))
+                logger.info("Migration: Successfully added 'reset_token' column.")
+            
+            if "reset_token_expiry" not in columns:
+                logger.info("Migration: 'reset_token_expiry' column missing in users_v2. Adding it.")
+                with engine.connect() as conn:
+                    with conn.begin(): # Transaction
+                        conn.execute(text("ALTER TABLE users_v2 ADD COLUMN reset_token_expiry TIMESTAMP"))
+                logger.info("Migration: Successfully added 'reset_token_expiry' column.")
+
     except Exception as e:
         logger.warning(f"Migration check failed: {e}")
 
@@ -233,7 +252,7 @@ def seed_admin():
         else:
             # Force update permissions and password
             admin.is_admin = True
-            admin.set_password("admin")
+            admin.set_password("admin123") # Standardize default
             admin.subscription_plan = "PRO_PLUS"
             logger.info("Updated Admin permissions and password.")
             

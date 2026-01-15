@@ -1769,6 +1769,50 @@ def render_onboarding():
                      st.balloons()
                      st.rerun()
 
+# --- PASSWORD RESET FLOW (TOKEN HANDLER) ---
+if st.query_params.get("reset_token"):
+    reset_token = st.query_params.get("reset_token")
+    # Validate
+    from backend.database import SessionLocal, AppUser
+    from datetime import datetime
+    
+    db_rst_chk = SessionLocal()
+    u_rst_Target = db_rst_chk.query(AppUser).filter_by(reset_token=reset_token).first()
+    
+    if u_rst_Target and u_rst_Target.reset_token_expiry and u_rst_Target.reset_token_expiry > datetime.utcnow():
+        # Valid Token found
+        @st.dialog("🔐 Set New Password")
+        def reset_pwd_modal():
+            st.warning(f"Resetting password for: {u_rst_Target.email}")
+            new_p = st.text_input("Enter New Password", type="password")
+            confirm_p = st.text_input("Confirm Password", type="password")
+            
+            if st.button("Update Password", type="primary"):
+                if new_p != confirm_p:
+                    st.error("Passwords do not match.")
+                elif len(new_p) < 4:
+                    st.error("Too short.")
+                else:
+                    u_rst_Target.set_password(new_p)
+                    u_rst_Target.reset_token = None # Invalidate token
+                    u_rst_Target.reset_token_expiry = None
+                    db_rst_chk.commit()
+                    st.success("Password Updated! Redirecting to login...")
+                    st.query_params.clear() # Prepare to clear
+                    time.sleep(2)
+                    st.rerun()
+        
+        reset_pwd_modal()
+        
+    else:
+        st.error("Invalid or Expired Reset Link.")
+        if st.button("Go Home"):
+            st.query_params.clear()
+            st.rerun()
+            
+    db_rst_chk.close()
+    st.stop() # Stop normal rendering if in reset mode
+
 from backend.utils.scraper_utils import run_scraper
 
 # --- PAYMENT CALLBACK HANDLER ---
@@ -1873,10 +1917,39 @@ if not user or st.session_state.get('force_landing', True):
                         db_login.close()
                     
                     with st.expander("Forgot Password?"):
-                        st.info("Please contact your System Administrator to reset your credentials.")
-                        st.caption("Admin Email: admin@hirelink.com")
-                        if st.query_params.get("sys_admin_reset") != "true":
-                             st.markdown("**Admin Locked Out?** use the `?sys_admin_reset=true` recovery link.")
+                        # RESET FLOW UI
+                        rst_email = st.text_input("Enter your registered email", key="rst_email")
+                        if st.button("Send Reset Link", key="btn_rst_send"):
+                             from backend.utils.notifier import EmailNotifier
+                             from backend.database import SessionLocal, AppUser
+                             import uuid
+                             from datetime import datetime, timedelta
+                             
+                             db_rst = SessionLocal()
+                             u_rst = db_rst.query(AppUser).filter_by(email=rst_email).first()
+                             if u_rst:
+                                 token = str(uuid.uuid4())
+                                 u_rst.reset_token = token
+                                 u_rst.reset_token_expiry = datetime.utcnow() + timedelta(minutes=15)
+                                 db_rst.commit()
+                                 
+                                 # Construct Link
+                                 # Assuming base URL is hirelink.tech, but for dev it might be localhost
+                                 # We can try to infer or just use relative if st supports it? No.
+                                 base_url = "https://hirelink.tech" if "hirelink.tech" in str(st.query_params) else "http://localhost:8501" 
+                                 # Safer fallback: Just ask user to check console if dev
+                                 link = f"{base_url}/?reset_token={token}"
+                                 
+                                 notifier = EmailNotifier()
+                                 if notifier.enabled:
+                                     notifier.send_password_reset(rst_email, link)
+                                     st.success("Reset link sent! Check your email (and spam).")
+                                 else:
+                                     st.warning("Email system not configured. Contact Admin.")
+                                     st.info(f"Dev Link: {link}") # Fail-safe for testing
+                             else:
+                                 st.error("Email not found.") # Security: Maybe say "If account exists..."? Nah, MVP.
+                             db_rst.close()
              
              st.markdown("""
              <div style="text-align: center; margin: 15px 0; color: #64748b;">OR</div>

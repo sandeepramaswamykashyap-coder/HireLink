@@ -136,3 +136,49 @@ class EmailNotifier:
         except Exception as e:
             logger.error(f"Failed to send session report: {e}")
             return False
+
+    def send_password_reset(self, to_email, reset_link):
+        """
+        Sends a password reset link to the user.
+        """
+        if not self.enabled:
+            logger.warning("EmailNotifier: SMTP credentials not set. Skipping reset email.")
+            return False
+            
+        try:
+            msg = MIMEMultipart()
+            msg['From'] = self.username
+            msg['To'] = to_email
+            msg['Subject'] = "🔐 Reset Your HireLink Password"
+
+            body = f"""
+            <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; color: #333;">
+                <h2 style="color: #1e3a8a;">Password Reset Request</h2>
+                <p>We received a request to reset your password for HireLink.</p>
+                <p>Click the button below to set a new password:</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{reset_link}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Reset Password</a>
+                </div>
+                
+                <p style="font-size: 13px; color: #666;">Or copy this link:<br><a href="{reset_link}">{reset_link}</a></p>
+                
+                <p style="font-size: 13px; color: #999;">If you didn't ask for this, you can ignore this email. This link expires in 15 minutes.</p>
+            </div>
+            """
+            
+            msg.attach(MIMEText(body, 'html'))
+            
+            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
+            server.starttls()
+            server.login(self.username, self.password)
+            text = msg.as_string()
+            server.sendmail(self.username, to_email, text)
+            server.quit()
+            
+            logger.info(f"Password reset email sent to {to_email}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to send reset email: {e}")
+            return False
