@@ -203,7 +203,9 @@ def migrate_db():
                 logger.info("Migration: 'subscription_expiry' column missing in users_v2. Adding it.")
                 with engine.connect() as conn:
                     with conn.begin(): # Transaction
-                        conn.execute(text("ALTER TABLE users_v2 ADD COLUMN subscription_expiry DATETIME"))
+                        # Use TIMESTAMP which is standard SQL (Postgres compatible)
+                        # SQLite also accepts it.
+                        conn.execute(text("ALTER TABLE users_v2 ADD COLUMN subscription_expiry TIMESTAMP"))
                 logger.info("Migration: Successfully added 'subscription_expiry' column.")
     except Exception as e:
         logger.warning(f"Migration check failed: {e}")
