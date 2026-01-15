@@ -1079,12 +1079,6 @@ def pay_modal():
             session.close()
             st.rerun()
 
-    if st.button(f"Pay ₹{pp['amount']} Now", type="primary", use_container_width=True):
-        st.link_button("Proceed to Gateway", pp['url']) # Use link_button if URL is ready, or redirect?
-        # Actually pp['url'] is the link. We should show it or auto-redirect.
-        # Since st.link_button is static, we render it.
-        pass
-    
     st.link_button(f"Pay ₹{pp['amount']} Securely", pp['url'], type="primary", use_container_width=True)
 
     # Mock Success for Demo
