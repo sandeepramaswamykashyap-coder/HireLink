@@ -1282,47 +1282,39 @@ def render_pricing_logic(user_exists):
              else: update_user_plan('FREE') 
              st.rerun()
 
+    # Helper for Payment Logic
+    def handle_payment_click(plan_name, price_display, is_annual_plan):
+        if not user_exists:
+            # GATED: Require Signup + Pay
+            st.session_state['pending_signup_plan'] = {'name': plan_name, 'amount': price_display}
+            st.rerun()
+        else:
+            # Calculate Total Amount
+            # If Annual, price_display is monthly equivalent, so multiply by 12
+            total_amount = price_display * 12 if is_annual_plan else price_display
+            
+            with st.spinner(f"Preparing {plan_name} Plan..."):
+                link_data = pg.create_payment_link(total_amount, plan_name, user.email)
+            
+            if link_data:
+                st.session_state['pending_payment'] = {
+                    "url": link_data.get('short_url'),
+                    "plan": plan_name,
+                    "amount": total_amount,
+                    "billing_cycle": "ANNUAL" if is_annual_plan else "MONTHLY",
+                    "email": user.email
+                }
+                st.rerun()
+            else:
+                st.error(f"Payment Error: {getattr(pg, 'last_error', 'Keys Invalid or Network Issue')}")
+
     with b2:
         if st.button("Choose Starter", key="btn_starter", use_container_width=True):
-             if not user_exists:
-                 # GATED: Require Signup + Pay
-                 st.session_state['pending_signup_plan'] = {'name': 'STARTER', 'amount': p_starter}
-                 st.rerun()
-             else:
-                 link_data = pg.create_payment_link(p_starter, "STARTER", user.email)
-                 if link_data:
-                     st.session_state['pending_payment'] = {
-                         "url": link_data.get('short_url'),
-                         "plan": "STARTER",
-                         "amount": p_starter,
-                         "billing_cycle": "ANNUAL" if is_annual else "MONTHLY",
-                         "email": user.email
-                     }
-                     st.rerun()
-                 else:
-                     st.error(f"Payment Link Failed: {getattr(pg, 'last_error', 'Unknown Error')}")
+             handle_payment_click("STARTER", p_starter, is_annual)
 
     with b3:
         if st.button("Choose Pro", key="btn_pro", type="primary", use_container_width=True):
-            if not user_exists:
-                # GATED: Require Signup + Pay
-                st.session_state['pending_signup_plan'] = {'name': 'PRO', 'amount': p_pro}
-                st.rerun()
-            else:
-                with st.spinner("Creating Secure Payment Link..."):
-                    link_data = pg.create_payment_link(p_pro, "PRO", user.email)
-                
-                if link_data:
-                    st.session_state['pending_payment'] = {
-                        "url": link_data.get('short_url'),
-                        "plan": "PRO",
-                        "amount": p_pro,
-                        "billing_cycle": "ANNUAL" if is_annual else "MONTHLY",
-                        "email": user.email
-                    }
-                    st.rerun()
-                else:
-                    st.error(f"Payment Link Failed: {getattr(pg, 'last_error', 'Unknown Error')}")
+             handle_payment_click("PRO", p_pro, is_annual)
 
     # --- SPACER BELOW BUTTONS (User Request) ---
     st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
