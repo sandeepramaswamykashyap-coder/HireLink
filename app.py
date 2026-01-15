@@ -1299,6 +1299,8 @@ def render_pricing_logic(user_exists):
                          "email": user.email
                      }
                      st.rerun()
+                 else:
+                     st.error("Failed to generate payment link. Check Razorpay keys.")
 
     with b3:
         if st.button("Choose Pro", key="btn_pro", type="primary", use_container_width=True):
@@ -1317,6 +1319,8 @@ def render_pricing_logic(user_exists):
                          "email": user.email
                      }
                      st.rerun()
+                 else:
+                     st.error("Failed to generate payment link. Check Razorpay keys.")
 
     # --- SPACER BELOW BUTTONS (User Request) ---
     st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
@@ -1398,11 +1402,7 @@ def check_and_show_payment_modal():
 
             st.link_button(f"💳 Pay Now ₹{current_amt}", pp['url'], type="primary", use_container_width=True)
             
-            # Mock Success for Demo
-            if st.button("Simulate Payment Success (Dev Mode)"):
-                update_user_plan(pp['plan'])
-                del st.session_state['pending_payment']
-                st.rerun()
+
                 
         pay_modal()
 
