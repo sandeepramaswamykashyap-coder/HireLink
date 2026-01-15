@@ -1081,24 +1081,7 @@ def pay_modal():
 
     st.link_button(f"Pay ₹{pp['amount']} Securely", pp['url'], type="primary", use_container_width=True)
 
-    # Mock Success for Demo
-    if st.button("Simulate Payment Success (Dev Mode)"):
-        # We need update_user_plan available globally or import it
-        # Assuming update_user_plan is global
-        update_user_plan(pp['plan'])
-        
-        # Record Coupon Usage
-        if 'applied_coupon' in pp:
-                session = get_db_session()
-                u = session.query(backend.database.AppUser).filter(backend.database.AppUser.email == pp['email']).first()
-                if u: 
-                    u.used_coupon_code = pp['applied_coupon']
-                    session.commit()
-                session.close() # Important
-                    
-        st.success("Payment Verified! Upgraded.")
-        del st.session_state['pending_payment']
-        st.rerun()
+
         
     if st.button("Cancel"):
         del st.session_state['pending_payment']
