@@ -1883,6 +1883,16 @@ if not user or st.session_state.get('force_landing', True):
              if st.button("Back", use_container_width=True):
                  del st.session_state['show_login']
                  st.rerun()
+
+    # EMERGENCY RECOVERY: Hidden Query Param to Fix Admin
+    # URL: /?sys_admin_reset=true
+    if st.query_params.get("sys_admin_reset") == "true":
+        try:
+            from backend.database import seed_admin
+            seed_admin()
+            st.success("SYSTEM RESET: Admin restored to admin@hirelink.com / admin123")
+        except Exception as e:
+            st.error(f"Reset Failed: {e}")
              
     elif st.session_state.get('show_onboarding', False):
         render_onboarding()
