@@ -2054,7 +2054,7 @@ else:
     if tour_mode:
         st.sidebar.info("👈 **Navigation Menu:** Use **Job Pilot** for all your hiring needs.")
     
-    nav_options = ["🏠 Dashboard", "👤 Pilot Profile", "🚀 Job Pilot", "🤝 Affiliate Program"]
+    nav_options = ["🏠 Dashboard", "👤 Pilot Profile", "🚀 Job Pilot", "💳 Subscription", "🤝 Affiliate Program"]
     if is_admin:
         nav_options.append("🛡️ Admin Console")
         
@@ -2062,6 +2062,9 @@ else:
 
     # ... (Other menus same) ...
     
+    if menu == "💳 Subscription":
+        render_pricing(user_exists=True)
+
     if menu == "🛡️ Admin Console":
         st.header("🛡️ Admin Console")
         st.markdown("Manage users and system health.")
@@ -3046,3 +3049,7 @@ else:
     with st.sidebar:
         st.markdown("---")
         st.caption(f"HireLink v1.1 (Live)")
+
+# --- FINAL MODAL CHECK ---
+# Ensures payment dialog works regardless of page
+check_and_show_payment_modal()
