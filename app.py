@@ -1013,15 +1013,15 @@ Start Applying Now 🚀
 
 def render_pricing_logic(user_exists):
 
-    # Header with Toggle Side-by-Side
-    h_col, t_col = st.columns([3, 2])
-    with h_col:
-        st.title("🚀 User Subscription")
-        st.caption("Simple pricing for every career stage.")
-        
-    with t_col:
-        # Align toggle to bottom/center of header
-        st.write("") # Vertical spacer
+    # Header
+    st.title("🚀 User Subscription")
+    st.caption("Simple pricing for every career stage.")
+    st.write("") # Spacer
+    
+    # Toggle (Left aligned, compact)
+    # Use a small column so the radio buttons are close together, not spread out
+    tc1, tc2 = st.columns([1, 2])
+    with tc1:
         billing = st.radio("Billing Cycle", ["Monthly", "Annual (Save 30% 🎁)"], horizontal=True, label_visibility="collapsed")
          
     is_annual = "Annual" in billing
@@ -1871,8 +1871,68 @@ else:
         st.header("🛡️ Admin Console")
         st.markdown("Manage users and system health.")
         
-        tab_dash, tab_users, tab_market, tab_snapshots = st.tabs(["📊 Dashboard", "👥 User Management", "🎟️ Marketing", "💾 Snapshots"])
+        tab_dash, tab_users, tab_market, tab_export = st.tabs(["📊 Dashboard", "👥 User Management", "🎟️ Marketing", "💾 Data Export"])
         
+        # --- TAB 4: DATA EXPORT ---
+        with tab_export:
+            st.subheader("💾 System Data Export")
+            st.markdown("Download full system data for backup or analysis.")
+            
+            c_ex1, c_ex2 = st.columns([2, 1])
+            with c_ex1:
+                st.info("ℹ️ Exports include: Users, Smart Answers, and Application History.")
+            
+            with c_ex2:
+                # Helper to generating Excel
+                def get_excel_export():
+                    import io
+                    try:
+                        buffer = io.BytesIO()
+                        # specific engine to ensure compatibility
+                        with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+                            # 1. Users
+                            users_df = pd.read_sql(db.query(backend.database.AppUser).statement, db.bind)
+                            # Remove sensitive hash if present
+                            if 'password' in users_df.columns: del users_df['password']
+                            users_df.to_excel(writer, sheet_name='Users', index=False)
+                            
+                            # 2. QAs
+                            qa_df = pd.read_sql(db.query(QuestionAnswer).statement, db.bind)
+                            qa_df.to_excel(writer, sheet_name='Smart_Answers', index=False)
+                            
+                            # 3. Applications
+                            app_df = pd.read_sql(db.query(Application).statement, db.bind)
+                            app_df.to_excel(writer, sheet_name='Applications', index=False)
+                            
+                        return buffer.getvalue()
+                    except ImportError:
+                        st.error("Missing 'openpyxl'. Please install it to export Excel.")
+                        return None
+                    except Exception as e:
+                        st.error(f"Export Failed: {e}")
+                        return None
+
+                # Generate on click (or prepared)
+                # Since we can't generate inside the button callback easily for download_button, 
+                # we usually generate it on page load OR uses a callback to set state.
+                # However, for admin, generating on render is acceptable for small DBs.
+                # For larger DBs, we'd use a "Prepare Export" button.
+                
+                if st.button("Prepare Export File"):
+                    data = get_excel_export()
+                    if data:
+                        st.session_state['export_data'] = data
+                        st.success("Export Ready!")
+                
+                if 'export_data' in st.session_state:
+                     st.download_button(
+                         label="⬇️ Download Backup (.xlsx)",
+                         data=st.session_state['export_data'],
+                         file_name=f"hirelink_backup_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
+                         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                         type="primary"
+                     )
+
         # --- TAB 1: DASHBOARD ---
         with tab_dash:
             st.markdown("### 🚀 Admin Overview")
