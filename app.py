@@ -1707,7 +1707,7 @@ if not user or st.session_state.get('force_landing', True):
 
              st.markdown('<div style="text-align: center; margin: 15px 0; color: #64748b;">OR</div>', unsafe_allow_html=True)
              
-             if st.button("🌐 Continue with Google", use_container_width=True):
+             if st.button("🌐 Continue with Gmail", use_container_width=True):
                  if os.getenv("GOOGLE_CLIENT_ID") and os.getenv("GOOGLE_CLIENT_SECRET"):
                      st.info("Initiating Google OAuth...")
                      # Redirect to Auth Logic would go here
