@@ -891,10 +891,33 @@ def render_landing_page(user_exists=False):
     h_col1, h_col2 = st.columns([6, 1])
     
     with h_col1:
-        # Subtle padding for logo aesthetics
-        st.markdown('<div style="padding: 8px 0;">', unsafe_allow_html=True)
-        st.image("assets/logo.png", width=210)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <style>
+        .logo-container {
+            font-family: 'Helvetica Neue', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            color: #ffffff;
+            cursor: pointer;
+            padding: 8px 0;
+        }
+        .logo-hire { color: #0F52BA; } /* Sapphire */
+        .logo-link { color: #2E8B57; } /* Sea Green */
+        .logo-icon { 
+            font-size: 24px; 
+            margin: 0 2px;
+            color: #2E8B57;
+            transform: rotate(-15deg);
+        }
+        </style>
+        <div class="logo-container">
+            <span class="logo-hire">Hire</span>
+            <span class=\"logo-icon\">🔗</span>
+            <span class="logo-link">Link</span>
+        </div>
+        """, unsafe_allow_html=True)
         
     with h_col2:
         st.write("") # Spacer to align with logo vertical center roughly
