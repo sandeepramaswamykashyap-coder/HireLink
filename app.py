@@ -990,10 +990,6 @@ Start Applying Now 🚀
 
 
 
-
-        st.rerun()
-
-
 def render_pricing_logic(user_exists):
 
     # Header
