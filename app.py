@@ -988,50 +988,6 @@ Start Applying Now 🚀
     </div>
     """, unsafe_allow_html=True)
 
-def render_pricing(user_exists):
-    # Wrapper to handle Modal + Grid
-    if 'pending_payment' in st.session_state:
-        pay_modal()
-    render_pricing_logic(user_exists)
-
-# --- GLOBAL DIALOG DEFINITION ---
-if hasattr(st, "dialog"):
-    payment_dialog = st.dialog("Complete Your Upgrade 🚀")
-elif hasattr(st, "experimental_dialog"):
-    payment_dialog = st.experimental_dialog("Complete Your Upgrade 🚀")
-else:
-    # Fallback for very old Streamlit
-    def payment_dialog(func):
-        return func
-
-@payment_dialog
-def pay_modal():
-    if 'pending_payment' not in st.session_state: return
-    pp = st.session_state['pending_payment']
-    
-    st.write(f"You are upgrading to **{pp['plan']}**")
-    
-    # Show Price breakdown
-    original_amt = pp.get('original_amount', pp['amount'])
-    current_amt = pp['amount']
-    
-    if current_amt < original_amt:
-        st.markdown(f"Original Price: ~~₹{original_amt}~~")
-        st.markdown(f"**Discounted Price: ₹{current_amt}** ✅")
-    else:
-        st.write(f"Total: **₹{current_amt}**")
-    
-
-    
-    # --- COUPON SECTION (Inside Checkout) ---
-    with st.expander("🎁 Have a Promo Code?", expanded=False):
-        c_in, c_btn = st.columns([2.5, 1.2])
-        code_input = c_in.text_input("Enter Code", label_visibility="collapsed", placeholder="PROMO2024").strip().upper()
-        if c_btn.button("Apply"):
-            session = get_db_session() # Use helper
-            coupon = session.query(backend.database.Coupon).filter(backend.database.Coupon.code == code_input).first()
-            if coupon:
-                # Apply Discount
                 if 'original_amount' not in pp:
                         pp['original_amount'] = pp['amount'] # Store base price
                 
@@ -1904,7 +1860,7 @@ else:
     # ... (Other menus same) ...
     
     if menu == "💳 Subscription":
-        render_pricing(user_exists=True)
+        render_pricing_logic(user_exists=True)
 
     if menu == "🛡️ Admin Console":
         # SECURITY CHECK
