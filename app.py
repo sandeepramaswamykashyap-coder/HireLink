@@ -896,7 +896,7 @@ def render_landing_page(user_exists=False):
         .logo-container {
             font-family: 'Helvetica Neue', sans-serif;
             font-weight: 700;
-            font-size: 28px;
+            font-size: 36px;
             display: flex;
             align-items: center;
             color: #ffffff;
@@ -906,7 +906,7 @@ def render_landing_page(user_exists=False):
         .logo-hire { color: #0F52BA; } /* Sapphire */
         .logo-link { color: #2E8B57; } /* Sea Green */
         .logo-icon { 
-            font-size: 24px; 
+            font-size: 32px; 
             margin: 0 2px;
             color: #2E8B57;
             transform: rotate(-15deg);
