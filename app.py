@@ -1700,7 +1700,7 @@ if not user or st.session_state.get('force_landing', True):
                     finally:
                         db_login.close()
              
-             if st.button("Forgot Password?", type="tertiary"):
+             if st.button("Forgot Password?", type="secondary"):
                  st.session_state['show_reset'] = True
                  st.rerun()
 
