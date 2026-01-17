@@ -1,6 +1,5 @@
-import streamlit as st
 st.set_page_config(
-        page_title="HireLink v2.33 (Stable)",
+        page_title="HireLink v2.34 (Checkout Fixed)",
         page_icon="💸",
         layout="wide",
         initial_sidebar_state="expanded"
@@ -1180,16 +1179,9 @@ def check_and_show_payment_modal():
             pass
 
 def check_and_show_signup_modal():
-    # FIX: If user is already logged in, do NOT show signup modal.
-    # Close it and ensure we proceed to checkout if needed.
-    if st.session_state.get('user') is not None:
-        if 'show_login' in st.session_state and st.session_state['show_login']:
-             st.session_state['show_login'] = False
-             # If they have a pending plan but are logged in, maybe we should trigger payment?
-             # For now, just closing the modal solves the "Double Ask" visual bug.
-             st.rerun()
-        return
-
+    # ALLOW both Guest and Logged-in Users to see checkout
+    # Logic: If pending plan exists, show the modal.
+    
     if 'pending_signup_plan' in st.session_state:
         plan_info = st.session_state['pending_signup_plan']
         
@@ -1212,7 +1204,6 @@ def check_and_show_signup_modal():
                 
                 final_price = plan_info['amount']
                 if coupon and apply_btn:
-                    # Verify Coupon
                     try:
                         from backend.database import Coupon
                         c_obj = db.query(Coupon).filter(Coupon.code == coupon, Coupon.is_active == True).first()
@@ -1232,79 +1223,85 @@ def check_and_show_signup_modal():
                 else:
                     st.markdown(f"### Total: **₹{final_price}**")
 
-                # --- CHECKOUT FORM (EMAIL ONLY) ---
+                # --- CHECKOUT FORM ---
                 with st.form("checkout_form"):
-                    email = st.text_input("Email Address (@)", placeholder="name@company.com")
+                    # Pre-fill if User Logged In
+                    curr_u = st.session_state.get('user')
+                    if curr_u:
+                        st.caption(f"Authenticated as: **{curr_u.email}**")
+                        # Hidden field workaround or just don't ask
+                        email_val = curr_u.email
+                    else:
+                        email_val = st.text_input("Email Address (@)", placeholder="name@company.com")
                     
                     submitted = st.form_submit_button(f"Pay ₹{final_price} & Start 🚀", type="primary", use_container_width=True)
                     
                     if submitted:
-                        if email:
+                        if email_val:
                             from backend.database import AppUser
                             import uuid
                             
-                            # Check exist
-                            exist_user = db.query(AppUser).filter(AppUser.email == email).first()
-                            
-                            # Scenario A: User Exists
-                            if exist_user:
-                                if exist_user.subscription_plan in ['STARTER', 'PRO', 'PRO_PLUS']:
-                                    st.warning("Account already exists and active. Please Login.")
-                                    return
-                                # Update existing pending user? Or just proceed to pay for them.
-                                target_user = exist_user
-                            else:
-                                # Scenario B: New User (Guest Checkout)
-                                # Create "Shadow User"
-                                temp_pass = str(uuid.uuid4())
-                                target_user = AppUser(
-                                    name="Valued Customer", # Placeholder
-                                    email=email, 
-                                    subscription_plan="AWAITING_PAYMENT", 
-                                    is_onboarded=False
-                                )
-                                target_user.set_password(temp_pass)
-                                db.add(target_user)
-                                db.commit()
-                                db.refresh(target_user)
-                                
-                                # Auto-login as Shadow User to track session
-                                st.session_state['user'] = target_user
-                                st.session_state['force_landing'] = False 
-                                st.session_state['show_login'] = False
-
-                            # Generate Link
+                            # GENERATE LINK LOGIC
                             try:
                                 from backend.utils.payment_gateway import PaymentGateway
                                 pg = PaymentGateway()
-                                link_data = pg.create_payment_link(final_price, plan_info['name'], email)
+                                link_data = pg.create_payment_link(final_price, plan_info['name'], email_val)
+                                
                                 if link_data:
-                                    # Payment State
+                                    # Handle User Creation ONLY if Guest
+                                    is_shadow = False
+                                    if not curr_u:
+                                         # Check exist
+                                         exist_user = db.query(AppUser).filter(AppUser.email == email_val).first()
+                                         if exist_user:
+                                             if exist_user.subscription_plan in ['STARTER', 'PRO', 'PRO_PLUS']:
+                                                 st.warning("Account exists. Please Login.")
+                                                 return
+                                             # Recover existing pending user
+                                             target_user = exist_user
+                                         else:
+                                             # Create Shadow
+                                             temp_pass = str(uuid.uuid4())
+                                             target_user = AppUser(
+                                                 name="Valued Customer",
+                                                 email=email_val, 
+                                                 subscription_plan="AWAITING_PAYMENT", 
+                                                 is_onboarded=False
+                                             )
+                                             target_user.set_password(temp_pass)
+                                             db.add(target_user)
+                                             db.commit()
+                                             
+                                             # Auto-Login Shadow
+                                             st.session_state['user'] = target_user
+                                             is_shadow = True
+                                    
+                                    # Set Payment State
                                     st.session_state['pending_payment'] = {
                                          "url": link_data.get('short_url'),
                                          "plan": plan_info['name'],
                                          "amount": final_price,
-                                         "email": email,
-                                         "is_shadow": True # Flag to trigger setup later
+                                         "email": email_val,
+                                         "is_shadow": is_shadow
                                     }
                                     if 'pending_signup_plan' in st.session_state:
                                          del st.session_state['pending_signup_plan']
                                     
-                                    # DIRECT REDIRECT UX
-                                    st.success("Redirecting to Secure Payment...")
+                                    # REDIRECT
+                                    st.success("Redirecting...")
                                     url = link_data.get('short_url')
                                     st.link_button("👉 Click to Pay", url, type="primary", use_container_width=True)
-                                    
                                     import streamlit.components.v1 as components
-                                    components.html(f"<script>window.location.href = '{url}';</script>", height=0)
+                                    js = f"<script>window.open('{url}', '_blank'); window.parent.location.href = '{url}';</script>"
+                                    components.html(js, height=0)
                                     return
                                 else:
-                                    st.error("Payment Gateway Error.")
+                                    st.error("Payment Gateway Error")
                             except Exception as e:
                                 st.error(f"Error: {e}")
                         else:
-                            st.warning("Email is required.")
-                            
+                            st.warning("Email Required")
+
             signup_modal()
             
         else:
