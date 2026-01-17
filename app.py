@@ -1702,6 +1702,7 @@ if not user or st.session_state.get('force_landing', True):
              
              if st.button("Forgot Password?", type="secondary"):
                  st.session_state['show_reset'] = True
+                 st.session_state['show_login'] = False # CRITICAL FIX: Hide Login to show Reset
                  st.rerun()
 
              st.markdown("""
@@ -1758,6 +1759,7 @@ if not user or st.session_state.get('force_landing', True):
             
         if st.button("Back to Login"):
             del st.session_state['show_reset']
+            st.session_state['show_login'] = True # Restore Login view
             st.rerun()
 
     # EMERGENCY RECOVERY: Hidden Query Param to Fix Admin
