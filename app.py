@@ -1,5 +1,9 @@
-import streamlit as st
-st.set_page_config(page_title="HireLink v2.1 (Safe Mode)", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(
+        page_title="HireLink v2.30 (Coupon Active)",
+        page_icon="💸",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
 
 
 from dotenv import load_dotenv
