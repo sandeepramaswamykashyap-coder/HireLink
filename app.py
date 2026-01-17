@@ -1219,82 +1219,113 @@ def check_and_show_signup_modal():
         dialog_decorator = getattr(st, "dialog", getattr(st, "experimental_dialog", None))
         
         if dialog_decorator:
-            @dialog_decorator(f"Create Account to Upgrade 🚀")
+            @dialog_decorator(f"Checkout: {plan_info['name']} 🚀")
             def signup_modal():
-                st.markdown(f"To get **{plan_info['name']}** access, please secure your account.")
+                st.markdown(f"**Plan:** {plan_info['name']} | **Price:** ₹{plan_info['amount']}")
                 
-                with st.form("signup_pay_form"):
-                    name = st.text_input("Full Name", placeholder="John Doe")
-                    email = st.text_input("Email Address", placeholder="john@example.com")
-                    password = st.text_input("Create Password", type="password")
+                # --- COUPON LOGIC ---
+                col_c1, col_c2 = st.columns([2, 1])
+                with col_c1:
+                    coupon = st.text_input("Coupon Code (Optional)", key="coupon_input")
+                with col_c2:
+                    st.write("") # Spacer
+                    st.write("")
+                    apply_btn = st.button("Apply", key="btn_apply_coupon")
+                
+                final_price = plan_info['amount']
+                if coupon and apply_btn:
+                    # Verify Coupon
+                    try:
+                        from backend.database import Coupon
+                        c_obj = db.query(Coupon).filter(Coupon.code == coupon, Coupon.is_active == True).first()
+                        if c_obj:
+                            st.session_state['active_coupon'] = {'code': c_obj.code, 'discount': c_obj.discount_percent}
+                            st.toast(f"Coupon Applied: {c_obj.discount_percent}% OFF!", icon="🎉")
+                        else:
+                            st.error("Invalid Coupon")
+                    except Exception:
+                        st.error("Coupon Check Failed")
+
+                if 'active_coupon' in st.session_state:
+                    disc = st.session_state['active_coupon']['discount']
+                    final_price = int(final_price * (1 - disc/100))
+                    st.success(f"Discount Applied: {disc}% OFF")
+                    st.markdown(f"### Total: ~~₹{plan_info['amount']}~~ **₹{final_price}**")
+                else:
+                    st.markdown(f"### Total: **₹{final_price}**")
+
+                # --- CHECKOUT FORM (EMAIL ONLY) ---
+                with st.form("checkout_form"):
+                    email = st.text_input("Email Address (@)", placeholder="name@company.com")
                     
-                    if st.form_submit_button("Create & Proceed to Payment", type="primary"):
-                        if name and email and password:
+                    submitted = st.form_submit_button(f"Pay ₹{final_price} & Start 🚀", type="primary", use_container_width=True)
+                    
+                    if submitted:
+                        if email:
                             from backend.database import AppUser
+                            import uuid
+                            
                             # Check exist
-                            if db.query(AppUser).filter(AppUser.email == email).first():
-                                st.error("Email already registered. Please login.")
+                            exist_user = db.query(AppUser).filter(AppUser.email == email).first()
+                            
+                            # Scenario A: User Exists
+                            if exist_user:
+                                if exist_user.subscription_plan in ['STARTER', 'PRO', 'PRO_PLUS']:
+                                    st.warning("Account already exists and active. Please Login.")
+                                    return
+                                # Update existing pending user? Or just proceed to pay for them.
+                                target_user = exist_user
                             else:
-                                # Create User
-                                new_user = AppUser(
-                                    name=name, 
+                                # Scenario B: New User (Guest Checkout)
+                                # Create "Shadow User"
+                                temp_pass = str(uuid.uuid4())
+                                target_user = AppUser(
+                                    name="Valued Customer", # Placeholder
                                     email=email, 
-                                    subscription_plan="AWAITING_PAYMENT", # Gate: Must pay to activate
+                                    subscription_plan="AWAITING_PAYMENT", 
                                     is_onboarded=False
                                 )
-                                new_user.set_password(password)
-                                new_user.set_password(password)
-                                db.add(new_user)
+                                target_user.set_password(temp_pass)
+                                db.add(target_user)
                                 db.commit()
-                                db.refresh(new_user)
-                                db.expunge(new_user)
+                                db.refresh(target_user)
                                 
-                                # AUTO-LOGIN
-                                st.session_state['user'] = new_user
+                                # Auto-login as Shadow User to track session
+                                st.session_state['user'] = target_user
                                 st.session_state['force_landing'] = False 
                                 st.session_state['show_login'] = False
-                                
-                                # APPLY REFERRAL
-                                if st.session_state.get('captured_ref'):
-                                    try:
-                                        from backend.utils.affiliate_manager import AffiliateManager
-                                        AffiliateManager.apply_referral(new_user.id, st.session_state['captured_ref'])
-                                    except Exception as e:
-                                        print(f"Ref Error: {e}")
-                                
-                                # Generate Link
-                                try:
-                                    from backend.utils.payment_gateway import PaymentGateway
-                                    pg = PaymentGateway()
-                                    link_data = pg.create_payment_link(plan_info['amount'], plan_info['name'], email)
-                                    if link_data:
-                                        # Transition to Payment State
-                                        st.session_state['pending_payment'] = {
-                                             "url": link_data.get('short_url'),
-                                             "plan": plan_info['name'],
-                                             "amount": plan_info['amount'],
-                                             "email": email
-                                        }
-                                        del st.session_state['pending_signup_plan']
-                                        
-                                        # DIRECT REDIRECT UX
-                                        st.success("Account Created! Redirecting to Razorpay...")
-                                        url = link_data.get('short_url')
-                                        st.link_button("👉 Click Here if not redirected", url, type="primary", use_container_width=True)
-                                        
-                                        # Auto-redirect script
-                                        import streamlit.components.v1 as components
-                                        components.html(f"<script>window.location.href = '{url}';</script>", height=0)
-                                        
-                                        # Do not st.rerun() immediately, let the script run.
-                                        # If user closes modal manually, logic in main app handles AWAITING_PAYMENT.
-                                        return
-                                    else:
-                                        st.error("Payment Init Failed.")
-                                except Exception as e:
-                                    st.error(f"Payment Error: {e}")
+
+                            # Generate Link
+                            try:
+                                from backend.utils.payment_gateway import PaymentGateway
+                                pg = PaymentGateway()
+                                link_data = pg.create_payment_link(final_price, plan_info['name'], email)
+                                if link_data:
+                                    # Payment State
+                                    st.session_state['pending_payment'] = {
+                                         "url": link_data.get('short_url'),
+                                         "plan": plan_info['name'],
+                                         "amount": final_price,
+                                         "email": email,
+                                         "is_shadow": True # Flag to trigger setup later
+                                    }
+                                    if 'pending_signup_plan' in st.session_state:
+                                         del st.session_state['pending_signup_plan']
+                                    
+                                    # DIRECT REDIRECT UX
+                                    st.success("Redirecting to Secure Payment...")
+                                    url = link_data.get('short_url')
+                                    st.link_button("👉 Click to Pay", url, type="primary", use_container_width=True)
+                                    
+                                    import streamlit.components.v1 as components
+                                    components.html(f"<script>window.location.href = '{url}';</script>", height=0)
+                                    return
+                                else:
+                                    st.error("Payment Gateway Error.")
+                            except Exception as e:
+                                st.error(f"Error: {e}")
                         else:
-                            st.warning("All fields required.")
+                            st.warning("Email is required.")
                             
             signup_modal()
             
