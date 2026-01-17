@@ -1903,6 +1903,42 @@ else:
             del st.session_state['impersonating_user_id']
             st.rerun()
 
+    # ADMIN TOOLS
+    if getattr(user, 'is_admin', False):
+        with st.sidebar.expander("⚙️ Admin Settings"):
+            st.caption("Configure System")
+            
+            # GEMINI KEY SETTER
+            current_key = os.getenv("GEMINI_API_KEY", "")
+            if not current_key:
+                from backend.database import SessionLocal, PortalCredential
+                db_cred = SessionLocal()
+                existing = db_cred.query(PortalCredential).filter_by(portal_name="GEMINI_API_KEY").first()
+                if existing:
+                    current_key = "********"
+                db_cred.close()
+            
+            new_key = st.text_input("Gemini API Key", value=current_key, type="password")
+            if st.button("Save Key"):
+                if new_key and new_key != "********":
+                    from backend.database import SessionLocal, PortalCredential
+                    db_cred = SessionLocal()
+                    try:
+                        cred = db_cred.query(PortalCredential).filter_by(portal_name="GEMINI_API_KEY").first()
+                        if not cred:
+                            cred = PortalCredential(portal_name="GEMINI_API_KEY", username="apikey", user_id=user.id)
+                            db_cred.add(cred)
+                        cred.password = new_key # Storing plain for MVP as per spec
+                        db_cred.commit()
+                        st.success("API Key Saved! Reloading...")
+                        time.sleep(1)
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Save Failed: {e}")
+                    finally:
+                        db_cred.close()
+
+
     # PLAN USAGE METER
     st.sidebar.markdown("---")
     plan = getattr(user, 'subscription_plan', 'FREE')
