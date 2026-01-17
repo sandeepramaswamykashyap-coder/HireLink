@@ -1420,44 +1420,61 @@ def check_and_show_signup_modal():
         if dialog_decorator:
             @dialog_decorator(f"Create Account to Upgrade 🚀")
             def signup_modal():
-            st.markdown(f"To get **{plan_info['name']}** access, please secure your account.")
-            
-            with st.form("signup_pay_form"):
-                name = st.text_input("Full Name", placeholder="John Doe")
-                email = st.text_input("Email Address", placeholder="john@example.com")
-                password = st.text_input("Create Password", type="password")
+                st.markdown(f"To get **{plan_info['name']}** access, please secure your account.")
                 
-                if st.form_submit_button("Create & Proceed to Payment", type="primary"):
-                    if name and email and password:
-                        from backend.database import AppUser
-                        # Check exist
-                        if db.query(AppUser).filter(AppUser.email == email).first():
-                            st.error("Email already registered. Please login.")
-                        else:
-                            # Create User
-                            new_user = AppUser(
-                                name=name, 
-                                email=email, 
-                                subscription_plan=plan_info['name'],
-                                is_onboarded=False # Gated until pay? Or user exists now.
-                            )
-                            new_user.set_password(password)
-                            db.add(new_user)
-                            db.commit()
-                            
-                            # Generate Link
-                            link_data = pg.create_payment_link(plan_info['amount'], plan_info['name'], email)
-                            if link_data:
-                                # Transition to Payment State
-                                st.session_state['pending_payment'] = {
-                                     "url": link_data.get('short_url'),
-                                     "plan": plan_info['name'],
-                                     "amount": plan_info['amount'],
-                                     "email": email
-                                }
-                                del st.session_state['pending_signup_plan']
-                                st.rerun()
+                with st.form("signup_pay_form"):
+                    name = st.text_input("Full Name", placeholder="John Doe")
+                    email = st.text_input("Email Address", placeholder="john@example.com")
+                    password = st.text_input("Create Password", type="password")
+                    
+                    if st.form_submit_button("Create & Proceed to Payment", type="primary"):
+                        if name and email and password:
+                            from backend.database import AppUser
+                            # Check exist
+                            if db.query(AppUser).filter(AppUser.email == email).first():
+                                st.error("Email already registered. Please login.")
                             else:
+                                # Create User
+                                new_user = AppUser(
+                                    name=name, 
+                                    email=email, 
+                                    subscription_plan=plan_info['name'],
+                                    is_onboarded=False # Gated until pay? Or user exists now.
+                                )
+                                new_user.set_password(password)
+                                db.add(new_user)
+                                db.commit()
+                                
+                                # Generate Link
+                                link_data = pg.create_payment_link(plan_info['amount'], plan_info['name'], email)
+                                if link_data:
+                                    # Transition to Payment State
+                                    st.session_state['pending_payment'] = {
+                                         "url": link_data.get('short_url'),
+                                         "plan": plan_info['name'],
+                                         "amount": plan_info['amount'],
+                                         "email": email
+                                    }
+                                    del st.session_state['pending_signup_plan']
+                                    st.rerun()
+                                else:
+                                    st.error("Payment Init Failed.")
+                        else:
+                            st.warning("All fields required.")
+                            
+            signup_modal()
+            
+        else:
+            # Fallback for old Streamlit
+            with st.expander(f"🚀 Create Account to Upgrade to {plan_info['name']}", expanded=True):
+                st.info("Please secure your account to proceed.")
+                with st.form("signup_fallback"):
+                    name = st.text_input("Full Name ", placeholder="John Doe")
+                    email = st.text_input("Email Address ", placeholder="john@example.com")
+                    password = st.text_input("Create Password ", type="password")
+                    if st.form_submit_button("Create & Pay"):
+                        # Simplified for MVP/Fallback (Duplicate logic ok for stability)
+                        st.info("Please use a newer browser or contact support if this fails.")
                                 st.error("Payment Gateway Error")
                     else:
                         st.error("All fields required.")
