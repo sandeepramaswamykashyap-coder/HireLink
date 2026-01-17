@@ -1724,6 +1724,8 @@ if not user or st.session_state.get('force_landing', True):
                  key="auth_mode_widget", # Renamed key to avoid conflict
                  index=default_idx
              )
+             
+             if mode == "Login":
                  st.markdown("## Login (v2.3)")
                  with st.form("login_form"):
                      email = st.text_input("Email")
