@@ -1231,176 +1231,54 @@ def render_pricing_logic(user_exists):
         </div>
         """, unsafe_allow_html=True)
 
-    # Spacer between Cards and Buttons (Robust)
-    st.markdown("<div style='height: 60px; width: 100%; clear: both; visibility: hidden;'>SPACER</div>", unsafe_allow_html=True)
-
-    # Separate row for buttons to ensure perfect horizontal alignment
-    _, b1, b2, b3, _ = st.columns([0.2, 3, 3, 3, 0.2])
-
-    with b1:
-        if st.button("Start Free", key="btn_free", use_container_width=True):
-             st.session_state['selected_plan'] = 'FREE'
-             if not user_exists: st.session_state['show_onboarding'] = True
-             else: update_user_plan('FREE') 
-             st.rerun()
-
-    # Helper for Payment Logic
-    def handle_payment_click(plan_name, price_display, is_annual_plan):
-        if not user_exists:
-            # GATED: Require Signup + Pay
-            st.session_state['pending_signup_plan'] = {'name': plan_name, 'amount': price_display}
-            st.rerun()
-        else:
-            # Calculate Total Amount
-            # If Annual, price_display is monthly equivalent, so multiply by 12
-            total_amount = price_display * 12 if is_annual_plan else price_display
-            
-            st.toast(f"Generating Secure Link for {plan_name}...", icon="💳")
-            
-            with st.spinner(f"Preparing {plan_name} Plan..."):
-                link_data = pg.create_payment_link(total_amount, plan_name, user.email)
+    # --- ROBUST PAYMENT INTERFACE (NUCLEAR OPTION) ---
+    st.markdown("### 🚀 Upgrade Your Plan")
+    
+    # Simple Selection instead of complicated Cards with Buttons
+    plan_choice = st.radio("Select Plan Tier", ["STARTER - ₹850/mo", "PRO - ₹2500/mo (Best Value)"], horizontal=True)
+    
+    if st.button(f"👉 Proceed to Payment ({plan_choice})", type="primary", use_container_width=True):
+        
+        selected_plan = "PRO" if "PRO" in plan_choice else "STARTER"
+        price = p_pro if selected_plan == "PRO" else p_starter
+        
+        # Calculate Total
+        total_amt = price * 12 if is_annual else price
+        
+        st.info(f"Generating Secure Link for {selected_plan}...")
+        
+        try:
+            # Direct Call - No Helpers
+            link_data = pg.create_payment_link(total_amt, selected_plan, user.email)
             
             if link_data:
-                pp = {
-                    "url": link_data.get('short_url'),
-                    "plan": plan_name,
-                    "amount": total_amount,
-                    "billing_cycle": "ANNUAL" if is_annual_plan else "MONTHLY",
-                    "email": user.email
+                url = link_data.get('short_url')
+                st.success("✅ Payment Link Created!")
+                
+                # 1. Big Clickable Link
+                st.markdown(f"### [👉 CLICK HERE TO PAY SECURELY]({url})")
+                
+                # 2. Raw URL for Copy-Paste
+                st.code(url, language="text")
+                
+                # 3. Sidebar Persistence
+                st.session_state['pending_payment'] = {
+                     "url": url,
+                     "plan": selected_plan,
+                     "amount": total_amt,
+                     "email": user.email
                 }
-                st.session_state['pending_payment'] = pp
                 
-                # FALLBACK: Open directly if modal fails (using JS hack if needed, but sticking to UI)
-                st.toast("Link Generated! See below...", icon="✅")
-                # Removed st.rerun() to allow immediate inline rendering logic to execute below this function call if possible.
-                # Actually, in Streamlit, without rerun, the UI below might not update if it was already rendered?
-                # But 'handle_payment_click' is called inside the column layout.
-                # The "INLINE PAYMENT RESULT" block is *after* the columns. 
-                # So if we don't rerun, that block won't see the new session_state in this render cycle?
-                # Correct. We MUST rerun for the *rest of the script* to pick up the new state, OR we must render strictly inside this function.
-                # Let's render INSIDE this function to be 100% sure.
-                
-                st.markdown(f"### 👉 [Pay for {plan_name} Now]({pp['url']})")
-                st.info("Click the link above to proceed.")
+                # 4. Auto-open attempt (JS)
+                st.markdown(f'<meta http-equiv="refresh" content="2;url={url}">', unsafe_allow_html=True)
+                st.caption("Redirecting in 2 seconds...")
                 
             else:
-                st.error(f"Payment Error: {getattr(pg, 'last_error', 'Keys Invalid or Network Issue')}")
-
-    with b2:
-        if st.button("Choose Starter", key="btn_starter", use_container_width=True):
-             print("DEBUG: Choose Starter Clicked")
-             handle_payment_click("STARTER", p_starter, is_annual)
-
-    with b3:
-        if st.button("Choose Pro", key="btn_pro", type="primary", use_container_width=True):
-             print("DEBUG: Choose Pro Clicked")
-             handle_payment_click("PRO", p_pro, is_annual)
-             
-    # --- INLINE PAYMENT RESULT (Immediate Feedback) ---
-    if 'pending_payment' in st.session_state:
-        pp = st.session_state['pending_payment']
-        st.success(f"Link Generated for {pp['plan']}!")
-        st.markdown(f"**[👉 Click Here to Pay Now]({pp['url']})**")
-        st.caption("If the popup didn't open, use the link above.")
-
-    # --- SPACER BELOW BUTTONS (User Request) ---
-    st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
-
-def update_user_plan(plan, billing_cycle="MONTHLY"):
-    # Helper to update DB for existing user
-    user = db.query(backend.database.AppUser).first()
-    if user:
-        user.subscription_plan = plan
-        
-        # Calculate Expiry
-        if plan == 'FREE':
-            user.subscription_expiry = None
-        else:
-            days = 365 if billing_cycle == "ANNUAL" else 30
-            user.subscription_expiry = datetime.utcnow() + timedelta(days=days)
-             
-            # --- REFERRAL LOGIC ---
-            # Credit Referrer if applicable (and upgrading from Free/Trial)
-            if user.referred_by_id:
-                referrer = db.query(backend.database.AppUser).filter_by(id=user.referred_by_id).first()
-                if referrer:
-                    current_bal = referrer.earnings_balance or 0
-                    referrer.earnings_balance = current_bal + 500
-                    referrer.referral_count = (referrer.referral_count or 0) + 1
-                    print(f"💰 Referral Reward: {referrer.email} credited ₹500")
-
-        db.commit()
-        st.session_state['force_landing'] = False
-        st.balloons()
-        st.success(f"Plan updated to {plan} ({billing_cycle})! Valid for {days} days.")
-        time.sleep(1)
-
-
-# --- ROBUST GLOBAL DIALOG DEFINITION ---
-# Defining dialog at global scope prevents "Could not find fragment" errors on rerun
-if hasattr(st, "dialog"):
-    dlg_decorator = st.dialog("Complete Your Upgrade 🚀")
-else:
-    dlg_decorator = st.experimental_dialog("Complete Your Upgrade 🚀")
-
-@dlg_decorator
-def pay_modal():
-    if 'pending_payment' not in st.session_state:
-        st.error("Session expired. Please try again.")
-        return
-
-    pp = st.session_state['pending_payment']
-    st.write(f"You are upgrading to **{pp['plan']}**")
-    
-    # Show Price breakdown
-    original_amt = pp.get('original_amount', pp['amount'])
-    current_amt = pp['amount']
-    
-    if current_amt < original_amt:
-        st.markdown(f"Original Price: ~~₹{original_amt}~~")
-        st.markdown(f"**Discounted Price: ₹{current_amt}** ✅")
-    else:
-        st.write(f"Total: **₹{current_amt}**")
-    
+                st.error("Gateway Returned No Data. Check API Keys.")
+        except Exception as e:
+            st.error(f"Critical Error: {e}")
+            
     st.markdown("---")
-    
-    # --- COUPON SECTION (Inside Checkout) ---
-    with st.expander("🎁 Have a Promo Code?", expanded=False):
-        c_in, c_btn = st.columns([2.5, 1.2])
-        code_input = c_in.text_input("Enter Code", label_visibility="collapsed", placeholder="PROMO2024").strip().upper()
-        if c_btn.button("Apply"):
-            from backend.database import Coupon
-            coupon = db.query(Coupon).filter(Coupon.code == code_input).first()
-            if coupon:
-                # Apply Discount
-                if 'original_amount' not in pp:
-                        pp['original_amount'] = pp['amount'] # Store base price
-                        
-                base = pp['original_amount']
-                disc_amt = int(base * (1 - coupon.discount_percent/100))
-                
-                pp['amount'] = disc_amt
-                pp['applied_coupon'] = coupon.code
-                
-                # Update Live Payment Link
-                new_link = pg.create_payment_link(disc_amt, pp['plan'], pp['email']) 
-                if new_link:
-                        pp['url'] = new_link.get('short_url')
-                        
-                st.session_state['pending_payment'] = pp
-                st.success(f"Applied {coupon.discount_percent}% OFF!")
-                st.rerun()
-            else:
-                st.error("Invalid Code")
-
-    # Robust Button (HTML Link)
-    st.markdown(f'''
-    <a href="{pp['url']}" target="_blank" style="text-decoration: none;">
-        <button style="width: 100%; background: #FF4B4B; color: white; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer;">
-            💳 Pay Now ₹{current_amt}
-        </button>
-    </a>
-    ''', unsafe_allow_html=True)
 
 
 def check_and_show_payment_modal():
@@ -2124,6 +2002,11 @@ else:
         render_pricing(user_exists=True)
 
     if menu == "🛡️ Admin Console":
+        # SECURITY CHECK
+        if not is_admin: # Double check
+            st.error("Access Denied.")
+            st.stop()
+            
         st.header("🛡️ Admin Console")
         st.markdown("Manage users and system health.")
         
