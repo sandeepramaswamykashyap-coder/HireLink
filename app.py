@@ -1244,6 +1244,14 @@ def check_and_show_signup_modal():
                                 st.session_state['force_landing'] = False 
                                 st.session_state['show_login'] = False
                                 
+                                # APPLY REFERRAL
+                                if st.session_state.get('captured_ref'):
+                                    try:
+                                        from backend.utils.affiliate_manager import AffiliateManager
+                                        AffiliateManager.apply_referral(new_user.id, st.session_state['captured_ref'])
+                                    except Exception as e:
+                                        print(f"Ref Error: {e}")
+                                
                                 # Generate Link
                                 try:
                                     from backend.utils.payment_gateway import PaymentGateway
@@ -2081,7 +2089,7 @@ else:
         st.header("🛡️ Admin Console")
         st.markdown("Manage users and system health.")
         
-        tab_dash, tab_users, tab_market, tab_export = st.tabs(["📊 Dashboard", "👥 User Management", "🎟️ Marketing", "💾 Data Export"])
+        tab_dash, tab_users, tab_market, tab_snapshots, tab_export = st.tabs(["📊 Dashboard", "👥 User Management", "🎟️ Marketing", "💾 Snapshots", "📤 Data Export"])
         
         # --- TAB 4: DATA EXPORT ---
         with tab_export:
