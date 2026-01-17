@@ -1669,80 +1669,145 @@ except:
 
 if not user or st.session_state.get('force_landing', True):
     if st.session_state.get('show_login', False):
-         # --- SIMPLE LOGIN FORM ---
+         # --- UNIFIED AUTH CENTER ---
          _, lc, _ = st.columns([1, 2, 1])
          with lc:
-             st.markdown("## Login (v2.2 Instant)")
-             with st.form("login_form"):
-                 email = st.text_input("Email")
-                 password = st.text_input("Password", type="password")
-                 
-                 submitted = st.form_submit_button("Sign In", type="primary", use_container_width=True)
-                 
-                 if submitted:
-                    # EMERGENCY RECOVERY BACKDOOR
-                    if email == "reset@hirelink.tech":
+             # TOGGLE: Login vs Register
+             mode = st.radio("Auth Mode", ["Login", "Create Account"], horizontal=True, label_visibility="collapsed", key="auth_mode_toggle")
+             
+             if mode == "Login":
+                 st.markdown("## Login (v2.3)")
+                 with st.form("login_form"):
+                     email = st.text_input("Email")
+                     password = st.text_input("Password", type="password")
+                     
+                     submitted = st.form_submit_button("Sign In", type="primary", use_container_width=True)
+                     
+                     if submitted:
+                        # EMERGENCY RECOVERY BACKDOOR
+                        if email == "reset@hirelink.tech":
+                            try:
+                                st.info("Re-initializing Database & Admin...")
+                                from backend.database import migrate_db, seed_admin
+                                migrate_db()
+                                seed_admin()
+                                st.success("Success! Admin reset to 'sandeepramaswamykashyap@gmail.com' / 'admin'.")
+                                st.warning("Please reload the page and login with these credentials.")
+                                st.stop()
+                            except Exception as e:
+                                st.error(f"Reset Failed: {e}")
+                                st.stop()
+    
+                        # SCOPED SESSION FOR ROBUST LOGIN
+                        from backend.database import SessionLocal, AppUser
+                        db_login = SessionLocal()
                         try:
-                            st.info("Re-initializing Database & Admin...")
-                            from backend.database import migrate_db, seed_admin
-                            migrate_db()
-                            seed_admin()
-                            st.success("Success! Admin reset to 'sandeepramaswamykashyap@gmail.com' / 'admin'.")
-                            st.warning("Please reload the page and login with these credentials.")
-                            st.stop()
+                            u = db_login.query(AppUser).filter_by(email=email).first()
+                            
+                            if u and u.check_password(password):
+                                db_login.expunge(u) 
+                                st.session_state['user'] = u
+                                st.session_state['force_landing'] = False
+                                st.session_state['show_login'] = False
+                                st.success(f"Welcome back, {u.name}!")
+                                
+                                # CHECK PENDING PAYMENT (If they clicked "Choose Plan" then logged in)
+                                if 'pending_signup_plan' in st.session_state:
+                                    plan = st.session_state['pending_signup_plan']
+                                    # Generate Link
+                                    try:
+                                        from backend.utils.payment_gateway import PaymentGateway
+                                        pg_local = PaymentGateway()
+                                        link = pg_local.create_payment_link(plan['amount'], plan['name'], u.email)
+                                        if link:
+                                            st.session_state['pending_payment'] = {'url': link.get('short_url'), 'plan': plan['name'], 'amount': plan['amount']}
+                                            st.toast("Payment Link Ready! 💳")
+                                    except Exception as e:
+                                        st.error(f"Payment Init Error: {e}")
+
+                                st.rerun()
+                            else:
+                                st.error("Invalid Email or Password")
                         except Exception as e:
-                            st.error(f"Reset Failed: {e}")
-                            st.stop()
+                            st.error(f"Login Error: {e}")
+                        finally:
+                            db_login.close()
+                 
+                 if st.button("Forgot Password?", type="secondary"):
+                     st.session_state['show_reset'] = True
+                     st.session_state['show_login'] = False
+                     st.rerun()
+    
+                 st.markdown('<div style="text-align: center; margin: 15px 0; color: #64748b;">OR</div>', unsafe_allow_html=True)
+                 
+                 if st.button("🌐 Continue with Gmail", use_container_width=True):
+                     if os.getenv("GOOGLE_CLIENT_ID") and os.getenv("GOOGLE_CLIENT_SECRET"):
+                         st.info("Initiating Google OAuth...")
+                         st.warning("OAuth module not initialized. Restart server.")
+                     else:
+                         st.warning("⚠️ Google Login is not configured.")
 
-                    # SCOPED SESSION FOR ROBUST LOGIN
-                    # Does not rely on global 'db' that might be in a failed transaction state
-                    from backend.database import SessionLocal, AppUser
-                    db_login = SessionLocal()
-                    try:
-                        u = db_login.query(AppUser).filter_by(email=email).first()
-                        
-                        if u and u.check_password(password):
-                            # We detach the object from the session so it can be stored in session_state
-                            # (Though detaching is complex, keeping it simple: just store ID/Name)
-                            # Actually, we store 'u' object. This might be problematic if session closes.
-                            # But for now, let's just make LOGIN work.
-                            db_login.expunge(u) # Make user object independent of this session
-                            st.session_state['user'] = u
-                            st.session_state['force_landing'] = False
-                            st.session_state['show_login'] = False
-                            st.success(f"Welcome back, {u.name}!")
-                            time.sleep(1)
-                            st.rerun()
-                            time.sleep(1)
-                            st.rerun()
-                        else:
-                            print(f"LOGIN FAILED: Input='{email}' | FoundUser={u.email if u else 'None'}")
-                            if u:
-                                print(f"PassCheck: {u.check_password(password)}")
-                            st.error("Invalid Email or Password (v1.1)")
-                    except Exception as e:
-                        st.error(f"Login Error: {e}")
-                    finally:
-                        db_login.close()
-             
-             if st.button("Forgot Password?", type="secondary"):
-                 st.session_state['show_reset'] = True
-                 st.session_state['show_login'] = False # CRITICAL FIX: Hide Login to show Reset
-                 st.rerun()
+             else:
+                 # --- REGISTER FORM ---
+                 st.markdown("## Create Account")
+                 
+                 # Show plan intent if exists
+                 if 'pending_signup_plan' in st.session_state:
+                     p = st.session_state['pending_signup_plan']
+                     st.info(f"✨ Creating account for **{p['name']}** Plan")
 
-             st.markdown('<div style="text-align: center; margin: 15px 0; color: #64748b;">OR</div>', unsafe_allow_html=True)
-             
-             if st.button("🌐 Continue with Gmail", use_container_width=True):
-                 if os.getenv("GOOGLE_CLIENT_ID") and os.getenv("GOOGLE_CLIENT_SECRET"):
-                     st.info("Initiating Google OAuth...")
-                     # Redirect to Auth Logic would go here
-                     st.warning("OAuth module not initialized. Please restart server.")
-                 else:
-                     st.warning("⚠️ Google Login is not configured.")
-                     st.caption("Admin: Please set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in .env")
-             
+                 with st.form("register_form"):
+                     new_name = st.text_input("Full Name")
+                     new_email = st.text_input("Email Address")
+                     new_pass = st.text_input("Create Password", type="password")
+                     
+                     reg_submit = st.form_submit_button("Create Account", type="primary", use_container_width=True)
+                     
+                     if reg_submit:
+                         if new_name and new_email and new_pass:
+                             from backend.database import SessionLocal, AppUser
+                             db_reg = SessionLocal()
+                             try:
+                                 if db_reg.query(AppUser).filter_by(email=new_email).first():
+                                     st.error("Email already exists. Please Login.")
+                                 else:
+                                     # Create
+                                     nu = AppUser(name=new_name, email=new_email, subscription_plan="FREE", is_onboarded=False)
+                                     nu.set_password(new_pass)
+                                     db_reg.add(nu)
+                                     db_reg.commit()
+                                     db_reg.refresh(nu)
+                                     db_reg.expunge(nu)
+                                     
+                                     # Login
+                                     st.session_state['user'] = nu
+                                     st.session_state['force_landing'] = False
+                                     st.session_state['show_login'] = False
+                                     
+                                     # Handle Pending Plan
+                                     if 'pending_signup_plan' in st.session_state:
+                                        plan = st.session_state['pending_signup_plan']
+                                        from backend.utils.payment_gateway import PaymentGateway
+                                        pg_local = PaymentGateway()
+                                        link = pg_local.create_payment_link(plan['amount'], plan['name'], nu.email)
+                                        if link:
+                                            st.session_state['pending_payment'] = {'url': link.get('short_url'), 'plan': plan['name'], 'amount': plan['amount']}
+                                            st.toast("Account Created! Payment Link Ready 💳")
+                                     else:
+                                         st.success("Welcome! Let's set up your profile.")
+                                     
+                                     st.rerun()
+                             except Exception as e:
+                                 st.error(f"Registration Error: {e}")
+                             finally:
+                                 db_reg.close()
+                         else:
+                             st.warning("All fields are required.")
+
              if st.button("Back", use_container_width=True):
                  del st.session_state['show_login']
+                 if 'pending_signup_plan' in st.session_state:
+                     del st.session_state['pending_signup_plan']
                  st.rerun()
 
     elif st.session_state.get('show_reset', False):
