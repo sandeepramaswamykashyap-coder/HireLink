@@ -1170,7 +1170,15 @@ def render_pricing_logic(user_exists):
                 # logic inline
                 total = p_starter * 12 if is_annual else p_starter
                 try:
-                    link = pg.create_payment_link(total, "STARTER", user.email)
+                    # SAFE USER EMAIL RETRIEVAL
+                    email_target = "guest@hirelink.tech"
+                    if 'user' in st.session_state and st.session_state['user']:
+                         email_target = st.session_state['user'].email
+                    elif user_exists: # Sometimes relying on global is risky
+                         # user global might be None
+                         pass
+                    
+                    link = pg.create_payment_link(total, "STARTER", email_target)
                     if link:
                         url = link.get('short_url')
                         st.session_state['pending_payment'] = {'url': url, 'plan': 'STARTER', 'amount': total}
@@ -1202,7 +1210,12 @@ def render_pricing_logic(user_exists):
                  # logic inline
                 total = p_pro * 12 if is_annual else p_pro
                 try:
-                    link = pg.create_payment_link(total, "PRO", user.email)
+                    # SAFE USER EMAIL RETRIEVAL
+                    email_target = "guest@hirelink.tech"
+                    if 'user' in st.session_state and st.session_state['user']:
+                         email_target = st.session_state['user'].email
+                         
+                    link = pg.create_payment_link(total, "PRO", email_target)
                     if link:
                         url = link.get('short_url')
                         st.session_state['pending_payment'] = {'url': url, 'plan': 'PRO', 'amount': total}
