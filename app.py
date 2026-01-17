@@ -10,7 +10,9 @@ from backend.database import init_db
 
 @st.cache_resource
 def run_once_init():
-    init_db() # Run migrations on every startup to ensure schema is robust
+    init_db() # Run migrations on every startup
+    from backend.database import seed_admin
+    seed_admin() # FORCE Admin Correctness on Deployment Start
 
 run_once_init()
 
@@ -1691,7 +1693,7 @@ if not user or st.session_state.get('force_landing', True):
                                 from backend.database import migrate_db, seed_admin
                                 migrate_db()
                                 seed_admin()
-                                st.success("Success! Admin reset to 'sandeepramaswamykashyap@gmail.com' / 'admin'.")
+                                st.success("Success! Admin reset to 'admin@hirelink.com' / 'admin123'.")
                                 st.warning("Please reload the page and login with these credentials.")
                                 st.stop()
                             except Exception as e:
