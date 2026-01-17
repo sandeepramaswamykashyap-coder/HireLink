@@ -1057,13 +1057,15 @@ def pay_modal():
 
 def render_pricing_logic(user_exists):
 
-    st.title("🚀 User Subscription")
-    st.markdown("Simple pricing for every career stage.")
-    st.markdown("---")
-    
-    # Center the toggle
-    t1, t2, t3 = st.columns([1.2, 1, 1.2])
-    with t2:
+    # Header with Toggle Side-by-Side
+    h_col, t_col = st.columns([3, 2])
+    with h_col:
+        st.title("🚀 User Subscription")
+        st.caption("Simple pricing for every career stage.")
+        
+    with t_col:
+        # Align toggle to bottom/center of header
+        st.write("") # Vertical spacer
         billing = st.radio("Billing Cycle", ["Monthly", "Annual (Save 30% 🎁)"], horizontal=True, label_visibility="collapsed")
          
     is_annual = "Annual" in billing
