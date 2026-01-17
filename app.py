@@ -1814,14 +1814,10 @@ if not user or st.session_state.get('force_landing', True):
                      st.session_state['show_login'] = False
                      st.rerun()
     
-                 st.markdown('<div style="text-align: center; margin: 15px 0; color: #64748b;">OR</div>', unsafe_allow_html=True)
-                 
-                 if st.button("🌐 Continue with Gmail", use_container_width=True):
-                     if os.getenv("GOOGLE_CLIENT_ID") and os.getenv("GOOGLE_CLIENT_SECRET"):
-                         st.info("Initiating Google OAuth...")
-                         st.warning("OAuth module not initialized. Restart server.")
-                     else:
-                         st.warning("⚠️ Google Login is not configured.")
+                 # Google Login Removed (Not Configured)
+                 # st.markdown('<div style="text-align: center; margin: 15px 0; color: #64748b;">OR</div>', unsafe_allow_html=True)
+                 # if st.button("🌐 Continue with Gmail", use_container_width=True):
+                 #    pass
 
              else:
                  # --- REGISTER FORM ---
