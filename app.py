@@ -1352,7 +1352,6 @@ def check_and_show_signup_modal():
                     password = st.text_input("Create Password ", type="password")
                     if st.form_submit_button("Create & Pay"):
                         st.info("Please use a newer browser or contact support if this fails.")
-                                st.error("Payment Gateway Error")
                     else:
                         st.error("All fields required.")
                         
