@@ -1134,150 +1134,88 @@ def render_pricing_logic(user_exists):
     lbl_period = "per month"
     if is_annual: lbl_period += " (billed annually)"
 
-    # --- FORCE CSS FOR PRICING CARDS (Fix for Transparent UI) ---
-    st.markdown("""
-    <style>
-    .pricing-card-redux {
-        background: #1e293b !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 20px !important;
-        padding: 40px 30px !important;
-        width: 100% !important;
-        text-align: center !important;
-        position: relative !important;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
-        display: flex !important;
-        flex-direction: column !important;
-        height: 500px !important;
-        min-height: 500px !important;
-        max-height: 500px !important;
-        justify-content: space-between !important;
-        margin-top: 20px !important;
-    }
-    .pricing-card-redux:hover {
-        transform: translateY(-5px) !important;
-        border-color: #6366f1 !important;
-        box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2) !important;
-    }
-    .plan-name { font-size: 0.9rem !important; font-weight: 700 !important; color: #94a3b8 !important; letter-spacing: 0.1em !important; margin-bottom: 10px !important; }
-    .plan-slogan { font-size: 1rem !important; color: #cbd5e1 !important; margin-bottom: 20px !important; }
-    .price-tag { font-size: 3rem !important; font-weight: 800 !important; color: white !important; margin-bottom: 8px !important; }
-    .price-period { color: #64748b !important; margin-bottom: 30px !important; }
-    .pricing-features ul { list-style: none !important; padding: 0 !important; margin: 0 !important; text-align: left !important; }
-    .pricing-features li { padding: 8px 0 !important; color: #cbd5e1 !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
-    .pricing-features li:last-child { border-bottom: none !important; }
-    .most-popular-badge {
-        position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-        background: linear-gradient(90deg, #6366f1, #a855f7);
-        padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; color: white;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-    # Grid with padding
-    _, c1, c2, c3, _ = st.columns([0.2, 3, 3, 3, 0.2])
+    # --- PLAN DISPLAY (Native Streamlit) ---
+    st.markdown("---")
     
-    with c1:
-        st.markdown(f"""
-        <div class="pricing-card-redux">
-            <div class="plan-name">FREE TIER</div>
-            <div class="plan-slogan">Taste the automation</div>
-            <div class="price-tag">₹0</div>
-            <div class="price-period">forever</div>
-            <div class="pricing-features">
-                <ul>
-                    <li>Apply to <b>20 jobs/month</b></li>
-                    <li>Basic Resume Parsing</li>
-                    <li>Manual Job Search</li>
-                </ul>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with c2:
-        st.markdown(f"""
-        <div class="pricing-card-redux">
-            <div class="plan-name">STARTER</div>
-            <div class="plan-slogan">For steady applying</div>
-            <div class="price-tag">₹{p_starter}</div>
-            <div class="price-period">{lbl_period}</div>
-            <div class="pricing-features">
-                <ul>
-                    <li>Apply to <b>150 jobs/month</b></li>
-                    <li>Priority Email Support</li>
-                    <li><b>Unlimited</b> Runtime</li>
-                </ul>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with c3:
-        st.markdown(f"""
-        <div class="pricing-card-redux featured">
-            <div class="most-popular-badge">BEST VALUE</div>
-            <div class="plan-name" style="color: #a78bfa;">PRO POWER</div>
-            <div class="plan-slogan">Maximum velocity</div>
-            <div class="price-tag">₹{p_pro}</div>
-            <div class="price-period">{lbl_period}</div>
-            <div class="pricing-features">
-                <ul>
-                    <li>Apply to <b>1,000 jobs/month</b></li>
-                    <li><b>Smart AI</b> Cover Letters</li>
-                    <li>Dedicated Account Manager</li>
-                    <li>Priority Queue</li>
-                </ul>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    # --- ROBUST PAYMENT INTERFACE (NUCLEAR OPTION) ---
-    st.markdown("### 🚀 Upgrade Your Plan")
+    # 3 Columns for Plans
+    c_free, c_starter, c_pro = st.columns(3)
     
-    # Simple Selection instead of complicated Cards with Buttons
-    plan_choice = st.radio("Select Plan Tier", ["STARTER - ₹850/mo", "PRO - ₹2500/mo (Best Value)"], horizontal=True)
-    
-    if st.button(f"👉 Proceed to Payment ({plan_choice})", type="primary", use_container_width=True):
-        
-        selected_plan = "PRO" if "PRO" in plan_choice else "STARTER"
-        price = p_pro if selected_plan == "PRO" else p_starter
-        
-        # Calculate Total
-        total_amt = price * 12 if is_annual else price
-        
-        st.info(f"Generating Secure Link for {selected_plan}...")
-        
-        try:
-            # Direct Call - No Helpers
-            link_data = pg.create_payment_link(total_amt, selected_plan, user.email)
+    # --- FREE TIER ---
+    with c_free:
+        with st.container(border=True):
+            st.subheader("🌱 FREE")
+            st.caption("Taste the automation")
+            st.metric("Price", "₹0", "Forever")
+            st.markdown("""
+            *   ✅ 20 Applications/mo
+            *   ✅ Basic Resume Parsing
+            *   ✅ Manual Job Search
+            """)
+            st.button("Current Plan", disabled=True, use_container_width=True)
+
+    # --- STARTER TIER ---
+    with c_starter:
+        with st.container(border=True):
+            st.subheader("🚀 STARTER")
+            st.caption("Steady applying")
+            st.metric("Price", f"₹{p_starter}", f"{lbl_period}")
+            st.markdown("""
+            *   ✅ **150** Applications/mo
+            *   ✅ Priority Email Support
+            *   ✅ Unlimited Runtime
+            """)
             
-            if link_data:
-                url = link_data.get('short_url')
-                st.success("✅ Payment Link Created!")
-                
-                # 1. Big Clickable Link
-                st.markdown(f"### [👉 CLICK HERE TO PAY SECURELY]({url})")
-                
-                # 2. Raw URL for Copy-Paste
-                st.code(url, language="text")
-                
-                # 3. Sidebar Persistence
-                st.session_state['pending_payment'] = {
-                     "url": url,
-                     "plan": selected_plan,
-                     "amount": total_amt,
-                     "email": user.email
-                }
-                
-                # 4. Auto-open attempt (JS)
-                st.markdown(f'<meta http-equiv="refresh" content="2;url={url}">', unsafe_allow_html=True)
-                st.caption("Redirecting in 2 seconds...")
-                
-            else:
-                st.error("Gateway Returned No Data. Check API Keys.")
-        except Exception as e:
-            st.error(f"Critical Error: {e}")
+            # Action Button
+            if st.button("Choose STARTER", key="btn_choose_starter", type="secondary", use_container_width=True):
+                # logic inline
+                total = p_starter * 12 if is_annual else p_starter
+                try:
+                    link = pg.create_payment_link(total, "STARTER", user.email)
+                    if link:
+                        url = link.get('short_url')
+                        st.session_state['pending_payment'] = {'url': url, 'plan': 'STARTER', 'amount': total}
+                        # Rerun to show persistence? No, just show it now.
+                except Exception as e:
+                    st.error(str(e))
+
+            # INLINE LINK DISPLAY (STARTER)
+            if 'pending_payment' in st.session_state and st.session_state['pending_payment']['plan'] == 'STARTER':
+                pp = st.session_state['pending_payment']
+                st.success("Link Ready!")
+                st.markdown(f"**[👉 Pay ₹{pp['amount']} Now]({pp['url']})**")
+                st.code(pp['url'], language="text")
+
+    # --- PRO TIER ---
+    with c_pro:
+        with st.container(border=True):
+            st.subheader("👑 PRO (Best Value)")
+            st.caption("Maximum Velocity")
+            st.metric("Price", f"₹{p_pro}", f"{lbl_period}")
+            st.markdown("""
+            *   ✅ **1,000** Applications/mo
+            *   ✅ **Smart AI** Cover Letters
+            *   ✅ Dedicated Account Manager
+            """)
             
+            # Action Button
+            if st.button("Choose PRO", key="btn_choose_pro", type="primary", use_container_width=True):
+                 # logic inline
+                total = p_pro * 12 if is_annual else p_pro
+                try:
+                    link = pg.create_payment_link(total, "PRO", user.email)
+                    if link:
+                        url = link.get('short_url')
+                        st.session_state['pending_payment'] = {'url': url, 'plan': 'PRO', 'amount': total}
+                except Exception as e:
+                    st.error(str(e))
+            
+            # INLINE LINK DISPLAY (PRO)
+            if 'pending_payment' in st.session_state and st.session_state['pending_payment']['plan'] == 'PRO':
+                pp = st.session_state['pending_payment']
+                st.success("Link Ready!")
+                st.markdown(f"**[👉 Pay ₹{pp['amount']} Now]({pp['url']})**")
+                st.code(pp['url'], language="text")
+
     st.markdown("---")
 
 
