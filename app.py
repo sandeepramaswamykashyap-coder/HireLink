@@ -1705,13 +1705,16 @@ if not user or st.session_state.get('force_landing', True):
                  st.session_state['show_login'] = False # CRITICAL FIX: Hide Login to show Reset
                  st.rerun()
 
-             st.markdown("""
-             <div style="text-align: center; margin: 15px 0; color: #64748b;">OR</div>
-             <button style="width: 100%; background: white; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 500; cursor: pointer; transition: 0.2s; margin-bottom: 20px;" onclick="alert('Google Login coming soon!')">
-                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" height="20">
-                 Sign in with Google
-             </button>
-             """, unsafe_allow_html=True)
+             st.markdown('<div style="text-align: center; margin: 15px 0; color: #64748b;">OR</div>', unsafe_allow_html=True)
+             
+             if st.button("🌐 Continue with Google", use_container_width=True):
+                 if os.getenv("GOOGLE_CLIENT_ID") and os.getenv("GOOGLE_CLIENT_SECRET"):
+                     st.info("Initiating Google OAuth...")
+                     # Redirect to Auth Logic would go here
+                     st.warning("OAuth module not initialized. Please restart server.")
+                 else:
+                     st.warning("⚠️ Google Login is not configured.")
+                     st.caption("Admin: Please set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in .env")
              
              if st.button("Back", use_container_width=True):
                  del st.session_state['show_login']
