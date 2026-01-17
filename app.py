@@ -2496,17 +2496,15 @@ else:
         # Let's keep Total Scraped Global as it represents "Platform Power".
         total_jobs = session.query(backend.database.Job).count() 
         
-        # 2. Resumes (PRIVATE)
-        total_resumes = session.query(backend.database.Resume).filter(backend.database.Resume.user_id == user.id).count()
+        # 2. Resumes (PRIVATE - Linked by Email)
+        # Fix: Resume table lacks user_id, use email mapping
+        total_resumes = session.query(backend.database.Resume).filter(backend.database.Resume.email == user.email).count()
         
         # 3. Applications (PRIVATE)
-        # Note: Application model might not have user_id directly if it links to Resume?
-        # Let's check model. Usually Application -> Resume -> User.
-        # Quick fix: Join Resume.
         try:
-             total_apps = session.query(backend.database.Application).join(backend.database.Resume).filter(backend.database.Resume.user_id == user.id).count()
+             # Application table HAS user_id
+             total_apps = session.query(backend.database.Application).filter(backend.database.Application.user_id == user.id).count()
         except:
-             # Fallback if Application table simple
              total_apps = 0
              
         session.close()
