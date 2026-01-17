@@ -1,6 +1,5 @@
-import streamlit as st
 st.set_page_config(
-        page_title="HireLink v2.31 (Hotfix)",
+        page_title="HireLink v2.32 (Unified Checkout)",
         page_icon="💸",
         layout="wide",
         initial_sidebar_state="expanded"
@@ -1120,24 +1119,10 @@ def render_pricing_logic(user_exists):
                     st.rerun()
             else:
                 if st.button("Choose STARTER", key="btn_choose_starter", type="primary", use_container_width=True):
-                    # logic inline
+                    # UNIFIED FLOW: Trigger Checkout Modal for Coupon Support
                     total = p_starter * 12 if is_annual else p_starter
-                    try:
-                        # Explicit Import for Safety
-                        from backend.utils.payment_gateway import PaymentGateway
-                        pg_local = PaymentGateway()
-                        
-                        u_curr = st.session_state.get('user')
-                        if u_curr:
-                            link = pg_local.create_payment_link(total, "STARTER", u_curr.email)
-                            if link:
-                                url = link.get('short_url')
-                                st.session_state['pending_payment'] = {'url': url, 'plan': 'STARTER', 'amount': total}
-                                st.toast("Payment Link Generated!", icon="💳")
-                        else:
-                            st.error("Session invalid. Please refresh.")
-                    except Exception as e:
-                        st.error(f"Error: {e}")
+                    st.session_state['pending_signup_plan'] = {'name': 'STARTER', 'amount': total}
+                    st.rerun()
 
             # INLINE LINK DISPLAY (STARTER)
             if 'pending_payment' in st.session_state and st.session_state['pending_payment']['plan'] == 'STARTER':
@@ -1171,23 +1156,10 @@ def render_pricing_logic(user_exists):
                     st.rerun()
             else:
                 if st.button("Choose PRO", key="btn_choose_pro", type="primary", use_container_width=True):
-                     # logic inline
+                    # UNIFIED FLOW: Trigger Checkout Modal
                     total = p_pro * 12 if is_annual else p_pro
-                    try:
-                        from backend.utils.payment_gateway import PaymentGateway
-                        pg_local = PaymentGateway()
-                        
-                        u_curr = st.session_state.get('user')
-                        if u_curr:
-                            link = pg_local.create_payment_link(total, "PRO", u_curr.email)
-                            if link:
-                                url = link.get('short_url')
-                                st.session_state['pending_payment'] = {'url': url, 'plan': 'PRO', 'amount': total}
-                                st.toast("Payment Link Generated!", icon="💳")
-                        else:
-                            st.error("Session invalid. Refresh.")
-                    except Exception as e:
-                         st.error(f"Error: {e}")
+                    st.session_state['pending_signup_plan'] = {'name': 'PRO', 'amount': total}
+                    st.rerun()
             
             # INLINE LINK DISPLAY (PRO)
             if 'pending_payment' in st.session_state and st.session_state['pending_payment']['plan'] == 'PRO':
