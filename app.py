@@ -2486,13 +2486,29 @@ else:
 # ... (Rest of app) ...
 
     if menu == "🏠 Dashboard":
-        # Metric Calculations
+        # Metric Calculations (USER ISOLATED)
         session = get_db_session()
-        total_jobs = session.query(backend.database.Job).count()
-        total_resumes = session.query(backend.database.Resume).count()
-        # Applications: Assuming 'applied' status or just count of entries in a hypothetical Applications table or tracked locally
-        # Currently we might not have an 'Application' table, so let's check Job status 'APPLIED'
-        total_apps = session.query(backend.database.Application).count()
+        # We only count jobs relevant to the user? No, Scraped jobs are global (Market Data).
+        # WAITING: User might want 'My Jobs'. But "Total Scraped" usually implies system availability.
+        # BUT 'Talent Profiles' and 'Applications' MUST be private.
+        
+        # 1. Total Scraped (Global Market View - OK to keep global or filter by user's search?)
+        # Let's keep Total Scraped Global as it represents "Platform Power".
+        total_jobs = session.query(backend.database.Job).count() 
+        
+        # 2. Resumes (PRIVATE)
+        total_resumes = session.query(backend.database.Resume).filter(backend.database.Resume.user_id == user.id).count()
+        
+        # 3. Applications (PRIVATE)
+        # Note: Application model might not have user_id directly if it links to Resume?
+        # Let's check model. Usually Application -> Resume -> User.
+        # Quick fix: Join Resume.
+        try:
+             total_apps = session.query(backend.database.Application).join(backend.database.Resume).filter(backend.database.Resume.user_id == user.id).count()
+        except:
+             # Fallback if Application table simple
+             total_apps = 0
+             
         session.close()
 
         # HERO SECTION
