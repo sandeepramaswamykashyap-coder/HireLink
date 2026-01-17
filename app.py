@@ -794,8 +794,8 @@ def render_floating_chat():
                 resp = agent.get_response(prompt, st.session_state.messages[:-1]) 
                 st.session_state.messages.append({"role": "assistant", "content": resp})
                 st.rerun() 
-             except:
-                 st.error("AI Offline")
+             except Exception as e:
+                 st.error(f"AI Error: {e}")
 
 # Invoke it
 render_floating_chat()
