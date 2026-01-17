@@ -55,6 +55,7 @@ class Application(Base):
     __tablename__ = 'applications'
     
     id = Column(Integer, primary_key=True)
+    user_id = Column(Integer) # ForeignKey('users_v2.id') - simplified
     job_id = Column(Integer)
     resume_id = Column(Integer)
     status = Column(String, default="Applied") # Applied, Viewed, Interview, Offer, Rejected, Failed
@@ -155,7 +156,8 @@ class Coupon(Base):
 class QuestionAnswer(Base):
     __tablename__ = 'question_answers'
     id = Column(Integer, primary_key=True)
-    question = Column(String, unique=True) # Normalized text or keyword
+    user_id = Column(Integer, ForeignKey('users_v2.id')) # ADDED
+    question = Column(String) # Removed unique constraint to allow multiple users to answer same Q
     answer = Column(String)
     category = Column(String) # e.g., 'experience', 'personal', 'legal'
 
@@ -196,6 +198,8 @@ def migrate_db():
         inspector = inspect(engine)
         if inspector.has_table("users_v2"):
             columns = [c['name'] for c in inspector.get_columns("users_v2")]
+            
+            # --- USERS_V2 MIGRATIONS ---
             if "password" not in columns:
                 logger.info("Migration: 'password' column missing in users_v2. Adding it.")
                 with engine.connect() as conn:
@@ -208,8 +212,7 @@ def migrate_db():
                 with engine.connect() as conn:
                     with conn.begin(): # Transaction
                         # Use TIMESTAMP which is standard SQL (Postgres compatible)
-                        # SQLite also accepts it.
-                        conn.execute(text("ALTER TABLE users_v2 ADD COLUMN subscription_expiry TIMESTAMP"))
+                        conn.execute(text("ALTER TABLE users_v2 ADD COLUMN subscription_expiry DATETIME"))
                 logger.info("Migration: Successfully added 'subscription_expiry' column.")
             
             if "reset_token" not in columns:
@@ -226,6 +229,24 @@ def migrate_db():
                         conn.execute(text("ALTER TABLE users_v2 ADD COLUMN reset_token_expiry TIMESTAMP"))
                 logger.info("Migration: Successfully added 'reset_token_expiry' column.")
 
+        # --- Q&A PRIVACY MIGRATIONS ---
+        if inspector.has_table("question_answers"):
+            columns = [c['name'] for c in inspector.get_columns("question_answers")]
+            if "user_id" not in columns:
+                logger.info("Migration: 'user_id' missing in question_answers. Adding it.")
+                with engine.connect() as conn:
+                    with conn.begin():
+                        conn.execute(text("ALTER TABLE question_answers ADD COLUMN user_id INTEGER"))
+        
+        # --- APPLICATION PRIVACY MIGRATIONS ---
+        if inspector.has_table("applications"):
+             columns = [c['name'] for c in inspector.get_columns("applications")]
+             if "user_id" not in columns:
+                 logger.info("Migration: 'user_id' check on applications.")
+                 with engine.connect() as conn:
+                    with conn.begin():
+                        conn.execute(text("ALTER TABLE applications ADD COLUMN user_id INTEGER"))
+
     except Exception as e:
         logger.warning(f"Migration check failed: {e}")
 
@@ -235,7 +256,7 @@ def seed_admin():
     """
     try:
         db = SessionLocal()
-        admin_email = "admin@hirelink.com"
+        admin_email = "admin@hirelink.tech"
         admin = db.query(AppUser).filter_by(email=admin_email).first()
         
         if not admin:

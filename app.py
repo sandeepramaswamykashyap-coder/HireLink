@@ -1327,8 +1327,34 @@ def render_onboarding():
                 st.info("ℹ️ **Note**: You may encounter similar or duplicate questions. Please answer them all—redundancy helps the AI apply correctly to different portals.")
                 
                 with st.form("onboarding_smart_answers"):
+                    # HYDRATE QAs if missing for this user
+                    if not is_admin:
+                         current_count = db.query(QuestionAnswer).filter_by(user_id=user.id).count()
+                         if current_count == 0:
+                             # Seed standard questions for this user
+                             # (Using a simplified list for now to ensure they have keys)
+                             standard_qs = [
+                                 ("What is your full name?", "personal"),
+                                 ("What is your phone number?", "contact"),
+                                 ("What is your current location?", "contact"),
+                                 ("What is your LinkedIn URL?", "contact"),
+                                 ("What are your top 3 skills?", "skills"),
+                                 ("How many years of experience do you have?", "experience"),
+                                 ("Are you willing to relocate?", "personal"),
+                                 ("What is your notice period?", "personal"),
+                                 ("What is your expected salary?", "personal"),
+                                 ("Do you require visa sponsorship?", "legal")
+                             ]
+                             for q_text, cat in standard_qs:
+                                 new_q = QuestionAnswer(user_id=user.id, question=q_text, category=cat, answer="")
+                                 db.add(new_q)
+                             db.commit() # Commit seeding
+                    
                     # Fetch categories
-                    qa_list = db.query(QuestionAnswer).all()
+                    if is_admin:
+                        qa_list = db.query(QuestionAnswer).all()
+                    else:
+                        qa_list = db.query(QuestionAnswer).filter_by(user_id=user.id).all()
                     categories = sorted(list(set([q.category for q in qa_list])))
                     
                     # Group by category
@@ -1993,7 +2019,15 @@ else:
             
             # Recent Applications Table
             st.caption("Recent Activity (Last 50)")
-            recent_apps = db.query(Application, Job).join(Job, Application.job_id == Job.id).order_by(Application.applied_at.desc()).limit(50).all()
+            if is_admin:
+                recent_apps = db.query(Application, Job).join(Job, Application.job_id == Job.id).order_by(Application.applied_at.desc()).limit(50).all()
+            else:
+                # JOIN Application -> Resume to ensure ownership if user_id missing, OR check user_id
+                # Simplest check: Filter by Resume Email that matches User Email
+                recent_apps = db.query(Application, Job).join(Job, Application.job_id == Job.id)\
+                            .join(Resume, Application.resume_id == Resume.id)\
+                            .filter(Resume.email == user.email)\
+                            .order_by(Application.applied_at.desc()).limit(20).all()
             
             if recent_apps:
                 app_data = []
@@ -2290,7 +2324,13 @@ else:
             st.subheader("📜 Complete Application History")
             
             # Query ALL applications
-            all_apps = db.query(Application, Job).join(Job, Application.job_id == Job.id).order_by(Application.applied_at.desc()).all()
+            if is_admin:
+                all_apps = db.query(Application, Job).join(Job, Application.job_id == Job.id).order_by(Application.applied_at.desc()).all()
+            else:
+                all_apps = db.query(Application, Job).join(Job, Application.job_id == Job.id)\
+                            .join(Resume, Application.resume_id == Resume.id)\
+                            .filter(Resume.email == user.email)\
+                            .order_by(Application.applied_at.desc()).all()
             
             if all_apps:
                 hist_data = []
@@ -2738,7 +2778,10 @@ else:
             
             # --- INSTANT SAVE PATTERN (No Form) ---
             # Fetch all questions
-            qa_list = db.query(QuestionAnswer).all()
+            if is_admin:
+                 qa_list = db.query(QuestionAnswer).all()
+            else:
+                 qa_list = db.query(QuestionAnswer).filter_by(user_id=user.id).all()
             if not qa_list:
                 st.warning("No questions found in knowledge base. Please run migration or contact admin.")
             else:
