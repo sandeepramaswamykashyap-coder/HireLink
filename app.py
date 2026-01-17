@@ -1026,7 +1026,7 @@ def render_landing_page(user_exists=False):
             <a href="/?page=shipping" target="_self" style="color: #94a3b8; margin: 0 15px; text-decoration: none;">Shipping Policy</a>
             <a href="/?page=contact" target="_self" style="color: #94a3b8; margin: 0 15px; text-decoration: none;">Contact Us</a>
         </div>
-        <p>&copy; 2026 HireLink Technologies Pvt. Ltd. All rights reserved.</p>
+        <p>&copy; 2026 HireLink Tech Pvt. Ltd. All rights reserved.</p>
     </div>
     """, unsafe_allow_html=True)
 

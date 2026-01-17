@@ -117,7 +117,7 @@ class EmailNotifier:
                 </table>
                 <br>
                 <p><em>Keep aiming high! 🚀</em></p>
-                <p style="font-size: 12px; color: #9ca3af;">HireLink Technologies Pvt. Ltd.</p>
+                <p style="font-size: 12px; color: #9ca3af;">HireLink Tech Pvt. Ltd.</p>
             </div>
             """
             

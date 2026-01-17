@@ -13,7 +13,7 @@ We are here to help you. If you have any questions, concerns, or feedback, pleas
 *   **Phone**: +91 9113211787 (Mon-Fri, 10 AM - 6 PM IST)
 
 ### Registered Office Address
-**HireLink Technologies Pvt. Ltd.**
+**HireLink Tech Pvt. Ltd.**
 JP Nagar, Bangalore
 Karnataka, India - 560078
 
@@ -30,10 +30,10 @@ TERMS_AND_CONDITIONS = """
 
 **Last Updated: January 14, 2026**
 
-These Terms and Conditions ("Terms") govern your use of the website located at **hirelink.tech** (the "Site") and any related services provided by **HireLink Technologies Pvt. Ltd.** ("we," "us," or "our"). By accessing or using our Service, you agree to be bound by these Terms. If you disagree with any part of the terms, then you may not access the Service.
+These Terms and Conditions ("Terms") govern your use of the website located at **hirelink.tech** (the "Site") and any related services provided by **HireLink Tech Pvt. Ltd.** ("we," "us," or "our"). By accessing or using our Service, you agree to be bound by these Terms. If you disagree with any part of the terms, then you may not access the Service.
 
 ### 1. Intellectual Property
-The Service and its original content, features, and functionality are and will remain the exclusive property of HireLink Technologies Pvt. Ltd. and its licensors. The Service is protected by copyright, trademark, and other laws of both India and foreign countries. Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of HireLink Technologies Pvt. Ltd.
+The Service and its original content, features, and functionality are and will remain the exclusive property of HireLink Tech Pvt. Ltd. and its licensors. The Service is protected by copyright, trademark, and other laws of both India and foreign countries. Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of HireLink Tech Pvt. Ltd.
 
 ### 2. User Accounts & Responsibilities
 When you create an account with us, you must provide us information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our Service.
@@ -42,13 +42,13 @@ When you create an account with us, you must provide us information that is accu
 *   You must notify us immediately upon becoming aware of any breach of security or unauthorized use of your account.
 
 ### 3. Links To Other Web Sites
-Our Service may contain links to third-party web sites or services that are not owned or controlled by HireLink Technologies Pvt. Ltd. (e.g., LinkedIn, Naukri, Indeed). We has no control over, and assumes no responsibility for, the content, privacy policies, or practices of any third-party web sites or services. You further acknowledge and agree that HireLink Technologies Pvt. Ltd. shall not be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or in connection with use of or reliance on any such content, goods or services available on or through any such web sites or services.
+Our Service may contain links to third-party web sites or services that are not owned or controlled by HireLink Tech Pvt. Ltd. (e.g., LinkedIn, Naukri, Indeed). We has no control over, and assumes no responsibility for, the content, privacy policies, or practices of any third-party web sites or services. You further acknowledge and agree that HireLink Tech Pvt. Ltd. shall not be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or in connection with use of or reliance on any such content, goods or services available on or through any such web sites or services.
 
 ### 4. Termination
 We may terminate or suspend access to our Service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms. Upon termination, your right to use the Service will immediately cease. If you wish to terminate your account, you may simply discontinue using the Service.
 
 ### 5. Limitation of Liability
-In no event shall HireLink Technologies Pvt. Ltd., nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from (i) your access to or use of or inability to access or use the Service; (ii) any conduct or content of any third party on the Service; (iii) any content obtained from the Service; and (iv) unauthorized access, use or alteration of your transmissions or content, whether based on warranty, contract, tort (including negligence) or any other legal theory, whether or not we have been informed of the possibility of such damage.
+In no event shall HireLink Tech Pvt. Ltd., nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from (i) your access to or use of or inability to access or use the Service; (ii) any conduct or content of any third party on the Service; (iii) any content obtained from the Service; and (iv) unauthorized access, use or alteration of your transmissions or content, whether based on warranty, contract, tort (including negligence) or any other legal theory, whether or not we have been informed of the possibility of such damage.
 
 ### 6. Governing Law
 These Terms shall be governed and construed in accordance with the laws of Karnataka, India, without regard to its conflict of law provisions. Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights. If any provision of these Terms is held to be invalid or unenforceable by a court, the remaining provisions of these Terms will remain in effect.
@@ -98,7 +98,7 @@ REFUND_POLICY = """
 
 **Last Updated: January 14, 2026**
 
-At HireLink Technologies Pvt. Ltd., we pride ourselves on the quality of our SaaS platform. We offer a transparent and fair cancellation and refund policy.
+At HireLink Tech Pvt. Ltd., we pride ourselves on the quality of our SaaS platform. We offer a transparent and fair cancellation and refund policy.
 
 ### 1. Subscription Cancellation
 *   **User-Initiated Cancellation**: You can cancel your subscription at any time through your account settings or by contacting customer support.
@@ -122,7 +122,7 @@ SHIPPING_POLICY = """
 
 **Last Updated: January 14, 2026**
 
-HireLink Technologies Pvt. Ltd. is a provider of digital software solutions (SaaS). We do not sell any physical goods, providing purely digital services.
+HireLink Tech Pvt. Ltd. is a provider of digital software solutions (SaaS). We do not sell any physical goods, providing purely digital services.
 
 ### 1. Nature of Service
 *   **Digital Delivery**: All our services are delivered digitally via the internet. No physical product will be shipped to your address.
