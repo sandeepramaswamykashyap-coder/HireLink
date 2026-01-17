@@ -95,7 +95,7 @@ except Exception as e:
 import os
 import time
 
-
+print("--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---")
 
 # --- CAPTURE REFERRAL ---
 if "ref" in st.query_params:
