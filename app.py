@@ -1,6 +1,5 @@
-import streamlit as st
 st.set_page_config(
-        page_title="HireLink v2.38 (Secure)",
+        page_title="HireLink v2.39 (UI Polish)",
         page_icon="💸",
         layout="wide",
         initial_sidebar_state="expanded"
@@ -1079,7 +1078,7 @@ def render_pricing_logic(user_exists):
             st.caption("Taste the automation")
             st.metric("Price", "₹0", "Forever")
             st.markdown("""
-            <div style="min-height: 160px;">
+            <div style="min-height: 210px;">
             <ul style="list-style-type: none; padding-left: 0;">
             <li>✅ 20 Applications/mo</li>
             <li>✅ Basic Resume Parsing</li>
@@ -1102,7 +1101,7 @@ def render_pricing_logic(user_exists):
             st.caption("Steady applying")
             st.metric("Price", f"₹{p_starter}", f"{lbl_period}")
             st.markdown("""
-            <div style="min-height: 160px;">
+            <div style="min-height: 210px;">
             <ul style="list-style-type: none; padding-left: 0;">
             <li>✅ <strong>150</strong> Applications/mo</li>
             <li>✅ Priority Email Support</li>
@@ -1135,11 +1134,11 @@ def render_pricing_logic(user_exists):
     # --- PRO TIER ---
     with c_pro:
         with st.container(border=True):
-            st.subheader("👑 PRO (Best Value)")
-            st.caption("Maximum Velocity")
+            st.subheader("👑 PRO")
+            st.caption("Max Velocity • Best Value")
             st.metric("Price", f"₹{p_pro}", f"{lbl_period}")
             st.markdown("""
-            <div style="min-height: 160px;">
+            <div style="min-height: 210px;">
             <ul style="list-style-type: none; padding-left: 0;">
             <li>✅ <strong>1,000</strong> Applications/mo</li>
             <li>✅ <strong>Smart AI</strong> Cover Letters</li>
