@@ -1922,7 +1922,9 @@ else:
                     data = get_excel_export()
                     if data:
                         st.session_state['export_data'] = data
-                        st.success("Export Ready!")
+                        st.success("Excel Export Ready!")
+                    else:
+                        st.session_state['export_fallback'] = True
                 
                 if 'export_data' in st.session_state:
                      st.download_button(
@@ -1932,6 +1934,22 @@ else:
                          mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                          type="primary"
                      )
+                
+                # FALLBACK: CSV Options
+                if st.session_state.get('export_fallback'):
+                    st.warning("Excel export unavailable (library missing). Using CSV fallback.")
+                    
+                    # 1. Users
+                    u_csv = pd.read_sql(db.query(backend.database.AppUser).statement, db.bind).to_csv(index=False).encode('utf-8')
+                    st.download_button("⬇️ Download Users (.csv)", u_csv, "users.csv", "text/csv")
+                    
+                    # 2. QAs
+                    q_csv = pd.read_sql(db.query(QuestionAnswer).statement, db.bind).to_csv(index=False).encode('utf-8')
+                    st.download_button("⬇️ Download Smart Answers (.csv)", q_csv, "smart_answers.csv", "text/csv")
+                    
+                    # 3. Applications
+                    a_csv = pd.read_sql(db.query(Application).statement, db.bind).to_csv(index=False).encode('utf-8')
+                    st.download_button("⬇️ Download Applications (.csv)", a_csv, "applications.csv", "text/csv")
 
         # --- TAB 1: DASHBOARD ---
         with tab_dash:
