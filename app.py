@@ -1344,18 +1344,8 @@ def check_and_show_signup_modal():
             
         else:
             # Fallback for old Streamlit
-            with st.expander(f"🚀 Create Account to Upgrade to {plan_info['name']}", expanded=True):
-                st.info("Please secure your account to proceed.")
-                with st.form("signup_fallback"):
-                    name = st.text_input("Full Name ", placeholder="John Doe")
-                    email = st.text_input("Email Address ", placeholder="john@example.com")
-                    password = st.text_input("Create Password ", type="password")
-                    if st.form_submit_button("Create & Pay"):
-                        st.info("Please use a newer browser or contact support if this fails.")
-                    else:
-                        st.error("All fields required.")
-                        
-        signup_modal()
+            st.warning("Your browser or app version does not support the Secure Signup Modal.")
+            st.info("Please contact support at sandeepkashyap@hirelink.tech to upgrade manually.")
 
 # --- ONBOARDING LOGIC ---
 def render_onboarding():
