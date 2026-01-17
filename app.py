@@ -1039,7 +1039,12 @@ def render_pricing_logic(user_exists):
             *   ✅ Basic Resume Parsing
             *   ✅ Manual Job Search
             """)
-            st.button("Current Plan", disabled=True, use_container_width=True)
+            if not user_exists:
+                if st.button("Start for Free", type="primary", use_container_width=True):
+                    st.session_state['show_login'] = True
+                    st.rerun()
+            else:
+                st.button("Current Plan", disabled=True, use_container_width=True)
 
     # --- STARTER TIER ---
     with c_starter:
