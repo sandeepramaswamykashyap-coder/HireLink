@@ -1,2 +1,4 @@
-chromium
-chromium-driver
+
+# chromium - REMOVED for build speed
+# chromium-driver - REMOVED for build speed
+# Only keep lightweight system libs if needed
