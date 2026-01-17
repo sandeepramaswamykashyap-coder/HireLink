@@ -941,13 +941,20 @@ def render_landing_page(user_exists=False):
 <span>&#11088;&#11088;&#11088;&#11088;&#11088; Trusted by 5,000+ Job Seekers</span>
 <span class="trust-badge">🔒 Secure & Private</span>
 </div>
-<div style="display: flex; justify-content: center; gap: 20px; margin-top: 40px;">
-<a href="#plans" target="_self" style="text-decoration: none;">
-<button style="background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-weight: 700; cursor: pointer; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);">
-Start Applying Now 🚀
-</button>
-</a>
 </div>
+"""
+    , unsafe_allow_html=True)
+    
+    # Native Streamlit Button for Logic Control (Centered)
+    _, h_cta, _ = st.columns([1, 2, 1])
+    with h_cta:
+        if st.button("Start Applying Now 🚀", type="primary", use_container_width=True):
+             st.session_state['show_login'] = True
+             st.session_state['auth_mode_default'] = "Create Account"
+             st.rerun()
+    
+    st.markdown("""
+<div class="landing-features">
 </div>
 <div class="landing-features">
 <div class="feature-card">
