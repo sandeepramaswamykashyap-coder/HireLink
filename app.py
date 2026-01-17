@@ -1218,19 +1218,24 @@ def check_and_show_signup_modal():
                                 db.commit()
                                 
                                 # Generate Link
-                                link_data = pg.create_payment_link(plan_info['amount'], plan_info['name'], email)
-                                if link_data:
-                                    # Transition to Payment State
-                                    st.session_state['pending_payment'] = {
-                                         "url": link_data.get('short_url'),
-                                         "plan": plan_info['name'],
-                                         "amount": plan_info['amount'],
-                                         "email": email
-                                    }
-                                    del st.session_state['pending_signup_plan']
-                                    st.rerun()
-                                else:
-                                    st.error("Payment Init Failed.")
+                                try:
+                                    from backend.utils.payment_gateway import PaymentGateway
+                                    pg = PaymentGateway()
+                                    link_data = pg.create_payment_link(plan_info['amount'], plan_info['name'], email)
+                                    if link_data:
+                                        # Transition to Payment State
+                                        st.session_state['pending_payment'] = {
+                                             "url": link_data.get('short_url'),
+                                             "plan": plan_info['name'],
+                                             "amount": plan_info['amount'],
+                                             "email": email
+                                        }
+                                        del st.session_state['pending_signup_plan']
+                                        st.rerun()
+                                    else:
+                                        st.error("Payment Init Failed.")
+                                except Exception as e:
+                                    st.error(f"Payment Error: {e}")
                         else:
                             st.warning("All fields required.")
                             
