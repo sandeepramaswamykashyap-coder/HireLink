@@ -1748,24 +1748,14 @@ if not user or st.session_state.get('force_landing', True):
                             st.success(f"Welcome back, {u.name}!")
                             time.sleep(1)
                             st.rerun()
+                            time.sleep(1)
+                            st.rerun()
                         else:
-                            st.error("Invalid credentials.")
+                            st.error("Invalid Email or Password")
                     except Exception as e:
                         st.error(f"Login Error: {e}")
                     finally:
                         db_login.close()
-                    
-                    with st.expander("Forgot Password?"):
-                        # RESET FLOW UI
-                        rst_email = st.text_input("Enter your registered email", key="rst_email")
-                        st.caption("Issues? Contact: **support@hirelink.tech**")
-                        if st.button("Send Reset Link", key="btn_rst_send"):
-                             from backend.utils.notifier import EmailNotifier
-                             from backend.database import SessionLocal, AppUser
-                             import uuid
-                             from datetime import datetime, timedelta
-                             
-                             db_rst = SessionLocal()
                              u_rst = db_rst.query(AppUser).filter_by(email=rst_email).first()
                              if u_rst:
                                  token = str(uuid.uuid4())
