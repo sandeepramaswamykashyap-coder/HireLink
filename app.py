@@ -70,19 +70,26 @@ from backend.agents.auto_applier import AutoApplier
 from backend.database import init_db, get_db, Job, Resume, Application, PortalStatus, QuestionAnswer, Coupon, PortalCredential, SessionLocal
 # FORCE DB INIT to create new tables
 init_db()
-from backend.scrapers.naukri import NaukriScraper
-from backend.scrapers.linkedin import LinkedInScraper
-from backend.scrapers.indeed import IndeedScraper
-from backend.scrapers.others import (
-    ShineScraper, GlassdoorScraper, FounditScraper, 
-    IntershalaScraper, IIMJobsScraper, FreshersworldScraper, WellfoundScraper
-)
-from backend.utils.payment_gateway import PaymentGateway
-pg = PaymentGateway()
-from backend.agents.resume_parser import ResumeParserV2 as ResumeParser
-from backend.agents.job_matcher import JobMatcher
-from backend.agents.auto_applier import AutoApplier
-from backend.agents.job_analyzer import JobAnalyzer
+# --- SAFE IMPORTS (Prevent Startup Crash) ---
+SCRAPERS_AVAILABLE = False
+try:
+    from backend.scrapers.naukri import NaukriScraper
+    from backend.scrapers.linkedin import LinkedInScraper
+    from backend.scrapers.indeed import IndeedScraper
+    from backend.scrapers.others import (
+        ShineScraper, GlassdoorScraper, FounditScraper, 
+        IntershalaScraper, IIMJobsScraper, FreshersworldScraper, WellfoundScraper
+    )
+    from backend.agents.resume_parser import ResumeParserV2 as ResumeParser
+    from backend.agents.job_matcher import JobMatcher
+    from backend.agents.auto_applier import AutoApplier
+    from backend.agents.job_analyzer import JobAnalyzer
+    SCRAPERS_AVAILABLE = True
+except Exception as e:
+    print(f"⚠️ SCRAPER INIT FAILED: {e}")
+    # Define dummy classes/vars to prevent NameError later in app
+    NaukriScraper = LinkedInScraper = IndeedScraper = None
+    AutoApplier = JobAnalyzer = ResumeParser = JobMatcher = None
 import os
 import time
 
