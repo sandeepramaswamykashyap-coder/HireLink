@@ -1054,25 +1054,30 @@ def render_pricing_logic(user_exists):
             """)
             
             # Action Button
-            if st.button("Choose STARTER", key="btn_choose_starter", type="secondary", use_container_width=True):
-                # logic inline
-                total = p_starter * 12 if is_annual else p_starter
-                try:
-                    # SAFE USER EMAIL RETRIEVAL
-                    email_target = "guest@hirelink.tech"
-                    if 'user' in st.session_state and st.session_state['user']:
-                         email_target = st.session_state['user'].email
-                    elif user_exists: # Sometimes relying on global is risky
-                         # user global might be None
-                         pass
-                    
-                    link = pg.create_payment_link(total, "STARTER", email_target)
-                    if link:
-                        url = link.get('short_url')
-                        st.session_state['pending_payment'] = {'url': url, 'plan': 'STARTER', 'amount': total}
-                        # Rerun to show persistence? No, just show it now.
-                except Exception as e:
-                    st.error(str(e))
+            if not user_exists:
+                if st.button("Choose STARTER", key="btn_choose_starter_guest", type="secondary", use_container_width=True):
+                    st.session_state['show_login'] = True
+                    st.session_state['pending_signup_plan'] = {'name': 'STARTER', 'amount': p_starter} # Optional: Remember intent
+                    st.rerun()
+            else:
+                if st.button("Choose STARTER", key="btn_choose_starter", type="secondary", use_container_width=True):
+                    # logic inline
+                    total = p_starter * 12 if is_annual else p_starter
+                    try:
+                        # SAFE USER EMAIL RETRIEVAL
+                        # We know user_exists is True, so st.session_state['user'] should be valid ideally, 
+                        # but we can pass it in via args if needed. 
+                        # Ideally rely on session_state['user']
+                        u_curr = st.session_state.get('user')
+                        if u_curr:
+                            link = pg.create_payment_link(total, "STARTER", u_curr.email)
+                            if link:
+                                url = link.get('short_url')
+                                st.session_state['pending_payment'] = {'url': url, 'plan': 'STARTER', 'amount': total}
+                        else:
+                            st.error("Session invalid. Please refresh.")
+                    except Exception as e:
+                        st.error(str(e))
 
             # INLINE LINK DISPLAY (STARTER)
             if 'pending_payment' in st.session_state and st.session_state['pending_payment']['plan'] == 'STARTER':
@@ -1695,6 +1700,10 @@ if not user or st.session_state.get('force_landing', True):
                     finally:
                         db_login.close()
              
+             if st.button("Forgot Password?", type="tertiary"):
+                 st.session_state['show_reset'] = True
+                 st.rerun()
+
              st.markdown("""
              <div style="text-align: center; margin: 15px 0; color: #64748b;">OR</div>
              <button style="width: 100%; background: white; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 500; cursor: pointer; transition: 0.2s; margin-bottom: 20px;" onclick="alert('Google Login coming soon!')">
@@ -1706,6 +1715,50 @@ if not user or st.session_state.get('force_landing', True):
              if st.button("Back", use_container_width=True):
                  del st.session_state['show_login']
                  st.rerun()
+
+    elif st.session_state.get('show_reset', False):
+        st.markdown("## 🔐 Reset Password")
+        st.info("Enter your email to receive a secure reset link.")
+        
+        with st.form("reset_request_form"):
+            rst_email = st.text_input("Email Address")
+            if st.form_submit_button("Send Reset Link", type="primary", use_container_width=True):
+                 # LOGIC
+                 if rst_email:
+                     from backend.database import SessionLocal, AppUser
+                     from datetime import datetime, timedelta
+                     import uuid
+                     from backend.utils.notifier import EmailNotifier
+                     
+                     db_rst = SessionLocal()
+                     try:
+                         u_rst = db_rst.query(AppUser).filter_by(email=rst_email).first()
+                         if u_rst:
+                             token = str(uuid.uuid4())
+                             u_rst.reset_token = token
+                             u_rst.reset_token_expiry = datetime.utcnow() + timedelta(minutes=15)
+                             db_rst.commit()
+                             
+                             base_url = "https://hirelink.tech" if "hirelink.tech" in str(st.query_params) else "http://localhost:8501"
+                             link = f"{base_url}/?reset_token={token}"
+                             
+                             notifier = EmailNotifier()
+                             if notifier.enabled:
+                                 notifier.send_password_reset(rst_email, link)
+                                 st.success("Link Sent! Check your email.")
+                             else:
+                                 st.warning("Email system disabled. Contact Admin.")
+                                 st.info(f"Dev Link: {link}")
+                         else:
+                             st.error("Email not found.")
+                     except Exception as e:
+                         st.error(str(e))
+                     finally:
+                         db_rst.close()
+            
+        if st.button("Back to Login"):
+            del st.session_state['show_reset']
+            st.rerun()
 
     # EMERGENCY RECOVERY: Hidden Query Param to Fix Admin
     # URL: /?sys_admin_reset=true
