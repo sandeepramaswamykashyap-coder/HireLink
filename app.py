@@ -1074,7 +1074,7 @@ def render_pricing_logic(user_exists):
             if not user_exists:
                 if st.button("Start for Free", type="primary", use_container_width=True):
                     st.session_state['show_login'] = True
-                    st.session_state['auth_mode_toggle'] = "Create Account" # Default to Signup
+                    st.session_state['auth_mode_default'] = "Create Account" # Safe state var
                     st.rerun()
             else:
                 st.button("Current Plan", disabled=True, use_container_width=True)
@@ -1095,7 +1095,7 @@ def render_pricing_logic(user_exists):
             if not user_exists:
                 if st.button("Choose STARTER", key="btn_choose_starter_guest", type="secondary", use_container_width=True):
                     st.session_state['show_login'] = True
-                    st.session_state['auth_mode_toggle'] = "Create Account" # Default to Signup
+                    st.session_state['auth_mode_default'] = "Create Account" # Safe state var
                     st.session_state['pending_signup_plan'] = {'name': 'STARTER', 'amount': p_starter} # Optional: Remember intent
                     st.rerun()
             else:
@@ -1142,7 +1142,7 @@ def render_pricing_logic(user_exists):
             if not user_exists:
                 if st.button("Choose PRO", key="btn_choose_pro_guest", type="primary", use_container_width=True):
                     st.session_state['show_login'] = True
-                    st.session_state['auth_mode_toggle'] = "Create Account" # Default to Signup
+                    st.session_state['auth_mode_default'] = "Create Account" # Safe state var
                     st.session_state['pending_signup_plan'] = {'name': 'PRO', 'amount': p_pro}
                     st.rerun()
             else:
@@ -1701,9 +1701,17 @@ if not user or st.session_state.get('force_landing', True):
          _, lc, _ = st.columns([1, 2, 1])
          with lc:
              # TOGGLE: Login vs Register
-             mode = st.radio("Auth Mode", ["Login", "Create Account"], horizontal=True, label_visibility="collapsed", key="auth_mode_toggle")
+             # Use safe state 'auth_mode_select' to control this, decoupling from widget key
              
-             if mode == "Login":
+             default_idx = 1 if st.session_state.get('auth_mode_default') == "Create Account" else 0
+             mode = st.radio(
+                 "Auth Mode", 
+                 ["Login", "Create Account"], 
+                 horizontal=True, 
+                 label_visibility="collapsed", 
+                 key="auth_mode_widget", # Renamed key to avoid conflict
+                 index=default_idx
+             )
                  st.markdown("## Login (v2.3)")
                  with st.form("login_form"):
                      email = st.text_input("Email")
