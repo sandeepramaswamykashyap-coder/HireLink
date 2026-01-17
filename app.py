@@ -1041,6 +1041,8 @@ def render_pricing_logic(user_exists):
             """)
             if not user_exists:
                 if st.button("Start for Free", type="primary", use_container_width=True):
+                    st.toast("Redirecting to Login...", icon="🔐")
+                    time.sleep(0.5)
                     st.session_state['show_login'] = True
                     st.rerun()
             else:
@@ -1069,20 +1071,21 @@ def render_pricing_logic(user_exists):
                     # logic inline
                     total = p_starter * 12 if is_annual else p_starter
                     try:
-                        # SAFE USER EMAIL RETRIEVAL
-                        # We know user_exists is True, so st.session_state['user'] should be valid ideally, 
-                        # but we can pass it in via args if needed. 
-                        # Ideally rely on session_state['user']
+                        # Explicit Import for Safety
+                        from backend.utils.payment_gateway import PaymentGateway
+                        pg_local = PaymentGateway()
+                        
                         u_curr = st.session_state.get('user')
                         if u_curr:
-                            link = pg.create_payment_link(total, "STARTER", u_curr.email)
+                            link = pg_local.create_payment_link(total, "STARTER", u_curr.email)
                             if link:
                                 url = link.get('short_url')
                                 st.session_state['pending_payment'] = {'url': url, 'plan': 'STARTER', 'amount': total}
+                                st.toast("Payment Link Generated!", icon="💳")
                         else:
                             st.error("Session invalid. Please refresh.")
                     except Exception as e:
-                        st.error(str(e))
+                        st.error(f"Error: {e}")
 
             # INLINE LINK DISPLAY (STARTER)
             if 'pending_payment' in st.session_state and st.session_state['pending_payment']['plan'] == 'STARTER':
@@ -1104,21 +1107,30 @@ def render_pricing_logic(user_exists):
             """)
             
             # Action Button
-            if st.button("Choose PRO", key="btn_choose_pro", type="primary", use_container_width=True):
-                 # logic inline
-                total = p_pro * 12 if is_annual else p_pro
-                try:
-                    # SAFE USER EMAIL RETRIEVAL
-                    email_target = "guest@hirelink.tech"
-                    if 'user' in st.session_state and st.session_state['user']:
-                         email_target = st.session_state['user'].email
-                         
-                    link = pg.create_payment_link(total, "PRO", email_target)
-                    if link:
-                        url = link.get('short_url')
-                        st.session_state['pending_payment'] = {'url': url, 'plan': 'PRO', 'amount': total}
-                except Exception as e:
-                    st.error(str(e))
+            if not user_exists:
+                if st.button("Choose PRO", key="btn_choose_pro_guest", type="primary", use_container_width=True):
+                    st.session_state['show_login'] = True
+                    st.session_state['pending_signup_plan'] = {'name': 'PRO', 'amount': p_pro}
+                    st.rerun()
+            else:
+                if st.button("Choose PRO", key="btn_choose_pro", type="primary", use_container_width=True):
+                     # logic inline
+                    total = p_pro * 12 if is_annual else p_pro
+                    try:
+                        from backend.utils.payment_gateway import PaymentGateway
+                        pg_local = PaymentGateway()
+                        
+                        u_curr = st.session_state.get('user')
+                        if u_curr:
+                            link = pg_local.create_payment_link(total, "PRO", u_curr.email)
+                            if link:
+                                url = link.get('short_url')
+                                st.session_state['pending_payment'] = {'url': url, 'plan': 'PRO', 'amount': total}
+                                st.toast("Payment Link Generated!", icon="💳")
+                        else:
+                            st.error("Session invalid. Refresh.")
+                    except Exception as e:
+                         st.error(f"Error: {e}")
             
             # INLINE LINK DISPLAY (PRO)
             if 'pending_payment' in st.session_state and st.session_state['pending_payment']['plan'] == 'PRO':
