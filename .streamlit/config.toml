@@ -3,3 +3,11 @@ headless = true
 enableCORS = false
 enableXsrfProtection = false
 enableWebsocketCompression = false
+
+[theme]
+base = "dark"
+primaryColor = "#4f46e5" # Indigo/Brand
+backgroundColor = "#0e1117" # Standard Dark
+secondaryBackgroundColor = "#262730"
+textColor = "#fafafa"
+font = "sans serif"
