@@ -1276,7 +1276,19 @@ def check_and_show_signup_modal():
                                              "email": email
                                         }
                                         del st.session_state['pending_signup_plan']
-                                        st.rerun()
+                                        
+                                        # DIRECT REDIRECT UX
+                                        st.success("Account Created! Redirecting to Razorpay...")
+                                        url = link_data.get('short_url')
+                                        st.link_button("👉 Click Here if not redirected", url, type="primary", use_container_width=True)
+                                        
+                                        # Auto-redirect script
+                                        import streamlit.components.v1 as components
+                                        components.html(f"<script>window.location.href = '{url}';</script>", height=0)
+                                        
+                                        # Do not st.rerun() immediately, let the script run.
+                                        # If user closes modal manually, logic in main app handles AWAITING_PAYMENT.
+                                        return
                                     else:
                                         st.error("Payment Init Failed.")
                                 except Exception as e:
