@@ -1317,7 +1317,7 @@ def check_and_show_signup_modal():
                                     name=name, 
                                     email=email, 
                                     subscription_plan=plan_info['name'],
-                                    is_onboarded=False # Gated until pay? Or user exists now.
+                                    is_onboarded=False
                                 )
                                 new_user.set_password(password)
                                 db.add(new_user)
@@ -1351,7 +1351,6 @@ def check_and_show_signup_modal():
                     email = st.text_input("Email Address ", placeholder="john@example.com")
                     password = st.text_input("Create Password ", type="password")
                     if st.form_submit_button("Create & Pay"):
-                        # Simplified for MVP/Fallback (Duplicate logic ok for stability)
                         st.info("Please use a newer browser or contact support if this fails.")
                                 st.error("Payment Gateway Error")
                     else:
