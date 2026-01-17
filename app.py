@@ -1,5 +1,6 @@
+import streamlit as st
 st.set_page_config(
-        page_title="HireLink v2.34 (Checkout Fixed)",
+        page_title="HireLink v2.35 (Stable)",
         page_icon="💸",
         layout="wide",
         initial_sidebar_state="expanded"
