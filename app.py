@@ -1,6 +1,5 @@
-import streamlit as st
 st.set_page_config(
-        page_title="HireLink v2.35 (Stable)",
+        page_title="HireLink v2.36 (Secure)",
         page_icon="💸",
         layout="wide",
         initial_sidebar_state="expanded"
@@ -3050,10 +3049,9 @@ else:
             
             # --- INSTANT SAVE PATTERN (No Form) ---
             # Fetch all questions
-            if is_admin:
-                 qa_list = db.query(QuestionAnswer).all()
-            else:
-                 qa_list = db.query(QuestionAnswer).filter_by(user_id=user.id).all()
+            # Always filter by current user to prevent data leakage, even for admins.
+            # Admins can inspect others via the dedicated Admin Console if needed.
+            qa_list = db.query(QuestionAnswer).filter_by(user_id=user.id).all()
             if not qa_list:
                 st.warning("No questions found in knowledge base. Please run migration or contact admin.")
             else:
