@@ -1255,17 +1255,24 @@ def render_pricing_logic(user_exists):
             # If Annual, price_display is monthly equivalent, so multiply by 12
             total_amount = price_display * 12 if is_annual_plan else price_display
             
+            st.toast(f"Generating Secure Link for {plan_name}...", icon="💳")
+            
             with st.spinner(f"Preparing {plan_name} Plan..."):
                 link_data = pg.create_payment_link(total_amount, plan_name, user.email)
             
             if link_data:
-                st.session_state['pending_payment'] = {
+                pp = {
                     "url": link_data.get('short_url'),
                     "plan": plan_name,
                     "amount": total_amount,
                     "billing_cycle": "ANNUAL" if is_annual_plan else "MONTHLY",
                     "email": user.email
                 }
+                st.session_state['pending_payment'] = pp
+                
+                # FALLBACK: Open directly if modal fails (using JS hack if needed, but sticking to UI)
+                st.toast("Link Generated! Opening payment...", icon="✅")
+                time.sleep(1) # Give toast time to show
                 st.rerun()
             else:
                 st.error(f"Payment Error: {getattr(pg, 'last_error', 'Keys Invalid or Network Issue')}")
@@ -2033,6 +2040,18 @@ else:
     st.sidebar.caption("v1.1 (Live)")
         
     st.sidebar.caption(f"{apps_used} / {'∞' if limit > 900000 else limit} Applications Used")
+    
+    # --- PENDING PAYMENT ALERT ---
+    if 'pending_payment' in st.session_state:
+        pp = st.session_state['pending_payment']
+        st.sidebar.warning("⚠️ **Payment Pending**")
+        st.sidebar.markdown(f"finish upgrading to **{pp['plan']}**")
+        st.sidebar.link_button("👉 Complete Payment", pp['url'], use_container_width=True)
+        if st.sidebar.button("Cancel", key="cancel_pay_sidebar"):
+            del st.session_state['pending_payment']
+            st.rerun()
+        st.sidebar.divider()
+
     
     if apps_used >= limit and limit < 900000:
         st.sidebar.error("Limit Reached! Upgrade to continue applying.")
