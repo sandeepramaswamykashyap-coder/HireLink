@@ -975,7 +975,7 @@ Start Applying Now 🚀
     </div>
     """, unsafe_allow_html=True)
 
-    render_pricing(user_exists)
+    render_pricing_logic(user_exists)
 
     # --- FOOTER (Razorpay Compliance) ---
     st.markdown("""
