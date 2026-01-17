@@ -1108,13 +1108,13 @@ def render_pricing_logic(user_exists):
             
             # Action Button
             if not user_exists:
-                if st.button("Choose STARTER", key="btn_choose_starter_guest", type="secondary", use_container_width=True):
+                if st.button("Choose STARTER", key="btn_choose_starter_guest", type="primary", use_container_width=True):
                     st.session_state['show_login'] = True
                     st.session_state['auth_mode_default'] = "Create Account" # Safe state var
                     st.session_state['pending_signup_plan'] = {'name': 'STARTER', 'amount': p_starter} # Optional: Remember intent
                     st.rerun()
             else:
-                if st.button("Choose STARTER", key="btn_choose_starter", type="secondary", use_container_width=True):
+                if st.button("Choose STARTER", key="btn_choose_starter", type="primary", use_container_width=True):
                     # logic inline
                     total = p_starter * 12 if is_annual else p_starter
                     try:
