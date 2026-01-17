@@ -1229,7 +1229,7 @@ def check_and_show_signup_modal():
                                 new_user = AppUser(
                                     name=name, 
                                     email=email, 
-                                    subscription_plan=plan_info['name'],
+                                    subscription_plan="AWAITING_PAYMENT", # Gate: Must pay to activate
                                     is_onboarded=False
                                 )
                                 new_user.set_password(password)
@@ -1694,7 +1694,14 @@ if "payment_success" in st.query_params:
         # Check if we were expecting a payment
         if 'pending_payment' in st.session_state:
              pp = st.session_state['pending_payment']
-             update_user_plan(pp['plan'], pp.get('billing_cycle', 'MONTHLY')) # Function is defined above, so this is safe
+             
+             # FORCE UPGRADE (Even if AWAITING_PAYMENT)
+             update_user_plan(pp['plan'], pp.get('billing_cycle', 'MONTHLY')) 
+             
+             # Force Onboarding Start
+             if 'user' in st.session_state:
+                 st.session_state['show_onboarding'] = True
+                 st.session_state['onboarding_step'] = 1
              
              # Clear state
              del st.session_state['pending_payment']
