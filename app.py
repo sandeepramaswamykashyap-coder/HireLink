@@ -1667,7 +1667,7 @@ if not user or st.session_state.get('force_landing', True):
          # --- SIMPLE LOGIN FORM ---
          _, lc, _ = st.columns([1, 2, 1])
          with lc:
-             st.markdown("## Login")
+             st.markdown("## Login (Debug v1.1)")
              with st.form("login_form"):
                  email = st.text_input("Email")
                  password = st.text_input("Password", type="password")
@@ -1711,7 +1711,10 @@ if not user or st.session_state.get('force_landing', True):
                             time.sleep(1)
                             st.rerun()
                         else:
-                            st.error("Invalid Email or Password")
+                            print(f"LOGIN FAILED: Input='{email}' | FoundUser={u.email if u else 'None'}")
+                            if u:
+                                print(f"PassCheck: {u.check_password(password)}")
+                            st.error("Invalid Email or Password (v1.1)")
                     except Exception as e:
                         st.error(f"Login Error: {e}")
                     finally:
