@@ -1,12 +1,5 @@
-[theme]
-base="dark"
-primaryColor="#4f46e5"
-backgroundColor="#1e1b4b"
-secondaryBackgroundColor="#312e81"
-textColor="#ffffff"
-
 [server]
-runOnSave = true
-
-[layout]
-wideMode = true
+headless = true
+enableCORS = false
+enableXsrfProtection = false
+enableWebsocketCompression = false
