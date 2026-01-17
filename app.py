@@ -1051,6 +1051,7 @@ def render_pricing_logic(user_exists):
             if not user_exists:
                 if st.button("Start for Free", type="primary", use_container_width=True):
                     st.session_state['show_login'] = True
+                    st.session_state['auth_mode_toggle'] = "Create Account" # Default to Signup
                     st.rerun()
             else:
                 st.button("Current Plan", disabled=True, use_container_width=True)
@@ -1071,6 +1072,7 @@ def render_pricing_logic(user_exists):
             if not user_exists:
                 if st.button("Choose STARTER", key="btn_choose_starter_guest", type="secondary", use_container_width=True):
                     st.session_state['show_login'] = True
+                    st.session_state['auth_mode_toggle'] = "Create Account" # Default to Signup
                     st.session_state['pending_signup_plan'] = {'name': 'STARTER', 'amount': p_starter} # Optional: Remember intent
                     st.rerun()
             else:
@@ -1117,6 +1119,7 @@ def render_pricing_logic(user_exists):
             if not user_exists:
                 if st.button("Choose PRO", key="btn_choose_pro_guest", type="primary", use_container_width=True):
                     st.session_state['show_login'] = True
+                    st.session_state['auth_mode_toggle'] = "Create Account" # Default to Signup
                     st.session_state['pending_signup_plan'] = {'name': 'PRO', 'amount': p_pro}
                     st.rerun()
             else:
