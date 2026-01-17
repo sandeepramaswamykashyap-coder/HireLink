@@ -1202,6 +1202,16 @@ def check_and_show_payment_modal():
             pass
 
 def check_and_show_signup_modal():
+    # FIX: If user is already logged in, do NOT show signup modal.
+    # Close it and ensure we proceed to checkout if needed.
+    if st.session_state.get('user') is not None:
+        if 'show_login' in st.session_state and st.session_state['show_login']:
+             st.session_state['show_login'] = False
+             # If they have a pending plan but are logged in, maybe we should trigger payment?
+             # For now, just closing the modal solves the "Double Ask" visual bug.
+             st.rerun()
+        return
+
     if 'pending_signup_plan' in st.session_state:
         plan_info = st.session_state['pending_signup_plan']
         
