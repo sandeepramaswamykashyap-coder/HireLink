@@ -1074,10 +1074,14 @@ def render_pricing_logic(user_exists):
             st.caption("Taste the automation")
             st.metric("Price", "₹0", "Forever")
             st.markdown("""
-            *   ✅ 20 Applications/mo
-            *   ✅ Basic Resume Parsing
-            *   ✅ Manual Job Search
-            """)
+            <div style="min-height: 160px;">
+            <ul style="list-style-type: none; padding-left: 0;">
+            <li>✅ 20 Applications/mo</li>
+            <li>✅ Basic Resume Parsing</li>
+            <li>✅ Manual Job Search</li>
+            </ul>
+            </div>
+            """, unsafe_allow_html=True)
             if not user_exists:
                 if st.button("Start for Free", type="primary", use_container_width=True):
                     st.session_state['show_login'] = True
@@ -1093,10 +1097,14 @@ def render_pricing_logic(user_exists):
             st.caption("Steady applying")
             st.metric("Price", f"₹{p_starter}", f"{lbl_period}")
             st.markdown("""
-            *   ✅ **150** Applications/mo
-            *   ✅ Priority Email Support
-            *   ✅ Unlimited Runtime
-            """)
+            <div style="min-height: 160px;">
+            <ul style="list-style-type: none; padding-left: 0;">
+            <li>✅ <strong>150</strong> Applications/mo</li>
+            <li>✅ Priority Email Support</li>
+            <li>✅ Unlimited Runtime</li>
+            </ul>
+            </div>
+            """, unsafe_allow_html=True)
             
             # Action Button
             if not user_exists:
@@ -1140,10 +1148,14 @@ def render_pricing_logic(user_exists):
             st.caption("Maximum Velocity")
             st.metric("Price", f"₹{p_pro}", f"{lbl_period}")
             st.markdown("""
-            *   ✅ **1,000** Applications/mo
-            *   ✅ **Smart AI** Cover Letters
-            *   ✅ Dedicated Account Manager
-            """)
+            <div style="min-height: 160px;">
+            <ul style="list-style-type: none; padding-left: 0;">
+            <li>✅ <strong>1,000</strong> Applications/mo</li>
+            <li>✅ <strong>Smart AI</strong> Cover Letters</li>
+            <li>✅ Dedicated Account Manager</li>
+            </ul>
+            </div>
+            """, unsafe_allow_html=True)
             
             # Action Button
             if not user_exists:

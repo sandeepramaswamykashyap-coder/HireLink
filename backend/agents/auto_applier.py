@@ -527,8 +527,19 @@ class AutoApplier:
             resume = db.query(Resume).filter_by(id=resume_id).first()
             
             # ... Data Fetching ...
-            from backend.database import QuestionAnswer
-            qa_records = db.query(QuestionAnswer).all()
+            # ... Data Fetching ...
+            # PRIVACY FIX: Filter Smart Answers by User
+            from backend.database import QuestionAnswer, AppUser
+            
+            # Find User via Resume Email (Foreign Key workaround since we don't have direct link yet)
+            job_owner = db.query(AppUser).filter(AppUser.email == resume.email).first()
+            if job_owner:
+                 qa_records = db.query(QuestionAnswer).filter_by(user_id=job_owner.id).all()
+            else:
+                 # Fallback: Empty or maybe try generic? Safe to return empty.
+                 logger.warning(f"Could not link Resume {resume.id} to a User. Skipping Smart Answers.")
+                 qa_records = []
+                 
             smart_answers = {qa.question: qa.answer for qa in qa_records if qa.answer}
              
             if not job or not resume:
