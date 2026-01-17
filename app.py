@@ -1271,19 +1271,37 @@ def render_pricing_logic(user_exists):
                 st.session_state['pending_payment'] = pp
                 
                 # FALLBACK: Open directly if modal fails (using JS hack if needed, but sticking to UI)
-                st.toast("Link Generated! Opening payment...", icon="✅")
-                time.sleep(1) # Give toast time to show
-                st.rerun()
+                st.toast("Link Generated! See below...", icon="✅")
+                # Removed st.rerun() to allow immediate inline rendering logic to execute below this function call if possible.
+                # Actually, in Streamlit, without rerun, the UI below might not update if it was already rendered?
+                # But 'handle_payment_click' is called inside the column layout.
+                # The "INLINE PAYMENT RESULT" block is *after* the columns. 
+                # So if we don't rerun, that block won't see the new session_state in this render cycle?
+                # Correct. We MUST rerun for the *rest of the script* to pick up the new state, OR we must render strictly inside this function.
+                # Let's render INSIDE this function to be 100% sure.
+                
+                st.markdown(f"### 👉 [Pay for {plan_name} Now]({pp['url']})")
+                st.info("Click the link above to proceed.")
+                
             else:
                 st.error(f"Payment Error: {getattr(pg, 'last_error', 'Keys Invalid or Network Issue')}")
 
     with b2:
         if st.button("Choose Starter", key="btn_starter", use_container_width=True):
+             print("DEBUG: Choose Starter Clicked")
              handle_payment_click("STARTER", p_starter, is_annual)
 
     with b3:
         if st.button("Choose Pro", key="btn_pro", type="primary", use_container_width=True):
+             print("DEBUG: Choose Pro Clicked")
              handle_payment_click("PRO", p_pro, is_annual)
+             
+    # --- INLINE PAYMENT RESULT (Immediate Feedback) ---
+    if 'pending_payment' in st.session_state:
+        pp = st.session_state['pending_payment']
+        st.success(f"Link Generated for {pp['plan']}!")
+        st.markdown(f"**[👉 Click Here to Pay Now]({pp['url']})**")
+        st.caption("If the popup didn't open, use the link above.")
 
     # --- SPACER BELOW BUTTONS (User Request) ---
     st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
