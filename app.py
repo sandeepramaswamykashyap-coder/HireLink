@@ -1057,61 +1057,9 @@ def pay_modal():
 
 def render_pricing_logic(user_exists):
 
-    st.markdown("""
-    <div id="plans" class="pricing-section">
-        <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 5px;">Plans for Every Career Stage</h2>
-        <p style="text-align: center; color: #94a3b8; margin-bottom: 30px;">Start for free, upgrade when you're ready to speed up.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Custom CSS for Big Toggle
-    st.markdown("""
-    <style>
-    /* Target the container of the radio buttons specifically */
-    div[role="radiogroup"] {
-        background: rgba(255,255,255,0.08);
-        padding: 12px 40px;
-        border-radius: 50px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: fit-content;
-        margin: 0 auto;
-        gap: 30px;
-        border: 1px solid rgba(255,255,255,0.1);
-    }
-    
-    /* Force the streamlit widget to take full width and center its content */
-    div[data-testid="stRadio"] {
-        width: 100% !important;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    /* The actual pill container */
-    div[role="radiogroup"] {
-        background: rgba(255,255,255,0.08);
-        padding: 10px 30px;
-        border-radius: 50px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 20px;
-        border: 1px solid rgba(255,255,255,0.1);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-    
-    div[data-testid="stRadio"] label p {
-        font-size: 1.2rem !important;
-        font-weight: 700 !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    # Pricing Header & Toggle (Compact)
-    st.markdown("<h2 style='text-align: center; margin-bottom: 10px;'>Simple, Transparent Pricing</h2>", unsafe_allow_html=True)
+    st.title("🚀 User Subscription")
+    st.markdown("Simple pricing for every career stage.")
+    st.markdown("---")
     
     # Center the toggle
     t1, t2, t3 = st.columns([1.2, 1, 1.2])
