@@ -68,7 +68,8 @@ class AutoApplier:
             # 1. Fetch Core Entities
             user = db.query(AppUser).filter_by(id=user_id).first()
             resume = db.query(Resume).filter_by(id=resume_id).first()
-            qa_list = db.query(QuestionAnswer).all()
+            # FIX: STRICT DATA ISOLATION
+            qa_list = db.query(QuestionAnswer).filter_by(user_id=user_id).all()
             
             if not user or not resume: return None
             
@@ -351,32 +352,44 @@ class AutoApplier:
         # Session Logging
         session_logs = []
         
-        yield {"step": "Login Verification", "status": "Running...", "progress": 10}
+        # IMMEDIATE FEEDBACK
+        yield {"step": "Initiating", "status": "Hyper-Drive Engines Spooling Up...", "progress": 5}
+        
+        yield {"step": "Login Verification", "status": "Checking Portal Access...", "progress": 10}
         
         # User selected portals > Hardcoded Default
         portals = target_portals if target_portals else ["LinkedIn", "Naukri", "Indeed", "Shine", "Foundit", "Internshala", "IIMJobs", "Wellfound"]
         
-        login_results = self.check_all_portal_logins(portals)
-        
         active_portals = []
-        for p, is_logged_in in login_results.items():
-            if is_logged_in:
-                active_portals.append(p)
-            else:
-                # TRY AUTO-LOGIN
-                yield {"step": "Auto-Login", "status": f"Session expired for {p}. Attempting Auto-Login...", "progress": 15}
-                if self.attempt_portal_login(p):
-                    yield {"step": "Auto-Login", "status": f"Successfully logged into {p}! ✅", "progress": 20}
+        try:
+            login_results = self.check_all_portal_logins(portals)
+            
+            for p, is_logged_in in login_results.items():
+                if is_logged_in:
                     active_portals.append(p)
                 else:
-                     yield {"step": "Auto-Login", "status": f"Could not log into {p}. Skipping.", "progress": 20}
-                     
-        # Fallback Logic: If secure processing fails, degrade to public scraping
-        if not active_portals:
-            yield {"step": "Warning", "status": "Login verification failed for all portals. Attempting public scrape mode...", "progress": 25}
-            active_portals = portals 
-        else:
-             yield {"step": "Login Success", "status": f"Active Sessions: {', '.join(active_portals)}", "progress": 25}
+                    # TRY AUTO-LOGIN
+                    yield {"step": "Auto-Login", "status": f"Session expired for {p}. Attempting Auto-Login...", "progress": 15}
+                    try:
+                        if self.attempt_portal_login(p):
+                            yield {"step": "Auto-Login", "status": f"Successfully logged into {p}! ✅", "progress": 20}
+                            active_portals.append(p)
+                        else:
+                            yield {"step": "Auto-Login", "status": f"Could not log into {p}. Skipping.", "progress": 20}
+                    except Exception as e:
+                         logger.error(f"Auto-login failed for {p}: {e}")
+
+            # Fallback Logic
+            if not active_portals:
+                yield {"step": "Warning", "status": "Login verification failed. Attempting public scrape mode...", "progress": 25}
+                active_portals = portals 
+            else:
+                yield {"step": "Login Success", "status": f"Active Sessions: {', '.join(active_portals)}", "progress": 25}
+
+        except Exception as e:
+             logger.error(f"Login Check Critical Fail: {e}")
+             yield {"step": "Error", "status": "Login Verification System Failed. Proceeding with caution...", "progress": 25}
+             active_portals = portals # Hope for best
 
         # --- RELEASE BROWSER FOR SCRAPERS ---
         self.close_browser()
