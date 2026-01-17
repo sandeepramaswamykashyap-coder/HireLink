@@ -1721,15 +1721,13 @@ if not user or st.session_state.get('force_landing', True):
          _, lc, _ = st.columns([1, 2, 1])
          with lc:
              # TOGGLE: Login vs Register
-             # Use safe state 'auth_mode_select' to control this, decoupling from widget key
-             
              default_idx = 1 if st.session_state.get('auth_mode_default') == "Create Account" else 0
              mode = st.radio(
                  "Auth Mode", 
                  ["Login", "Create Account"], 
                  horizontal=True, 
                  label_visibility="collapsed", 
-                 key="auth_mode_widget", # Renamed key to avoid conflict
+                 key="auth_mode_widget",
                  index=default_idx
              )
              
