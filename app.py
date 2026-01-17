@@ -1221,8 +1221,16 @@ def check_and_show_signup_modal():
                                     is_onboarded=False
                                 )
                                 new_user.set_password(password)
+                                new_user.set_password(password)
                                 db.add(new_user)
                                 db.commit()
+                                db.refresh(new_user)
+                                db.expunge(new_user)
+                                
+                                # AUTO-LOGIN
+                                st.session_state['user'] = new_user
+                                st.session_state['force_landing'] = False 
+                                st.session_state['show_login'] = False
                                 
                                 # Generate Link
                                 try:
