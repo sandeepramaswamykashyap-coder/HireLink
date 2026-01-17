@@ -1414,8 +1414,12 @@ def check_and_show_signup_modal():
     if 'pending_signup_plan' in st.session_state:
         plan_info = st.session_state['pending_signup_plan']
         
-        @st.dialog(f"Create Account to Upgrade 🚀")
-        def signup_modal():
+        # SAFE DIALOG LOOKUP
+        dialog_decorator = getattr(st, "dialog", getattr(st, "experimental_dialog", None))
+        
+        if dialog_decorator:
+            @dialog_decorator(f"Create Account to Upgrade 🚀")
+            def signup_modal():
             st.markdown(f"To get **{plan_info['name']}** access, please secure your account.")
             
             with st.form("signup_pay_form"):
@@ -2299,7 +2303,7 @@ else:
                              st.rerun()
                         
                         # Delete Button
-                        if c_act_2.button("🗑️ Delete", key=f"del_{u.id}"):
+                        if c_act2.button("🗑️ Delete", key=f"del_{u.id}"):
                             st.session_state[del_key] = True
                             st.rerun()
                             
