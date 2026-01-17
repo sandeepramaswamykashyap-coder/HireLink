@@ -1691,30 +1691,6 @@ if not user or st.session_state.get('force_landing', True):
                         st.error(f"Login Error: {e}")
                     finally:
                         db_login.close()
-                             u_rst = db_rst.query(AppUser).filter_by(email=rst_email).first()
-                             if u_rst:
-                                 token = str(uuid.uuid4())
-                                 u_rst.reset_token = token
-                                 u_rst.reset_token_expiry = datetime.utcnow() + timedelta(minutes=15)
-                                 db_rst.commit()
-                                 
-                                 # Construct Link
-                                 # Assuming base URL is hirelink.tech, but for dev it might be localhost
-                                 # We can try to infer or just use relative if st supports it? No.
-                                 base_url = "https://hirelink.tech" if "hirelink.tech" in str(st.query_params) else "http://localhost:8501" 
-                                 # Safer fallback: Just ask user to check console if dev
-                                 link = f"{base_url}/?reset_token={token}"
-                                 
-                                 notifier = EmailNotifier()
-                                 if notifier.enabled:
-                                     notifier.send_password_reset(rst_email, link)
-                                     st.success("Reset link sent! Check your email (and spam).")
-                                 else:
-                                     st.warning("Email system not configured. Contact Admin.")
-                                     st.info(f"Dev Link: {link}") # Fail-safe for testing
-                             else:
-                                 st.error("Email not found.") # Security: Maybe say "If account exists..."? Nah, MVP.
-                             db_rst.close()
              
              st.markdown("""
              <div style="text-align: center; margin: 15px 0; color: #64748b;">OR</div>
