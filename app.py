@@ -988,26 +988,9 @@ Start Applying Now 🚀
     </div>
     """, unsafe_allow_html=True)
 
-                if 'original_amount' not in pp:
-                        pp['original_amount'] = pp['amount'] # Store base price
-                
-                # Check expiry/usage logic here ideally
-                discount_val = (coupon.discount_percent / 100) * pp['original_amount']
-                new_price = int(pp['original_amount'] - discount_val)
-                pp['amount'] = new_price
-                pp['coupon_applied'] = code_input
-                st.success(f"Applied {coupon.code}!")
-            else:
-                st.error("Invalid Code")
-            session.close()
-            st.rerun()
-
-    st.link_button(f"Pay ₹{pp['amount']} Securely", pp['url'], type="primary", use_container_width=True)
 
 
-        
-    if st.button("Cancel"):
-        del st.session_state['pending_payment']
+
         st.rerun()
 
 
@@ -1922,9 +1905,7 @@ else:
                     data = get_excel_export()
                     if data:
                         st.session_state['export_data'] = data
-                        st.success("Excel Export Ready!")
-                    else:
-                        st.session_state['export_fallback'] = True
+                        st.success("Export Ready!")
                 
                 if 'export_data' in st.session_state:
                      st.download_button(
@@ -1934,22 +1915,6 @@ else:
                          mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                          type="primary"
                      )
-                
-                # FALLBACK: CSV Options
-                if st.session_state.get('export_fallback'):
-                    st.warning("Excel export unavailable (library missing). Using CSV fallback.")
-                    
-                    # 1. Users
-                    u_csv = pd.read_sql(db.query(backend.database.AppUser).statement, db.bind).to_csv(index=False).encode('utf-8')
-                    st.download_button("⬇️ Download Users (.csv)", u_csv, "users.csv", "text/csv")
-                    
-                    # 2. QAs
-                    q_csv = pd.read_sql(db.query(QuestionAnswer).statement, db.bind).to_csv(index=False).encode('utf-8')
-                    st.download_button("⬇️ Download Smart Answers (.csv)", q_csv, "smart_answers.csv", "text/csv")
-                    
-                    # 3. Applications
-                    a_csv = pd.read_sql(db.query(Application).statement, db.bind).to_csv(index=False).encode('utf-8')
-                    st.download_button("⬇️ Download Applications (.csv)", a_csv, "applications.csv", "text/csv")
 
         # --- TAB 1: DASHBOARD ---
         with tab_dash:
