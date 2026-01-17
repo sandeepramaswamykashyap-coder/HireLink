@@ -1048,8 +1048,6 @@ def render_pricing_logic(user_exists):
             """)
             if not user_exists:
                 if st.button("Start for Free", type="primary", use_container_width=True):
-                    st.toast("Redirecting to Login...", icon="🔐")
-                    time.sleep(0.5)
                     st.session_state['show_login'] = True
                     st.rerun()
             else:
@@ -1671,11 +1669,10 @@ except:
 
 if not user or st.session_state.get('force_landing', True):
     if st.session_state.get('show_login', False):
-         st.toast("System Updated: v1.1 Loaded 🚀", icon="✅")
          # --- SIMPLE LOGIN FORM ---
          _, lc, _ = st.columns([1, 2, 1])
          with lc:
-             st.markdown("## Login (VERSION 2.0 FORCED)")
+             st.markdown("## Login (v2.2 Instant)")
              with st.form("login_form"):
                  email = st.text_input("Email")
                  password = st.text_input("Password", type="password")
