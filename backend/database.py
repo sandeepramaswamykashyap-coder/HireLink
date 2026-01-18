@@ -392,6 +392,8 @@ def seed_user_questions(user_id):
         return False, str(e)
 
 
+
+def seed_admin():
     """
     Ensures the default admin user exists and has the correct password.
     """
