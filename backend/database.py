@@ -258,7 +258,140 @@ def migrate_db():
     except Exception as e:
         logger.warning(f"Migration check failed: {e}")
 
-def seed_admin():
+# Default Questions List (Shared)
+DEFAULT_SMART_ANSWERS = [
+    # --- PERSONAL INFORMATION ---
+    {"question": "Full legal name (first, middle, last)", "answer": "", "category": "personal"},
+    {"question": "Preferred name or nickname", "answer": "", "category": "personal"},
+    {"question": "Date of birth", "answer": "", "category": "personal"},
+    {"question": "Gender (options: Male, Female, Non-binary, Prefer not to say)", "answer": "", "category": "personal"},
+    {"question": "Nationality / Country of citizenship", "answer": "", "category": "personal"},
+    {"question": "Visa/work authorization status (e.g., eligible to work in US without sponsorship?)", "answer": "", "category": "personal"},
+    {"question": "Marital status", "answer": "", "category": "personal"},
+    {"question": "Home address (street, city, state, ZIP/postal code, country)", "answer": "", "category": "personal"},
+    {"question": "Phone number (primary and alternate)", "answer": "", "category": "personal"},
+    {"question": "Email address", "answer": "", "category": "personal"},
+    {"question": "LinkedIn profile URL", "answer": "", "category": "personal"},
+    {"question": "Personal website or portfolio URL", "answer": "", "category": "personal"},
+    
+    # --- CONTACT PREFERENCES ---
+    {"question": "Preferred contact method (email, phone, both)", "answer": "", "category": "contact"},
+    {"question": "Availability for calls (time zone, best hours)", "answer": "", "category": "contact"},
+    {"question": "Willingness to receive marketing emails from the portal", "answer": "No", "category": "contact"},
+
+    # --- EDUCATION HISTORY ---
+    {"question": "Highest level of education (high school, associate, bachelor's, master's, PhD, etc.)", "answer": "", "category": "education"},
+    {"question": "Degree name (e.g., Bachelor of Science in Computer Science)", "answer": "", "category": "education"},
+    {"question": "Field of study / Major / Minor", "answer": "", "category": "education"},
+    {"question": "Institution/university name", "answer": "", "category": "education"},
+    {"question": "Graduation year (month and year)", "answer": "", "category": "education"},
+    {"question": "GPA or percentage (if above a threshold, e.g., 3.0+)", "answer": "", "category": "education"},
+    {"question": "Relevant coursework or honors", "answer": "", "category": "education"},
+    {"question": "High school details (if no higher education)", "answer": "", "category": "education"},
+
+    # --- WORK EXPERIENCE ---
+    {"question": "Job title", "answer": "", "category": "experience"},
+    {"question": "Company/employer name", "answer": "", "category": "experience"},
+    {"question": "Location (city, state, country)", "answer": "", "category": "experience"},
+    {"question": "Start date (month/year)", "answer": "", "category": "experience"},
+    {"question": "End date (month/year or 'Present')", "answer": "", "category": "experience"},
+    {"question": "Employment type (full-time, part-time, contract, internship, freelance)", "answer": "", "category": "experience"},
+    {"question": "Number of direct reports (if managerial)", "answer": "", "category": "experience"},
+    {"question": "Key responsibilities (free text or bullet points)", "answer": "", "category": "experience"},
+    {"question": "Achievements/accomplishments (quantified, e.g., 'Increased sales by 20%')", "answer": "", "category": "experience"},
+    {"question": "Reason for leaving (voluntary, layoff, etc.)", "answer": "", "category": "experience"},
+    {"question": "Salary history (current/previous, optional)", "answer": "", "category": "experience"},
+
+    # --- SKILLS AND CERTIFICATIONS ---
+    {"question": "Programming languages (e.g., Python, Java)", "answer": "", "category": "skills"},
+    {"question": "Tools/software (e.g., Excel, AWS)", "answer": "", "category": "skills"},
+    {"question": "Languages spoken (with proficiency: native, fluent, basic)", "answer": "", "category": "skills"},
+    {"question": "Certifications (e.g., AWS Certified, PMP) with issue date and provider", "answer": "", "category": "skills"},
+    {"question": "Licenses (e.g., driver's license, professional bar admission)", "answer": "", "category": "skills"},
+
+    # --- AVAILABILITY AND LOGISTICS ---
+    {"question": "Earliest start date (specific date or notice period)", "answer": "", "category": "logistics"},
+    {"question": "Preferred work hours (full-time, part-time)", "answer": "", "category": "logistics"},
+    {"question": "Willingness to travel (percentage or yes/no)", "answer": "", "category": "logistics"},
+    {"question": "Willingness to relocate (yes/no, to specific locations)", "answer": "", "category": "logistics"},
+    {"question": "Remote/hybrid/office preference", "answer": "", "category": "logistics"},
+    {"question": "Salary expectations (range, currency)", "answer": "", "category": "logistics"},
+
+    # --- SCREENING / LEGAL ---
+    {"question": "Years of experience in [specific field]?", "answer": "", "category": "screening"},
+    {"question": "Are you legally authorized to work in [country]?", "answer": "", "category": "screening"},
+    {"question": "Do you now or will you require sponsorship?", "answer": "", "category": "screening"},
+    {"question": "Have you ever been convicted of a crime? (If yes, explain)", "answer": "No", "category": "screening"},
+    {"question": "Why do you want to work here? (200 words max)", "answer": "", "category": "screening"},
+    {"question": "Describe a challenge you overcame at work (behavioral)", "answer": "", "category": "screening"},
+    {"question": "How many years in current role/industry?", "answer": "", "category": "screening"},
+    {"question": "Do you have a valid driver's license?", "answer": "Yes", "category": "screening"},
+    {"question": "Availability for shift work/nights/weekends?", "answer": "", "category": "screening"},
+
+    # --- BEHAVIORAL ---
+    {"question": "What excites you most about this role/company?", "answer": "", "category": "behavioral"},
+    {"question": "Describe your greatest professional achievement and its impact.", "answer": "", "category": "behavioral"},
+    {"question": "Tell us about a time you failed and what you learned.", "answer": "", "category": "behavioral"},
+    {"question": "How do you prioritize tasks under tight deadlines?", "answer": "", "category": "behavioral"},
+    {"question": "Give an example of teamwork leading to success.", "answer": "", "category": "behavioral"},
+    {"question": "What feedback have you received that shaped your career?", "answer": "", "category": "behavioral"},
+    {"question": "How do you stay updated in your field?", "answer": "", "category": "behavioral"},
+    {"question": "Describe handling a difficult customer/colleague.", "answer": "", "category": "behavioral"},
+    {"question": "What’s your approach to learning new tools/technologies?", "answer": "", "category": "behavioral"},
+    {"question": "Why are you leaving your current job?", "answer": "", "category": "behavioral"},
+
+    # --- SITUATIONAL ---
+    {"question": "How would you handle missing a project deadline?", "answer": "", "category": "situational"},
+    {"question": "If assigned a task outside your expertise, what next?", "answer": "", "category": "situational"},
+    {"question": "Describe improving a process in a past role.", "answer": "", "category": "situational"},
+    {"question": "How would you resolve a team conflict?", "answer": "", "category": "situational"},
+    {"question": "What would you do if given unclear instructions?", "answer": "", "category": "situational"},
+    {"question": "How do you manage multiple competing projects?", "answer": "", "category": "situational"},
+    {"question": "If you disagreed with a manager’s decision, how would you proceed?", "answer": "", "category": "situational"},
+    {"question": "Explain adapting to major workplace changes.", "answer": "", "category": "situational"},
+    {"question": "How would you contribute to diversity/inclusion here?", "answer": "", "category": "situational"},
+    {"question": "What’s your strategy for the first 90 days in this role?", "answer": "", "category": "situational"},
+
+    # --- COMPLIANCE ---
+    {"question": "Are you a protected veteran (yes/no)?", "answer": "", "category": "compliance"},
+    {"question": "Do you have a disability (yes/no, optional)?", "answer": "", "category": "compliance"},
+    {"question": "Identify your ethnicity/race (multi-select, optional)?", "answer": "", "category": "compliance"},
+    {"question": "Pronouns (he/him, she/her, they/them)?", "answer": "", "category": "compliance"},
+    {"question": "Sexual orientation (optional, for DEI tracking)?", "answer": "", "category": "compliance"},
+    {"question": "How did you hear about this job? (dropdown: portal, referral, etc.)", "answer": "", "category": "compliance"},
+
+     # --- CREATIVE ---
+    {"question": "What’s your superpower?", "answer": "", "category": "creative"},
+    {"question": "Share a fun fact about yourself.", "answer": "", "category": "creative"},
+    {"question": "Favorite book/podcast influencing your work?", "answer": "", "category": "creative"},
+    {"question": "If not your career, what path would you pursue?", "answer": "", "category": "creative"},
+    {"question": "Send your favorite meme/GIF.", "answer": "", "category": "creative"},
+    {"question": "Describe your work style in three adjectives.", "answer": "", "category": "creative"},
+    {"question": "What’s an unusual hobby/skill you have?", "answer": "", "category": "creative"}
+]
+
+def seed_user_questions(user_id):
+    """
+    Seeds the default smart answers for a specific user.
+    """
+    try:
+        db = SessionLocal()
+        count = 0
+        for q in DEFAULT_SMART_ANSWERS:
+            # Check for dupe for this user
+            exists = db.query(QuestionAnswer).filter_by(user_id=user_id, question=q['question']).first()
+            if not exists:
+                db.add(QuestionAnswer(user_id=user_id, question=q['question'], answer=q['answer'], category=q['category']))
+                count += 1
+        
+        db.commit()
+        db.close()
+        return True, f"Seeded {count} questions."
+    except Exception as e:
+        logger.error(f"Seeding failed for user {user_id}: {e}")
+        return False, str(e)
+
+
     """
     Ensures the default admin user exists and has the correct password.
     """

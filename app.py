@@ -1,6 +1,5 @@
-import streamlit as st
 st.set_page_config(
-        page_title="HireLink v2.42 (Stable)",
+        page_title="HireLink v2.43 (Auto-Seed)",
         page_icon="💸",
         layout="wide",
         initial_sidebar_state="expanded"
@@ -3088,7 +3087,15 @@ else:
             # Admins can inspect others via the dedicated Admin Console if needed.
             qa_list = db.query(QuestionAnswer).filter_by(user_id=user.id).all()
             if not qa_list:
-                st.warning("No questions found in knowledge base. Please run migration or contact admin.")
+                with st.status("Initializing Knowledge Base...", expanded=True) as status:
+                    from backend.database import seed_user_questions
+                    success, msg = seed_user_questions(user.id)
+                    if success:
+                        status.update(label="Knowledge Base Ready!", state="complete", expanded=False)
+                        time.sleep(1)
+                        st.rerun()
+                    else:
+                        st.error(f"Failed to initialize: {msg}")
             else:
                 # Group by Category with Priority Sorting
                 # Define Priority (Lower # = Higher Priority/Top of list)
