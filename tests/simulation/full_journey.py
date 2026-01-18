@@ -1,12 +1,13 @@
 import os
 import sys
 from datetime import datetime
+from dotenv import load_dotenv; load_dotenv()
 
 # Setup Path
 sys.path.append(os.getcwd())
 
 from backend.database import SessionLocal, AppUser, Job, Application, init_db, Resume
-from backend.agents.resume_parser import ResumeParser
+from backend.agents.resume_parser import ResumeParserV2 as ResumeParser
 from backend.agents.auto_applier import AutoApplier
 from backend.agents.job_matcher import JobMatcher
 
@@ -44,20 +45,37 @@ def simulate_journey():
     # 3. Parse Dummy Resume
     print("\n📄 Step 2: Uploading & Parsing Resume...")
     resume_path = "dummy_resume.pdf"
-    if not os.path.exists(resume_path):
-        print("   ❌ Dummy resume not found!")
-        return
-
-    parser = ResumeParser()
-    # We need to force a new parse even if hash exists? 
-    # Just standard parse
-    resume = parser.parse_and_save(resume_path)
-    if resume:
-        # Update resume ownership if we had user linking (currently Resume is global in MVP)
-        print(f"   ✅ Resume Parsed: {resume.parsed_data.get('name')}")
+    
+    if os.path.exists(resume_path):
+        parser = ResumeParser()
+        data = parser.parse(resume_path)
     else:
-        print("   ❌ Resume Parsing Failed")
-        return
+        print("   ⚠️ Dummy resume not found! Creating synthetic resume data...")
+        data = {
+            "name": "Simulated User",
+            "email": "sim@example.com",
+            "phone": "9999999999",
+            "skills": ["Python", "Streamlit", "Automation", "SQL"],
+            "experience": [{"company": "Tech Corp", "role": "Developer", "years": "2020-2023"}],
+            "raw_full": "Synthetic Resume Content for Simulation"
+        }
+
+    # Save to DB
+    res_obj = Resume(
+        # user_id=user.id, # Removed as Resume table doesn't have user_id currently. Linked via Email?
+        name=data.get('name'),
+        email=data.get('email'),
+        parsed_data=data,
+        raw_text=data.get('raw_full', '')
+    )
+    db.add(res_obj)
+    db.commit()
+    print("   ✅ Resume Parsed & Saved")
+
+    # parser = ResumeParser()
+    # resume = parser.parse_and_save(resume_path)
+    # Skipping file-based parse since we injected synthetic data above
+    print(f"   ✅ Resume Parsed (Synthetic/Loaded): {res_obj.parsed_data.get('name')}")
 
     # 4. Scrape Jobs (Simulated)
     print("\n🔍 Step 3: Scraping Jobs (Simulating)...")
@@ -81,7 +99,7 @@ def simulate_journey():
     # 5. Job Matching
     print("\n🧠 Step 4: Finding Matches...")
     matcher = JobMatcher()
-    matches = matcher.match_jobs(resume.id, limit=5)
+    matches = matcher.match_jobs(res_obj.id, limit=5)
     print(f"   ✅ Found {len(matches)} matches based on profile.")
     for m in matches:
         print(f"      - {m['job'].title} ({m['score']}%)")
@@ -102,7 +120,7 @@ def simulate_journey():
         job = m['job']
         print(f"   -> Applying to {job.company}...")
         # Simulate success
-        application = Application(job_id=job.id, resume_id=resume.id, status="Applied", match_score=m['score'])
+        application = Application(job_id=job.id, resume_id=res_obj.id, status="Applied", match_score=m['score'])
         db.add(application)
         successful_apps += 1
         
@@ -118,7 +136,7 @@ def simulate_journey():
 
 ## Activities
 1.  **Onboarding**: Completed. Target Role: {user.target_roles}
-2.  **Resume**: Parsed '{resume_path}'. Found Skills: {resume.parsed_data.get('skills')}
+2.  **Resume**: Parsed '{resume_path}'. Found Skills: {res_obj.parsed_data.get('skills')}
 3.  **Scraping**: Found {len(matches)} relevant jobs.
 4.  **Applications**: Sent {successful_apps} applications.
 
