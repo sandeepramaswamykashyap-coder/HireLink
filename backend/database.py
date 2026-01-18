@@ -399,8 +399,8 @@ def seed_admin():
     """
     try:
         db = SessionLocal()
-        # Changed to .com as per user preference/persistence
-        admin_email = "admin@hirelink.com"
+        # Changed to .tech as per user preference (Permanent Admin)
+        admin_email = "admin@hirelink.tech"
         admin = db.query(AppUser).filter_by(email=admin_email).first()
         
         if not admin:
