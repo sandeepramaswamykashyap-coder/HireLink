@@ -1,6 +1,5 @@
-import streamlit as st
 st.set_page_config(
-        page_title="HireLink v2.40 (Stable)",
+        page_title="HireLink v2.41 (Activity Logs)",
         page_icon="💸",
         layout="wide",
         initial_sidebar_state="expanded"
@@ -2121,7 +2120,7 @@ else:
         st.header("🛡️ Admin Console")
         st.markdown("Manage users and system health.")
         
-        tab_dash, tab_users, tab_market, tab_snapshots, tab_export = st.tabs(["📊 Dashboard", "👥 User Management", "🎟️ Marketing", "💾 Snapshots", "📤 Data Export"])
+        tab_dash, tab_users, tab_market, tab_activity, tab_snapshots, tab_export = st.tabs(["📊 Dashboard", "👥 User Management", "🎟️ Marketing", "📜 Activity Logs", "💾 Snapshots", "📤 Data Export"])
         
         # --- TAB 4: DATA EXPORT ---
         with tab_export:
@@ -2440,6 +2439,40 @@ else:
                         st.rerun()
 
 
+        # --- TAB: ACTIVITY LOGS ---
+        with tab_activity:
+            st.subheader("📜 User Activity Feed")
+            
+            # Filters
+            act_c1, act_c2 = st.columns([3, 1])
+            with act_c1:
+                search_uid = st.text_input("Search (User Email / ID)", placeholder="e.g. 12 or user@email.com")
+            with act_c2:
+                limit = st.selectbox("Limit", [50, 100, 200], index=1)
+                
+            from backend.database import ActivityLog
+            query = db.query(ActivityLog, backend.database.AppUser).join(backend.database.AppUser, ActivityLog.user_id == backend.database.AppUser.id).order_by(ActivityLog.timestamp.desc())
+            
+            if search_uid:
+                if search_uid.isdigit():
+                    query = query.filter(ActivityLog.user_id == int(search_uid))
+                else:
+                    query = query.filter(backend.database.AppUser.email.ilike(f"%{search_uid}%"))
+            
+            logs = query.limit(limit).all()
+            
+            if logs:
+                log_data = []
+                for log, u in logs:
+                    log_data.append({
+                        "Time": log.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+                        "User": f"{u.name} ({u.email})",
+                        "Action": log.action,
+                        "Details": log.details
+                    })
+                st.dataframe(pd.DataFrame(log_data), use_container_width=True)
+            else:
+                st.info("No activity logs found.")
         # --- TAB 4: SNAPSHOTS (From Sidebar) ---
         with tab_snapshots:
             st.markdown("### 💾 Admin Profile Snapshots")

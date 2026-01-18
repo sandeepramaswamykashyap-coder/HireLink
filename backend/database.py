@@ -171,6 +171,14 @@ class PortalStatus(Base):
     status = Column(String) # Active, Down, RateLimited
 
 # ...
+class ActivityLog(Base):
+    __tablename__ = 'activity_logs'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users_v2.id'))
+    action = Column(String) # Login, Logout, Applied, Updated Profile
+    details = Column(String) # Metadata
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
 class PortalCredential(Base):
     __tablename__ = 'portal_credentials'
     id = Column(Integer, primary_key=True)
@@ -256,7 +264,8 @@ def seed_admin():
     """
     try:
         db = SessionLocal()
-        admin_email = "admin@hirelink.tech"
+        # Changed to .com as per user preference/persistence
+        admin_email = "admin@hirelink.com"
         admin = db.query(AppUser).filter_by(email=admin_email).first()
         
         if not admin:
