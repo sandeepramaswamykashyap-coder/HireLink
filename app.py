@@ -2503,7 +2503,7 @@ else:
                         "Time": log.timestamp,
                         "User": f"{u.name}",
                         "Email": u.email,
-                        "Action": fp"{icon} {log.action}",
+                        "Action": f"{icon} {log.action}",
                         "RawAction": log.action, # For charts
                         "Details": log.details
                     })
