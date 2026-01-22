@@ -1821,6 +1821,14 @@ if not user or st.session_state.get('force_landing', True):
                                 st.session_state['user'] = u
                                 st.session_state['force_landing'] = False
                                 st.session_state['show_login'] = False
+                                
+                                # LOG ACTIVITY
+                                try:
+                                    from backend.database import ActivityLog
+                                    db_login.add(ActivityLog(user_id=u.id, action="Login Success", details="Web Login"))
+                                    db_login.commit()
+                                except: pass
+                                
                                 st.success(f"Welcome back, {u.name}!")
                                 
                                 # CHECK PENDING PAYMENT (If they clicked "Choose Plan" then logged in)
@@ -1992,6 +2000,15 @@ else:
     
     # LOGOUT
     if st.sidebar.button("Log Out"):
+         # Log Activity
+         try:
+             from backend.database import SessionLocal, ActivityLog
+             db_log = SessionLocal()
+             db_log.add(ActivityLog(user_id=user.id, action="Logout", details="User initiated logout"))
+             db_log.commit()
+             db_log.close()
+         except: pass
+
          # Clear impersonation on logout too
          if 'impersonating_user_id' in st.session_state:
              del st.session_state['impersonating_user_id']
@@ -2065,7 +2082,7 @@ else:
         st.sidebar.progress(min(apps_used / limit, 1.0))
     
     st.sidebar.divider()
-    st.sidebar.caption("v1.1 (Live)")
+    st.sidebar.caption("HireLink v2.5 (Admin V2)")
         
     st.sidebar.caption(f"{apps_used} / {'∞' if limit > 900000 else limit} Applications Used")
     
@@ -2443,37 +2460,103 @@ else:
         # --- TAB: ACTIVITY LOGS ---
         with tab_activity:
             st.subheader("📜 User Activity Feed")
+            st.caption("Live monitoring of user actions (Logins, Applications, Updates)")
             
             # Filters
-            act_c1, act_c2 = st.columns([3, 1])
+            act_c1, act_c2, act_c3 = st.columns([3, 1, 1])
             with act_c1:
-                search_uid = st.text_input("Search (User Email / ID)", placeholder="e.g. 12 or user@email.com")
+                # Fetch Users for Dropdown
+                all_users_act = db.query(backend.database.AppUser).all()
+                user_opts = ["All Users"] + [f"{u.email} : {u.id}" for u in all_users_act]
+                sel_user_filter = st.selectbox("Filter User", user_opts)
+                
             with act_c2:
-                limit = st.selectbox("Limit", [50, 100, 200], index=1)
+                limit = st.selectbox("Limit", [50, 100, 200, 500], index=1)
+            with act_c3:
+                st.write("") # Align
+                if st.button("🔄 Refresh Feed", use_container_width=True):
+                    st.rerun()
                 
             from backend.database import ActivityLog
             query = db.query(ActivityLog, backend.database.AppUser).join(backend.database.AppUser, ActivityLog.user_id == backend.database.AppUser.id).order_by(ActivityLog.timestamp.desc())
             
-            if search_uid:
-                if search_uid.isdigit():
-                    query = query.filter(ActivityLog.user_id == int(search_uid))
-                else:
-                    query = query.filter(backend.database.AppUser.email.ilike(f"%{search_uid}%"))
+            if sel_user_filter != "All Users":
+                # Extract ID from "email : id" string
+                target_id = int(sel_user_filter.split(" : ")[-1])
+                query = query.filter(ActivityLog.user_id == target_id)
             
             logs = query.limit(limit).all()
             
             if logs:
                 log_data = []
                 for log, u in logs:
+                    # Emoji mapping
+                    icon = "🔹"
+                    if "Login" in log.action: icon = "🟢"
+                    elif "Logout" in log.action: icon = "⚪"
+                    elif "Mission" in log.action: icon = "🚀"
+                    elif "Application" in log.action: icon = "✅"
+                    elif "Failed" in log.action: icon = "❌"
+                    elif "Profile" in log.action: icon = "✏️"
+                    
                     log_data.append({
-                        "Time": log.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-                        "User": f"{u.name} ({u.email})",
-                        "Action": log.action,
+                        "Time": log.timestamp,
+                        "User": f"{u.name}",
+                        "Email": u.email,
+                        "Action": fp"{icon} {log.action}",
+                        "RawAction": log.action, # For charts
                         "Details": log.details
                     })
-                st.dataframe(pd.DataFrame(log_data), use_container_width=True)
+                
+                df_logs = pd.DataFrame(log_data)
+                
+                # --- ANALYTICS DASHBOARD ---
+                st.markdown("#### 📊 Insights")
+                c_chart1, c_chart2 = st.columns([2, 1])
+                
+                with c_chart1:
+                    # Activity over Time
+                    st.caption("Activity Volume (Last 24h)")
+                    if not df_logs.empty:
+                        df_chart = df_logs.set_index("Time")
+                        st.bar_chart(df_chart["RawAction"].resample("H").count(), color="#6366f1")
+                        
+                with c_chart2:
+                    # Action Distribution
+                    st.caption("Action Types")
+                    if not df_logs.empty:
+                        action_counts = df_logs["RawAction"].value_counts()
+                        st.dataframe(action_counts, use_container_width=True)
+
+                st.divider()
+
+                # Interactive Table
+                c_tbl, c_dl = st.columns([4, 1])
+                with c_tbl:
+                    st.markdown("#### 📝 Detailed Log")
+                with c_dl:
+                     # CSV Download
+                     csv = df_logs.to_csv(index=False).encode('utf-8')
+                     st.download_button(
+                         "⬇️ Export CSV",
+                         csv,
+                         "activity_logs.csv",
+                         "text/csv",
+                         key='download-csv'
+                     )
+
+                st.data_editor(
+                    df_logs[["Time", "User", "Email", "Action", "Details"]],
+                    use_container_width=True,
+                    disabled=True,
+                    hide_index=True,
+                    column_config={
+                        "Time": st.column_config.DatetimeColumn("Timestamp", format="D MMM, HH:mm:ss"),
+                        "Action": st.column_config.TextColumn("Event Type"),
+                    }
+                )
             else:
-                st.info("No activity logs found.")
+                st.info("No activity logs found yet. Users need to verify login or start missions.")
         # --- TAB 4: SNAPSHOTS (From Sidebar) ---
         with tab_snapshots:
             st.markdown("### 💾 Admin Profile Snapshots")

@@ -182,3 +182,33 @@ class EmailNotifier:
         except Exception as e:
             logger.error(f"Failed to send reset email: {e}")
             return False
+
+    def send_email(self, to_email, subject, html_body):
+        """
+        Generic method to send any HTML email.
+        """
+        if not self.enabled:
+            logger.warning("EmailNotifier: SMTP credentials not set. Skipping generic email.")
+            return False
+            
+        try:
+            msg = MIMEMultipart()
+            msg['From'] = self.username
+            msg['To'] = to_email
+            msg['Subject'] = subject
+
+            msg.attach(MIMEText(html_body, 'html'))
+            
+            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
+            server.starttls()
+            server.login(self.username, self.password)
+            text = msg.as_string()
+            server.sendmail(self.username, to_email, text)
+            server.quit()
+            
+            logger.info(f"Generic email sent to {to_email}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to send generic email: {e}")
+            return False

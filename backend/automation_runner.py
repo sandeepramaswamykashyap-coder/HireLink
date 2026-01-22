@@ -18,8 +18,23 @@ def run_pilot_mission(role, loc, sel_res_id, sel_portals, user_email, render_pha
     
     full_log = []
     
+    # Logging Setup
+    from backend.database import SessionLocal, ActivityLog, AppUser
+    db = SessionLocal()
+    user = db.query(AppUser).filter(AppUser.email == user_email).first()
+    uid = user.id if user else None
+    
+    # Log Start
+    try:
+        if uid:
+            db.add(ActivityLog(user_id=uid, action="Mission Started", details=f"Role: {role}, Loc: {loc}"))
+            db.commit()
+    except Exception as e:
+        print(f"Log Error: {e}")
+
     try:
         if not st.session_state.get('pilot_running', False):
+            db.close()
             return
 
         for update in applier.run_hyper_automation(role, loc, sel_res_id, target_portals=sel_portals, user_email=user_email):
@@ -45,6 +60,12 @@ def run_pilot_mission(role, loc, sel_res_id, sel_portals, user_email, render_pha
             
             if status == "SUCCESS":
                 st.session_state['m_sent'] += 1
+                # Log Success
+                if uid:
+                    try:
+                        db.add(ActivityLog(user_id=uid, action="Application Sent", details=f"Applied via {step}"))
+                        db.commit()
+                    except: pass
             
             # Refresh UI Components
             render_phases_callback(st.session_state['m_phase_idx'])
@@ -57,7 +78,10 @@ def run_pilot_mission(role, loc, sel_res_id, sel_portals, user_email, render_pha
                 st.session_state['pilot_running'] = False
                 st.balloons()
                 st.success("Mission Concluded Successfully!")
+                db.close()
                 st.rerun()
+    except Exception as e:
+        db.close()
 
     except Exception as e:
         st.session_state['pilot_running'] = False
