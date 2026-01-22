@@ -272,6 +272,18 @@ def migrate_db():
                     with conn.begin():
                         conn.execute(text("ALTER TABLE applications ADD COLUMN user_id INTEGER"))
 
+        # --- FIX: DROP STALE UNIQUE CONSTRAINT (Postgres) ---
+        # The 'question' column should NOT be unique globally, as multiple users have the same questions.
+        if engine.dialect.name == 'postgresql':
+            try:
+                with engine.connect() as conn:
+                    with conn.begin():
+                        conn.execute(text("ALTER TABLE question_answers DROP CONSTRAINT IF EXISTS question_answers_question_key"))
+                logger.info("Migration: Dropped stale unique constraint 'question_answers_question_key'.")
+            except Exception as e:
+                # Often fails if constraint doesn't exist, which is fine.
+                logger.warning(f"Migration: Attempted to drop constraint but failed (ignorable): {e}")
+
     except Exception as e:
         logger.warning(f"Migration check failed: {e}")
 
