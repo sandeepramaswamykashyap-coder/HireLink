@@ -112,3 +112,60 @@ class JobMatcher:
         # Sort by score desc
         matched_jobs.sort(key=lambda x: x['score'], reverse=True)
         return matched_jobs[:limit]
+
+    def match_question(self, target_question, knowledge_base):
+        """
+        Finds the best matching answer from the knowledge base for a given target question.
+        Args:
+            target_question (str): The question asked by the portal.
+            knowledge_base (dict): { "category": { "question": "answer" } } OR flat { "question": "answer" }
+        Returns:
+            answer (str) or None
+        """
+        if not target_question or not knowledge_base: return None
+        
+        # Flatten KB if needed
+        flat_kb = {}
+        for k, v in knowledge_base.items():
+            if isinstance(v, dict):
+                for q, a in v.items():
+                    flat_kb[q] = a
+            else:
+                flat_kb[k] = v
+                
+        if not flat_kb: return None
+        
+        known_questions = list(flat_kb.keys())
+        
+        # Preprocess
+        target_proc = self._preprocess(target_question)
+        known_proc = [self._preprocess(q) for q in known_questions]
+        
+        # Quick exact/substring check first (Optimization)
+        for i, q_proc in enumerate(known_proc):
+            if target_proc == q_proc or target_proc in q_proc or q_proc in target_proc:
+                return flat_kb[known_questions[i]]
+        
+        # TF-IDF Cosine Similarity
+        try:
+            all_docs = [target_proc] + known_proc
+            # Fit specific for this batch to ensure vocabulary covers these specific words
+            # Note: We reuse the vectorizer config but fit_transform on new data
+            local_vectorizer = TfidfVectorizer(stop_words='english')
+            tfidf_matrix = local_vectorizer.fit_transform(all_docs)
+            
+            cosine_sim = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).flatten()
+            
+            best_idx = np.argmax(cosine_sim)
+            best_score = cosine_sim[best_idx]
+            
+            logger.info(f"Smart Answer Match: '{target_question}' matched '{known_questions[best_idx]}' (Score: {best_score:.2f})")
+            
+            # Threshold (e.g., 0.4 implies distinct similarity)
+            if best_score > 0.35:
+                return flat_kb[known_questions[best_idx]]
+            
+        except Exception as e:
+            logger.error(f"Semantic Match Failed: {e}")
+            
+        return None

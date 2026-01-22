@@ -2953,17 +2953,38 @@ else:
             st.write("")
             st.write("### Ready to Launch?")
             
-            if st.button("🔥 ENGAGE HYPER-DRIVE", type="primary", use_container_width=True, key="engage_btn_v2"):
-                missing = []
-                if not role: missing.append("Target Role")
-                if not loc: missing.append("Location")
-                if not sel_res_id: missing.append("Active Resume")
-                if not sel_portals: missing.append("Active Portals")
-                
-                if missing:
-                    st.error(f"⚠️ MISSION ABORTED. Missing: {', '.join(missing)}")
+            # --- PAUSE / RESUME CONTROL ---
+            pause_lock_file = os.path.join(os.getcwd(), "data", "bot_pause.lock")
+            is_paused = os.path.exists(pause_lock_file)
+            
+            c_eng, c_pause = st.columns([3, 1])
+            
+            with c_eng:
+                if st.button("🔥 ENGAGE HYPER-DRIVE", type="primary", use_container_width=True, key="engage_btn_v2"):
+                    missing = []
+                    if not role: missing.append("Target Role")
+                    if not loc: missing.append("Location")
+                    if not sel_res_id: missing.append("Active Resume")
+                    if not sel_portals: missing.append("Active Portals")
+                    
+                    if missing:
+                        st.error(f"⚠️ MISSION ABORTED. Missing: {', '.join(missing)}")
+                    else:
+                        st.session_state['pilot_running'] = True
+            
+            with c_pause:
+                if is_paused:
+                    if st.button("▶️ RESUME", type="primary", use_container_width=True, help="Resume the Autopilot"):
+                        if os.path.exists(pause_lock_file): os.remove(pause_lock_file)
+                        st.rerun()
                 else:
-                    st.session_state['pilot_running'] = True
+                    if st.button("⏸️ PAUSE", type="secondary", use_container_width=True, help="Pause the Autopilot safely"):
+                        os.makedirs(os.path.dirname(pause_lock_file), exist_ok=True)
+                        with open(pause_lock_file, "w") as f: f.write("paused")
+                        st.rerun()
+            
+            if is_paused:
+                st.warning("⚠️ Autopilot is PAUSED. Click RESUME to continue operations.")
 
         # Space between Mission Control and Systems Log
         for _ in range(3): st.write("")

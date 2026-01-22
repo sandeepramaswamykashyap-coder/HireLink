@@ -1,4 +1,4 @@
-from backend.utils.selenium_utils import setup_driver, random_sleep
+from backend.utils.selenium_utils import setup_driver, random_sleep, save_cookies, load_cookies
 from backend.database import get_db, Job, Resume, Application
 from sqlalchemy import func
 from backend.utils.logger import logger
@@ -118,6 +118,13 @@ class AutoApplier:
             logger.info("Starting AutoApplier browser session (Visible)...")
             self.driver = setup_driver(headless=False, detach=False)
             
+            # Load Cookies if available
+            cookie_path = os.path.join(os.getcwd(), "data", "cookies", "session_cookies.pkl")
+            if load_cookies(self.driver, cookie_path):
+                logger.info("Restored session cookies.")
+                self.driver.refresh()
+                random_sleep(2, 3)
+            
     def _click_radio(self, parent, value_text):
         """Helper to click Yes/No radio buttons"""
         try:
@@ -131,6 +138,10 @@ class AutoApplier:
 
     def close_browser(self):
         if self.driver:
+            # Save Cookies before quitting
+            cookie_path = os.path.join(os.getcwd(), "data", "cookies", "session_cookies.pkl")
+            save_cookies(self.driver, cookie_path)
+            
             logger.info("Closing AutoApplier browser session...")
             self.driver.quit()
             self.driver = None
@@ -208,11 +219,17 @@ class AutoApplier:
 
             # Default to False for safety
             return False
+            
         except RuntimeError as re:
             raise re
         except Exception as e:
             logger.error(f"Error checking {portal_name} login: {e}")
             return False
+        finally:
+             if self.driver:
+                 # Opportunistic Save
+                 cookie_path = os.path.join(os.getcwd(), "data", "cookies", "session_cookies.pkl")
+                 save_cookies(self.driver, cookie_path)
 
     def check_all_portal_logins(self, portals):
         """Batch check logins for a list of portals"""
@@ -413,6 +430,13 @@ class AutoApplier:
         yield {"step": "Applying", "status": f"Applying to {total_matches} best matches...", "progress": 80}
         success_count = 0
         for i, match in enumerate(matches):
+            # --- PAUSE CHECK ---
+            pause_lock = os.path.join(os.getcwd(), "data", "bot_pause.lock")
+            while os.path.exists(pause_lock):
+                yield {"step": "Paused", "status": "⚠️ Bot is PAUSED by User. Waiting for resume...", "progress": 80 + int(((i)/total_matches)*19)}
+                logger.info("Bot Paused. Sleeping 2s...")
+                random_sleep(2, 2)
+                
             job = match['job']
             yield {"step": "Applying", "status": f"[{i+1}/{total_matches}] Applying to {job.title} @ {job.company}...", "progress": 80 + int(((i+1)/total_matches)*19)}
             try:
@@ -469,41 +493,34 @@ class AutoApplier:
 
 
     def find_smart_answer(self, label_text):
-        """Fuzzy match label text against DB Questions"""
+        """Semantic match label text against DB Questions using JobMatcher"""
         if not label_text: return None
-        label_text = label_text.lower()
         
-        # Load QA Cache if empty (Basic caching)
+        # Load QA Cache if empty
         if not hasattr(self, 'qa_cache'):
+            # Only fetch if not already populated (it might have been populated by run_hyper_automation)
             from backend.database import SessionLocal, QuestionAnswer
             db = SessionLocal()
             self.qa_cache = db.query(QuestionAnswer).all()
             db.close()
             
-        # 1. Exact/Substring Match
-        for qa in self.qa_cache:
-            q_text = qa.question.lower()
-            if q_text in label_text or label_text in q_text:
-                return qa.answer
-                
-        # 2. Keyword Match (Advanced)
-        keywords = {
-            "notice": ["notice period", "how soon"],
-            "ctc": ["ctc", "salary", "compensation"],
-            "experience": ["experience", "years of"],
-            "sponsorship": ["sponsorship", "visa"],
-            "relocate": ["relocate"],
-            "gender": ["gender"]
-        }
+        # Convert QA Cache to simple dict for matcher
+        # JobMatcher expects: { "question": "answer" }
+        # If qa_cache is a list of objects, convert. If it's a dict passed from run_hyper, handle that.
+        # Ideally, we standardize. In run_hyper it's a dict. Here it's a list.
         
-        for key, tokens in keywords.items():
-            if any(t in label_text for t in tokens):
-                # Find the DB entry for this category/key
-                for qa in self.qa_cache:
-                    if key in qa.question.lower():
-                        return qa.answer
-                        
-        return None
+        kb_dict = {}
+        if isinstance(self.qa_cache, dict):
+            kb_dict = self.qa_cache
+        else:
+             kb_dict = {qa.question: qa.answer for qa in self.qa_cache if qa.answer}
+
+        # Lazy load matcher to save resources
+        if not hasattr(self, 'matcher'):
+            from backend.agents.job_matcher import JobMatcher
+            self.matcher = JobMatcher()
+            
+        return self.matcher.match_question(label_text, kb_dict)
 
     def apply_to_job(self, job_id, resume_id, status_callback=None):
         """Legacy Wrapper for compatibility"""
@@ -635,7 +652,29 @@ class AutoApplier:
                     random_sleep(4, 6)
                     
                     # --- COVER LETTER DECISION ---
-                    # ...
+                    if job.description:
+                         try:
+                             yield "Generating Tailored Cover Letter with Contextual Hook..."
+                             logger.info("Pilot: Generating tailored cover letter...")
+                             
+                             # Extract skills list if possible
+                             skills_list = []
+                             if candidate_profile.get("skills"):
+                                 skills_list = candidate_profile["skills"]
+                            
+                             cl_text = self.cl_gen.generate(
+                                 job_title=job.title,
+                                 company_name=job.company,
+                                 candidate_name=candidate_profile.get("contact", {}).get("name", "Candidate"),
+                                 skills=skills_list,
+                                 resume_text=resume.raw_text,
+                                 job_description=job.description
+                             )
+                             
+                             candidate_profile['cover_letter'] = cl_text
+                             logger.info("Pilot: Cover Letter Generated.")
+                         except Exception as e:
+                             logger.warning(f"Pilot: Cover Letter Gen Failed: {e}")
                     
                     # --- UNIVERSAL FORM FILLING HANDOFF ---
                     yield "Engaging Autonomous Pilot for Form Completion..."

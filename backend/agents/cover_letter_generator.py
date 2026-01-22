@@ -6,7 +6,7 @@ class CoverLetterGenerator:
     def __init__(self):
         self.llm_client = LLMClient()
 
-    def generate(self, job_title, company_name, candidate_name, skills, resume_text=None):
+    def generate(self, job_title, company_name, candidate_name, skills, resume_text=None, job_description=None):
         """
         Generate a cover letter. Tries LLM first, falls back to templates.
         """
@@ -14,6 +14,18 @@ class CoverLetterGenerator:
         if self.llm_client.client:
             try:
                 logger.info(f"Generating AI cover letter for {company_name}")
+                
+                # Contextual Hook Logic
+                prompt_context = ""
+                if job_description:
+                    prompt_context = f"""
+                    Job Description:
+                    {job_description[:3000]}
+                    
+                    Instruction for Hook:
+                    Identify a specific project, value, or challenge mentioned in the Job Description and write a custom opening sentence (The Hook) that connects it to the candidate.
+                    """
+                
                 prompt = f"""
                 Write a professional and persuasive cover letter for the following role.
                 
@@ -21,6 +33,8 @@ class CoverLetterGenerator:
                 Role: {job_title}
                 Company: {company_name}
                 Key Skills: {', '.join(skills) if isinstance(skills, list) else skills}
+                
+                {prompt_context}
                 
                 Resume Context:
                 {resume_text[:2000] if resume_text else "No specific resume text provided."}
@@ -30,6 +44,7 @@ class CoverLetterGenerator:
                 - Highlight why the candidate is a good fit based on the skills.
                 - Use a professional but enthusiastic tone.
                 - structured as standard cover letter (Dear Hiring Manager...)
+                - IMPORTANT: Do not include placeholders like [Your Name]. Use the provided Candidate Name.
                 """
                 
                 letter = self.llm_client.generate_text(prompt)

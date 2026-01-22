@@ -80,6 +80,56 @@ def setup_driver(headless=True, profile_dir=None, detach=False):
                 logger.error(f"CRITICAL: Engine Failed. {e}")
                 raise RuntimeError(f"Browser Engine Blocked: {e}")
 
+
+def save_cookies(driver, path):
+    """Save cookies to a file"""
+    import pickle
+    try:
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'wb') as file:
+            pickle.dump(driver.get_cookies(), file)
+        logger.info(f"Cookies saved to {path}")
+        return True
+    except Exception as e:
+        logger.warning(f"Failed to save cookies: {e}")
+        return False
+
+def load_cookies(driver, path, domain=None):
+    """Load cookies from a file"""
+    import pickle
+    try:
+        if not os.path.exists(path):
+            return False
+            
+        with open(path, 'rb') as file:
+            cookies = pickle.load(file)
+            
+        # Add cookies to driver
+        driver.execute_cdp_cmd('Network.enable', {})
+        for cookie in cookies:
+            try:
+                # Fix for domain mismatch issues
+                if domain and domain not in cookie.get('domain', ''):
+                    continue
+                    
+                # Clean up cookie fields that might cause errors
+                if 'expiry' in cookie:
+                    cookie['expires'] = cookie['expiry']
+                    del cookie['expiry']
+                
+                driver.add_cookie(cookie)
+            except Exception as e:
+                # Some cookies fail to add, just ignore
+                pass
+                
+        logger.info(f"Cookies loaded from {path}")
+        return True
+    except Exception as e:
+        logger.warning(f"Failed to load cookies: {e}")
+        return False
+
 def random_sleep(min_seconds=2, max_seconds=5):
     """Sleep for a random amount of time to mimic human behavior"""
     time.sleep(random.uniform(min_seconds, max_seconds))
+
