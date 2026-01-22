@@ -2405,56 +2405,120 @@ else:
                             
 
         
-        # --- TAB: MARKETING ---
+        # --- TAB: MARKETING & CAMPAIGNS ---
         with tab_market:
-            st.subheader("🎟️ Coupon Generator")
+            st.subheader("📢 Marketing Automation Center")
             
-            # Helper to generate code
-            import random, string
-            def generate_code(disc):
-                suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
-                return f"SAVE{disc}-{suffix}"
-
-            # Aligning properly: Input (Small), Input (Large), Button (Bottom-aligned effectively)
-            c1, c2, c3 = st.columns([1, 3, 1])
+            mk_tab1, mk_tab2 = st.tabs(["🚀 Campaign Manager", "🎟️ Coupons & Offers"])
             
-            with c1:
-                new_disc = st.number_input("Discount %", 1, 100, 20)
+            with mk_tab1:
+                st.info("💡 **Drip Campaigns:** Automated emails sent to Free users based on account age.")
                 
-            with c2:
-                # Auto-generate logic
-                default_code = generate_code(new_disc)
-                new_code = st.text_input("Coupon Code", value=default_code)
-            
-            with c3:
-                st.write("") # Spacer to push button down
-                st.write("")
-                submit = st.button("Create", type="primary", use_container_width=True)
-            
-            if submit:
-                if new_code:
-                    try:
-                        final_code = new_code.strip().upper()
-                        coupon = backend.database.Coupon(code=final_code, discount_percent=new_disc)
-                        db.add(coupon)
-                        db.commit()
-                        st.success(f"Created: {final_code} (-{new_disc}%)")
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"Error: {e}")
-            
-            # List Coupons
-            coupons = db.query(backend.database.Coupon).all()
-            if coupons:
-                st.write("Active Coupons:")
-                for c in coupons:
-                    c1, c2, c3 = st.columns([2, 1, 1])
-                    c1.write(f"**{c.code}**")
-                    c2.write(f"**-{c.discount_percent}%** OFF")
-                    if c3.button("Delete", key=f"del_coup_{c.code}"):
-                        db.delete(c)
-                        db.commit()
-                        st.rerun()
+                from backend.marketing_engine import MarketingEngine
+                from backend.database import MarketingCampaign
+                engine_mk = MarketingEngine()
+                
+                # Stats
+                stats = engine_mk.get_campaign_status()
+                m1, m2 = st.columns(2)
+                m1.metric("Active Campaigns", stats['active_campaigns'])
+                m2.metric("Total Emails Sent", stats['emails_delivered'])
+                
+                st.divider()
+                
+                # Campaign Editor
+                st.markdown("#### 📝 Edit Campaigns")
+                campaigns = db.query(MarketingCampaign).order_by(MarketingCampaign.day_offset).all()
+                
+                for camp in campaigns:
+                    with st.expander(f"Day {camp.day_offset}: {camp.name}", expanded=False):
+                        with st.form(f"edit_camp_{camp.id}"):
+                            new_subj = st.text_input("Subject", value=camp.subject)
+                            new_body = st.text_area("HTML Body", value=camp.body_template, height=150)
+                            
+                            c_save, c_preview = st.columns([1, 1])
+                            if c_save.form_submit_button("Save Changes", type="primary"):
+                                camp.subject = new_subj
+                                camp.body_template = new_body
+                                db.commit()
+                                st.success("Saved!")
+                                st.rerun()
+                                
+                            # Basic Preview
+                            st.caption("Preview:")
+                            st.markdown(new_body, unsafe_allow_html=True)
+
+                st.divider()
+                
+                # Execution Control
+                st.markdown("#### ⚡ Operations")
+                c_run, c_log = st.columns([1, 2])
+                with c_run:
+                    st.caption("Process the email queue for today.")
+                    if st.button("🚀 Run Daily Campaign Now", type="primary"):
+                        with st.spinner("Sending emails..."):
+                            logs = engine_mk.run_daily_campaign(dry_run=False)
+                            st.session_state['mk_logs'] = logs
+                            if logs:
+                                st.success("Campaign Run Complete!")
+                            else:
+                                st.info("No eligible users found for today.")
+                                
+                with c_log:
+                    if 'mk_logs' in st.session_state:
+                        with st.status("Execution Log", expanded=True):
+                            for l in st.session_state['mk_logs']:
+                                st.write(l)
+
+            with mk_tab2:
+                st.subheader("🎟️ Coupon Generator")
+                
+                # Helper to generate code
+                import random, string
+                def generate_code(disc):
+                    suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+                    return f"SAVE{disc}-{suffix}"
+    
+                # Aligning properly: Input (Small), Input (Large), Button (Bottom-aligned effectively)
+                c1, c2, c3 = st.columns([1, 3, 1])
+                
+                with c1:
+                    new_disc = st.number_input("Discount %", 1, 100, 20)
+                    
+                with c2:
+                    # Auto-generate logic
+                    default_code = generate_code(new_disc)
+                    new_code = st.text_input("Coupon Code", value=default_code)
+                
+                with c3:
+                    st.write("") # Spacer to push button down
+                    st.write("")
+                    submit = st.button("Create", type="primary", use_container_width=True)
+                
+                if submit:
+                    if new_code:
+                        try:
+                            final_code = new_code.strip().upper()
+                            coupon = backend.database.Coupon(code=final_code, discount_percent=new_disc)
+                            db.add(coupon)
+                            db.commit()
+                            st.success(f"Created: {final_code} (-{new_disc}%)")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Error: {e}")
+                
+                # List Coupons
+                coupons = db.query(backend.database.Coupon).all()
+                if coupons:
+                    st.write("Active Coupons:")
+                    for c in coupons:
+                        c1, c2, c3 = st.columns([2, 1, 1])
+                        c1.write(f"**{c.code}**")
+                        c2.write(f"**-{c.discount_percent}%** OFF")
+                        if c3.button("Delete", key=f"del_coup_{c.code}"):
+                            db.delete(c)
+                            db.commit()
+                            st.rerun()
 
 
         # --- TAB: ACTIVITY LOGS ---

@@ -183,7 +183,7 @@ class EmailNotifier:
             logger.error(f"Failed to send reset email: {e}")
             return False
 
-    def send_email(self, to_email, subject, html_body):
+    def send_email(self, to_email, subject, html_body, sender_override=None):
         """
         Generic method to send any HTML email.
         """
@@ -193,7 +193,7 @@ class EmailNotifier:
             
         try:
             msg = MIMEMultipart()
-            msg['From'] = self.username
+            msg['From'] = sender_override if sender_override else self.username
             msg['To'] = to_email
             msg['Subject'] = subject
 

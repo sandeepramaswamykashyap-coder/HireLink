@@ -188,6 +188,23 @@ class PortalCredential(Base):
     password = Column(String) # Stored plainly for MVP as per user context
     updated_at = Column(DateTime, default=datetime.utcnow)
 
+class MarketingCampaign(Base):
+    __tablename__ = 'marketing_campaigns'
+    id = Column(Integer, primary_key=True)
+    name = Column(String) # e.g., "Day 1: Welcome"
+    subject = Column(String)
+    body_template = Column(String) # HTML Template
+    day_offset = Column(Integer) # Send on Day X
+    # For now, simplistic sequence logic
+
+class UserCampaignStatus(Base):
+    __tablename__ = 'user_campaign_status'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users_v2.id'))
+    campaign_id = Column(Integer, ForeignKey('marketing_campaigns.id'))
+    sent_at = Column(DateTime, default=datetime.utcnow)
+    status = Column(String, default="Sent") # Sent, Opened, Clicked (Future)
+
 # Setup Database
 if "sqlite" in DATABASE_URL:
     engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
