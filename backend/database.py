@@ -405,17 +405,30 @@ def seed_user_questions(user_id):
     """
     try:
         db = SessionLocal()
-        count = 0
-        for q in DEFAULT_SMART_ANSWERS:
-            # Check for dupe for this user
-            exists = db.query(QuestionAnswer).filter_by(user_id=user_id, question=q['question']).first()
-            if not exists:
-                db.add(QuestionAnswer(user_id=user_id, question=q['question'], answer=q['answer'], category=q['category']))
-                count += 1
         
-        db.commit()
+        # 1. Bulk Select Existing Questions
+        existing_qs = db.query(QuestionAnswer.question).filter_by(user_id=user_id).all()
+        existing_set = {r[0] for r in existing_qs}
+        
+        # 2. Filter New Questions
+        new_records = []
+        for q in DEFAULT_SMART_ANSWERS:
+            if q['question'] not in existing_set:
+                new_records.append(QuestionAnswer(
+                    user_id=user_id,
+                    question=q['question'],
+                    answer=q['answer'],
+                    category=q['category']
+                ))
+        
+        # 3. Bulk Insert
+        if new_records:
+            db.bulk_save_objects(new_records)
+            db.commit()
+            return True, f"Seeded {len(new_records)} new questions."
+            
         db.close()
-        return True, f"Seeded {count} questions."
+        return True, "Questions already up to date."
     except Exception as e:
         logger.error(f"Seeding failed for user {user_id}: {e}")
         return False, str(e)
