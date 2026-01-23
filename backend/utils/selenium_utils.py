@@ -2,18 +2,24 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from fake_useragent import UserAgent
 from backend.utils.logger import logger
 import time
 import random
 import os
 
+try:
+    from fake_useragent import UserAgent
+except ImportError:
+    UserAgent = None
+
 def get_random_user_agent():
     try:
-        ua = UserAgent()
-        return ua.random
+        if UserAgent:
+            ua = UserAgent()
+            return ua.random
     except:
-        return "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        pass
+    return "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
 def setup_driver(headless=True, profile_dir=None, detach=False):
     """Setup Chrome Driver with anti-detection options and optional profile persistence"""
