@@ -2061,21 +2061,36 @@ else:
 
     # PLAN USAGE METER
     st.sidebar.markdown("---")
-    plan = getattr(user, 'subscription_plan', 'FREE')
     
-    if getattr(user, 'is_admin', False):
-        limit = 999999
-        plan_display = f"{plan} (ADMIN)"
-    else:
-        limit_map = {'TRIAL': 20, 'FREE': 20, 'STARTER': 150, 'PRO': 1000, 'PRO_PLUS': 10000}
-        limit = limit_map.get(plan, 20)
-        plan_display = plan
-
-    # Count apps
+    # RE-FETCH USER FROM DB TO ENSURE FRESHNESS (e.g. after Admin Upgrade)
+    # This fixes the issue of "stale session state" showing old plan
     try:
-        apps_used = db.query(backend.database.Application).count()
-    except:
+        from backend.database import SessionLocal, AppUser, Application
+        db_usage = SessionLocal()
+        fresh_user = db_usage.query(AppUser).filter_by(id=user.id).first()
+        if fresh_user:
+            plan = fresh_user.subscription_plan or 'FREE'
+            is_admin_check = fresh_user.is_admin
+        else:
+            plan = getattr(user, 'subscription_plan', 'FREE')
+            is_admin_check = getattr(user, 'is_admin', False)
+            
+        if is_admin_check:
+            limit = 999999
+            plan_display = f"{plan} (ADMIN)"
+        else:
+            limit_map = {'TRIAL': 20, 'FREE': 20, 'STARTER': 150, 'PRO': 1000, 'PRO_PLUS': 10000}
+            limit = limit_map.get(plan, 20)
+            plan_display = plan
+
+        # Count apps (FILTERED BY USER)
+        apps_used = db_usage.query(Application).filter_by(user_id=user.id).count()
+        db_usage.close()
+    except Exception as e:
+        logger.error(f"Usage check failed: {e}")
         apps_used = 0
+        limit = 20
+        plan_display = "Error"
         
     st.sidebar.caption(f"**PLAN:** {plan_display}")
     if limit < 999999 and limit > 0:
