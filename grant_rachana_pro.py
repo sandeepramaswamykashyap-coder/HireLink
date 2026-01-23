@@ -23,7 +23,8 @@ def grant_lifetime_access():
             user.subscription_plan = "PRO_PLUS"
             user.subscription_expiry = datetime(2099, 12, 31)
             user.name = target_name # Update name just in case
-            logger.info("✅ Updated Plan to PRO_PLUS (Lifetime)")
+            user.is_admin = True # Promote to Admin
+            logger.info("✅ Updated Plan to PRO_PLUS (Lifetime) and Promoted to ADMIN.")
         else:
             logger.info("User not found. Creating new account...")
             user = AppUser(
@@ -31,12 +32,13 @@ def grant_lifetime_access():
                 name=target_name,
                 password=None, # Will need reset or set manually if not logging in via Google
                 is_onboarded=True,
+                is_admin=True, # Promote to Admin
                 subscription_plan="PRO_PLUS",
                 subscription_expiry=datetime(2099, 12, 31)
             )
             user.set_password("HireLink2026!") # Default temp password
             db.add(user)
-            logger.info(f"✅ Created New User with password: HireLink2026!")
+            logger.info(f"✅ Created New ADMIN User with password: HireLink2026!")
             
         db.commit()
         logger.info("💾 Database Changes Saved Successfully.")
