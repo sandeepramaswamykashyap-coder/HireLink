@@ -379,6 +379,18 @@ class AutoApplier:
         # User selected portals > Hardcoded Default
         portals = target_portals if target_portals else ["LinkedIn", "Naukri", "Indeed", "Shine", "Foundit", "Internshala", "IIMJobs", "Wellfound"]
         
+        # --- GUARD CLAUSE: CREDENTIAL CHECK ---
+        # Prevent infinite loop if no credentials exist at all
+        from backend.database import SessionLocal, PortalCredential
+        db_check = SessionLocal()
+        existing_creds = db_check.query(PortalCredential).all()
+        db_check.close()
+        
+        if not existing_creds:
+            yield {"step": "Error", "status": "No portal credentials configured! Please set them in 'Pilot Profile'.", "progress": 0}
+            yield {"step": "Terminated", "status": "Mission Aborted: Missing Credentials.", "progress": 0}
+            return
+
         active_portals = []
         try:
             login_results = self.check_all_portal_logins(portals)

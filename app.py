@@ -960,8 +960,6 @@ def render_landing_page(user_exists=False):
     
     st.markdown("""
 <div class="landing-features">
-</div>
-<div class="landing-features">
 <div class="feature-card">
 <span class="feature-icon">🔍</span>
 <h3>Smart Search</h3>
@@ -978,6 +976,12 @@ def render_landing_page(user_exists=False):
 <p>Advanced matching engine ensures you only apply to high-relevance roles.</p>
 </div>
 </div>
+""", unsafe_allow_html=True)
+
+    # --- PRICING SECTION (Inserted High) ---
+    render_pricing_logic(user_exists)
+
+    st.markdown("""
 <div class="landing-portals" style="text-align: center; margin: 80px 0;">
 <h2 style="font-size: 2.5rem; margin-bottom: 40px;">Supported <span class="gradient-text">Platforms</span> 🌐</h2>
 <div class="portal-grid">
@@ -1018,8 +1022,6 @@ def render_landing_page(user_exists=False):
         </div>
     </div>
     """, unsafe_allow_html=True)
-
-    render_pricing_logic(user_exists)
 
     # --- FOOTER (Razorpay Compliance) ---
     st.markdown("""
@@ -2029,16 +2031,27 @@ else:
             st.caption("Configure System")
             
             # GEMINI KEY SETTER
-            current_key = os.getenv("GEMINI_API_KEY", "")
-            if not current_key:
-                from backend.database import SessionLocal, PortalCredential
-                db_cred = SessionLocal()
-                existing = db_cred.query(PortalCredential).filter_by(portal_name="GEMINI_API_KEY").first()
-                if existing:
-                    current_key = "********"
-                db_cred.close()
+            # Security: Check existence without exposing value
+            sb_key_exists = bool(os.getenv("GEMINI_API_KEY"))
+            if not sb_key_exists:
+                 # Check DB if not in env
+                 from backend.database import SessionLocal, PortalCredential
+                 db_cred = SessionLocal()
+                 existing = db_cred.query(PortalCredential).filter_by(portal_name="GEMINI_API_KEY").first()
+                 if existing:
+                     sb_key_exists = True
+                 db_cred.close()
             
-            new_key = st.text_input("Gemini API Key", value=current_key, type="password")
+            sb_placeholder = "********" if sb_key_exists else ""
+            
+            # FIXED: Do not put secret in 'value'
+            new_key = st.text_input(
+                "Gemini API Key", 
+                value="", 
+                placeholder=sb_placeholder, 
+                type="password",
+                key="sb_admin_settings_key" 
+            )
             if st.button("Save Key"):
                 if new_key and new_key != "********":
                     from backend.database import SessionLocal, PortalCredential
@@ -2322,13 +2335,16 @@ else:
             if recent_apps:
                 app_data = []
                 for app, job in recent_apps:
+                    # Fix: Handle NoneType for match_score
+                    score_display = f"{app.match_score:.2f}" if app.match_score is not None else "N/A"
+                    
                     app_data.append({
                         "Date": app.applied_at.strftime("%Y-%m-%d %H:%M"),
                         "Role": job.title,
                         "Company": job.company,
                         "Portal": job.source,
                         "Status": app.status,
-                        "Score": f"{app.match_score:.2f}"
+                        "Score": score_display
                     })
                 st.dataframe(pd.DataFrame(app_data), use_container_width=True)
             else:
@@ -2337,11 +2353,18 @@ else:
             st.markdown("---")
             # --- SYSTEM CONFIGURATION ---
             st.subheader("⚙️ System Configuration")
-            current_key = os.getenv("GEMINI_API_KEY", "")
+            # Security: Never send the raw key to the client. Use a placeholder.
+            current_key_exists = bool(os.getenv("GEMINI_API_KEY"))
+            
             with st.form("config_form"):
                 st.markdown("**LLM Settings (Gemini)**")
                 st.caption("Required for Smart Resume Parsing and Cover Letters.")
-                new_key = st.text_input("Gemini API Key", value=current_key if current_key else "", type="password", placeholder="AIzaSy...")
+                
+                # If key exists, show placeholder. If not, show empty.
+                placeholder_text = "********" if current_key_exists else ""
+                
+                # NOTE: We do NOT populate 'value' with the secret logic.
+                new_key = st.text_input("Gemini API Key", value="", type="password", placeholder=placeholder_text, help="Enter a new key to update. Leave blank to keep existing.")
                 
                 if st.form_submit_button("Save Configuration"):
                     if new_key:
@@ -2975,17 +2998,27 @@ else:
             c_eng, c_pause = st.columns([3, 1])
             
             with c_eng:
-                if st.button("🔥 ENGAGE HYPER-DRIVE", type="primary", use_container_width=True, key="engage_btn_v2"):
-                    missing = []
-                    if not role: missing.append("Target Role")
-                    if not loc: missing.append("Location")
-                    if not sel_res_id: missing.append("Active Resume")
-                    if not sel_portals: missing.append("Active Portals")
-                    
-                    if missing:
-                        st.error(f"⚠️ MISSION ABORTED. Missing: {', '.join(missing)}")
-                    else:
-                        st.session_state['pilot_running'] = True
+                # --- GUARD: CREDENTIAL CHECK ---
+                has_creds = False
+                with SessionLocal() as db_check:
+                    if db_check.query(PortalCredential).filter(PortalCredential.user_id == user.id).first():
+                        has_creds = True
+                
+                if has_creds:
+                    if st.button("🔥 ENGAGE HYPER-DRIVE", type="primary", use_container_width=True, key="engage_btn_v2"):
+                        missing = []
+                        if not role: missing.append("Target Role")
+                        if not loc: missing.append("Location")
+                        if not sel_res_id: missing.append("Active Resume")
+                        if not sel_portals: missing.append("Active Portals")
+                        
+                        if missing:
+                            st.error(f"⚠️ MISSION ABORTED. Missing: {', '.join(missing)}")
+                        else:
+                            st.session_state['pilot_running'] = True
+                else:
+                    st.warning("⚠️ Setup Required")
+                    st.caption("Add portal credentials in 'Pilot Profile' to enable flight.")
             
             with c_pause:
                 if is_paused:
