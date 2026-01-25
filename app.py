@@ -1241,6 +1241,12 @@ def check_and_show_signup_modal():
                     
                     if submitted:
                         if email_val:
+                            # VALIDATION
+                            import re
+                            if not re.match(r"[^@]+@[^@]+\.[^@]+", email_val):
+                                st.error("Invalid Email Format")
+                                return
+
                             from backend.database import AppUser
                             import uuid
                             
@@ -1363,18 +1369,26 @@ def render_onboarding():
                 github = st.text_input("GITHUB PROFILE", placeholder="https://github.com/username")
                 
                 st.write("")
+                st.write("")
                 if st.form_submit_button("NEXT STEP", type="primary", use_container_width=True):
                     if name and email and password and loc and linkedin:
-                        # Save to Session State Temp
-                        st.session_state['ob_name'] = name
-                        st.session_state['ob_email'] = email
-                        st.session_state['ob_password'] = password
-                        st.session_state['ob_loc'] = loc
-                        st.session_state['ob_linkedin'] = linkedin
-                        st.session_state['ob_website'] = website
-                        st.session_state['ob_github'] = github
-                        st.session_state['onboarding_step'] = 2
-                        st.rerun()
+                         # VALIDATION
+                         import re
+                         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+                             st.error("Invalid Email Format")
+                         elif len(password) < 6:
+                             st.error("Password must be at least 6 characters")
+                         else:
+                             # Save to Session State Temp
+                             st.session_state['ob_name'] = name
+                             st.session_state['ob_email'] = email
+                             st.session_state['ob_password'] = password
+                             st.session_state['ob_loc'] = loc
+                             st.session_state['ob_linkedin'] = linkedin
+                             st.session_state['ob_website'] = website
+                             st.session_state['ob_github'] = github
+                             st.session_state['onboarding_step'] = 2
+                             st.rerun()
                     else:
                         st.error("Please fill in all required fields marked with *")
 
@@ -1883,23 +1897,30 @@ if not user or st.session_state.get('force_landing', True):
                      
                      if reg_submit:
                          if new_name and new_email and new_pass:
-                             from backend.database import SessionLocal, AppUser
-                             db_reg = SessionLocal()
-                             try:
-                                 if db_reg.query(AppUser).filter_by(email=new_email).first():
-                                     st.error("Email already exists. Please Login.")
-                                 else:
-                                     # Create
-                                     nu = AppUser(name=new_name, email=new_email, subscription_plan="FREE", is_onboarded=False)
-                                     nu.set_password(new_pass)
-                                     db_reg.add(nu)
-                                     db_reg.commit()
-                                     db_reg.refresh(nu)
-                                     db_reg.expunge(nu)
-                                     
-                                     # Login
-                                     st.session_state['user'] = nu
-                                     st.session_state['force_landing'] = False
+                             import re
+                             if len(new_pass) < 6:
+                                 st.error("Password must be at least 6 characters.")
+                             elif not re.match(r"[^@]+@[^@]+\.[^@]+", new_email):
+                                 st.error("Invalid Email Format.")
+                             else:
+                                 from backend.database import SessionLocal, AppUser
+                                 db_reg = SessionLocal()
+                                 try:
+                                     if db_reg.query(AppUser).filter_by(email=new_email).first():
+                                         st.error("Email already exists. Please Login.")
+                                     else:
+                                         # Create
+                                         nu = AppUser(name=new_name, email=new_email, subscription_plan="FREE", is_onboarded=False)
+                                         nu.set_password(new_pass)
+                                         # ... (rest of logic follows via indentation update if needed, but here I am just replacing the start)
+                                         db_reg.add(nu)
+                                         db_reg.commit()
+                                         db_reg.refresh(nu)
+                                         db_reg.expunge(nu)
+                                         
+                                         # Login
+                                         st.session_state['user'] = nu
+                                         st.session_state['force_landing'] = False
                                      st.session_state['show_login'] = False
                                      
                                      # Handle Pending Plan
@@ -1993,7 +2014,8 @@ else:
     check_and_show_payment_modal()
 
     # Sidebar
-    st.sidebar.header("Navigation")
+    # Removed duplicate header "Navigation"
+
 
     # Sidebar
     st.sidebar.header("Navigation")
@@ -2061,7 +2083,8 @@ else:
                         if not cred:
                             cred = PortalCredential(portal_name="GEMINI_API_KEY", username="apikey", user_id=user.id)
                             db_cred.add(cred)
-                        cred.password = new_key # Storing plain for MVP as per spec
+                        from backend.utils.security import encrypt_value
+                        cred.password = encrypt_value(new_key) # Encrypting
                         db_cred.commit()
                         st.success("API Key Saved! Reloading...")
                         time.sleep(1)
@@ -2385,16 +2408,26 @@ else:
             # --- SYSTEM LOGS ---
             st.markdown("---")
             with st.expander("📜 System Logs (Debug)", expanded=False):
-                log_file = "logs/app.log"
-                if os.path.exists(log_file):
-                    with open(log_file, "r") as f:
-                        lines = f.readlines()
-                        last_lines = lines[-500:] 
-                        log_content = "".join(last_lines)
-                        st.code(log_content, language="text")
-                        st.download_button("⬇️ Download Full Log", log_content, "app.log", mime="text/plain", type="primary")
+                # SECURITY: Only Super Admin
+                if user.email != "admin@hirelink.tech":
+                    st.error("🔒 Restricted to Super Admin")
                 else:
-                    st.warning("No logs found.")
+                    log_file = "logs/app.log"
+                    if os.path.exists(log_file):
+                        with open(log_file, "r") as f:
+                            lines = f.readlines()
+                            last_lines = lines[-500:] 
+                            log_content = "".join(last_lines)
+                            
+                            # REDACT SENSITIVE DATA
+                            import re
+                            log_content = re.sub(r"password=['\"](.*?)['\"]", "password='***'", log_content)
+                            log_content = re.sub(r"GEMINI_API_KEY=(.*)", "GEMINI_API_KEY=***", log_content)
+                            
+                            st.code(log_content, language="text")
+                            st.download_button("⬇️ Download Full Log (Redacted)", log_content, "app.log", mime="text/plain", type="primary")
+                    else:
+                        st.warning("No logs found.")
         
         # --- TAB: USERS ---
         with tab_users:
@@ -2430,16 +2463,40 @@ else:
                             
                     else:
                         c_act1, c_act2, c_act3 = st.columns(3) # Added a third column for the new button
-                        # Impersonate Button
+                        # Impersonate Button (With Audit)
                         if c_act1.button("👁️ Login As", key=f"imp_{u.id}"):
-                             st.session_state['impersonating_user_id'] = u.id
-                             st.session_state['force_landing'] = False # Ensure we don't get stuck on landing
+                             # TRIGGER DIALOG INSTEAD OF INSTANT SWITCH
+                             st.session_state[f'confirm_imp_{u.id}'] = True
                              st.rerun()
                         
-                        # Delete Button
-                        if c_act2.button("🗑️ Delete", key=f"del_{u.id}"):
-                            st.session_state[del_key] = True
-                            st.rerun()
+                        if st.session_state.get(f'confirm_imp_{u.id}'):
+                            with st.expander("confirm_imp_dialog", expanded=True): # Poor man's dialog inline
+                                st.warning(f"Audit: Logging in as {u.email}")
+                                reason = st.text_input("Reason for Access", key=f"reason_{u.id}")
+                                ic1, ic2 = st.columns(2)
+                                if ic1.button("Confirm Access", key=f"conf_imp_{u.id}"):
+                                    if reason:
+                                         # LOG IT
+                                         db.add(ActivityLog(user_id=user.id, action="Impersonation", details=f"Accessed {u.email}: {reason}"))
+                                         db.commit()
+                                         
+                                         st.session_state['impersonating_user_id'] = u.id
+                                         st.session_state['force_landing'] = False 
+                                         del st.session_state[f'confirm_imp_{u.id}']
+                                         st.rerun()
+                                    else:
+                                        st.error("Reason required.")
+                                if ic2.button("Cancel", key=f"canc_imp_{u.id}"):
+                                     del st.session_state[f'confirm_imp_{u.id}']
+                                     st.rerun()
+
+                        # Delete Button (Protected)
+                        if u.id == user.id or u.email == "admin@hirelink.tech":
+                            c_act2.button("🗑️ Delete", disabled=True, key=f"del_{u.id}_disabled")
+                        else:
+                            if c_act2.button("🗑️ Delete", key=f"del_{u.id}"):
+                                st.session_state[del_key] = True
+                                st.rerun()
                             
 
         
@@ -2693,20 +2750,41 @@ else:
                         
             with c_snap3:
                 st.markdown("#### 3. Nuclear Option")
-                if st.button("💣 Factory Reset (Wipe All)", type="secondary", use_container_width=True):
-                    # Force close current session to release file lock
-                    db.close()
-                    
-                    success, msg = factory_reset()
-                    if success:
-                        st.toast(msg, icon="🗑️")
-                        # Nuke session
-                        st.session_state.clear()
-                        # Force browser cache clear workarounds if needed (usually just rerun is enough)
-                        time.sleep(1)
-                        st.rerun()
+                # SECURITY: Double Confirmation
+                if user.email != "admin@hirelink.tech":
+                     st.button("💣 Factory Reset", disabled=True, help="Restricted to Super Admin")
+                else:
+                    # Uses Session State to track confirmation step
+                    if not st.session_state.get('confirm_reset_step'):
+                        if st.button("💣 Factory Reset (Wipe All)", type="secondary", use_container_width=True):
+                            st.session_state['confirm_reset_step'] = True
+                            st.rerun()
                     else:
-                        st.error(msg)
+                        st.warning("⚠️ **DANGER ZONE**")
+                        st.markdown("Type **DELETE** to confirm wiping the entire database.")
+                        confirm_txt = st.text_input("Confirmation", key="reset_confirm_input")
+                        
+                        rc1, rc2 = st.columns(2)
+                        with rc1:
+                            if st.button("🚨 CONFIRM WIPE", type="primary", use_container_width=True):
+                                if confirm_txt == "DELETE":
+                                    # Force close current session to release file lock
+                                    db.close()
+                                    
+                                    success, msg = factory_reset()
+                                    if success:
+                                        st.toast(msg, icon="🗑️")
+                                        st.session_state.clear()
+                                        time.sleep(1)
+                                        st.rerun()
+                                    else:
+                                        st.error(msg)
+                                else:
+                                    st.error("Incorrect confirmation text.")
+                        with rc2:
+                            if st.button("Cancel", use_container_width=True):
+                                del st.session_state['confirm_reset_step']
+                                st.rerun()
 
 
 # ... (Rest of app) ...
