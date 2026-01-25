@@ -58,7 +58,7 @@ from datetime import datetime
 import backend.database # Import module directly
 from sqlalchemy import func
 import importlib
-importlib.reload(backend.database) # FORCE RELOAD to see new Coupon table
+# importlib.reload(backend.database) # FORCE RELOAD to see new Coupon table
 
 # importlib.reload logic removed for stability
 import sys
@@ -76,7 +76,7 @@ from backend.agents.auto_applier import AutoApplier
 
 from backend.database import init_db, get_db, Job, Resume, Application, PortalStatus, QuestionAnswer, Coupon, PortalCredential, SessionLocal
 # FORCE DB INIT to create new tables
-init_db()
+# init_db() # DUPLICATE - Removed to prevent lock
 # --- SAFE IMPORTS (Prevent Startup Crash) ---
 SCRAPERS_AVAILABLE = False
 try:
