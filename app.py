@@ -1936,10 +1936,10 @@ if not user or st.session_state.get('force_landing', True):
                                          st.success("Welcome! Let's set up your profile.")
                                      
                                      st.rerun()
-                             except Exception as e:
-                                 st.error(f"Registration Error: {e}")
-                             finally:
-                                 db_reg.close()
+                                 except Exception as e:
+                                     st.error(f"Registration Error: {e}")
+                                 finally:
+                                     db_reg.close()
                          else:
                              st.warning("All fields are required.")
 
