@@ -31,3 +31,7 @@ razorpay
 bcrypt
 openpyxl
 # Force trigger dep install
+# Testing
+pytest
+pytest-playwright
+playwright

@@ -42,7 +42,17 @@ def setup_driver(headless=True, profile_dir=None, detach=False):
     ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     options.add_argument(f'user-agent={ua}')
 
-    # 4. Profile Management
+    # 4. Proxy Support
+    # Usage: host:port, or user:pass@host:port (May require extension for auth, but IP auth works directly)
+    proxy_server = os.getenv("PROXY_SERVER") or os.getenv("RR_PROXY")
+    
+    # Allow overriding via an argument if we update the function signature (not doing that yet to avoid breaking callers)
+    # But we can read env var safely.
+    if proxy_server:
+        options.add_argument(f'--proxy-server={proxy_server}')
+        logger.info(f"Using Proxy: {proxy_server}")
+
+    # 5. Profile Management
     if not profile_dir:
         profile_dir = os.path.join(os.getcwd(), "data", "chrome_profile")
     

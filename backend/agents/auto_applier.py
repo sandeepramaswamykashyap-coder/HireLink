@@ -115,8 +115,10 @@ class AutoApplier:
         
     def start_browser(self):
         if not self.driver:
-            logger.info("Starting AutoApplier browser session (Visible)...")
-            self.driver = setup_driver(headless=False, detach=False)
+            # Allow Headless Override for Testing
+            headless_mode = os.getenv("HEADLESS_MODE", "False").lower() == "true"
+            logger.info(f"Starting AutoApplier browser session (Headless={headless_mode})...")
+            self.driver = setup_driver(headless=headless_mode, detach=False)
             
             # Load Cookies if available
             cookie_path = os.path.join(os.getcwd(), "data", "cookies", "session_cookies.pkl")
@@ -580,7 +582,12 @@ class AutoApplier:
 
             job_data = {'id': job.id, 'title': job.title, 'company': job.company, 'url': job.url}
             
-            candidate_profile = self.build_candidate_profile(user_id=1, resume_id=resume.id)
+            if not job_owner:
+                yield "Error: Could not link Resume to User"
+                yield "FAILURE"
+                return
+
+            candidate_profile = self.build_candidate_profile(user_id=job_owner.id, resume_id=resume.id)
             if not candidate_profile:
                 yield "Error: Profile build failed"
                 yield "FAILURE" 

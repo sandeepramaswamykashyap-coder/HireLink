@@ -1,0 +1,71 @@
+
+name: HireLink CI
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-suite:
+    runs-on: ubuntu-latest
+
+    services:
+      # We cannot easily run Streamlit as a 'service' container because it's part of our repo code.
+      # Instead we run it as a background process in the steps.
+      # Postgres is a good candidate for a service if we moved away from sqlite, 
+      # but HireLink currently uses SQLite (or local file DB) for simplicity in dev.
+      # So no services needed yet.
+      pass: 
+        image: alpine
+        options: --entrypoint /bin/true
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.9"
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        playwright install chromium
+
+    - name: Run Backend E2E Tests
+      env:
+        HEADLESS_MODE: "true"
+        # Secrets for live connectivity (Optional)
+        # PROXY_SERVER: ${{ secrets.RR_PROXY }} 
+      run: |
+        python tests/backend_e2e.py
+
+    - name: Run Live Scraper Connectivity (Smoke Test)
+      continue-on-error: true # Don't block build on anti-bot failures for now
+      env:
+        HEADLESS_MODE: "true"
+      run: |
+        python tests/live_scraper_test.py
+
+    - name: Run UI Tests with Playwright
+      env: 
+        HEADLESS_MODE: "true"
+      run: |
+        # Start Streamlit in Background
+        streamlit run app.py --server.headless true --server.port 8501 &
+        STREAMLIT_PID=$!
+        
+        # Disable caching/browser open
+        export STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+        
+        echo "Waiting for Streamlit..."
+        sleep 10
+        
+        # Run Playwright
+        pytest tests/ui_e2e.py
+        
+        # Cleanup
+        kill $STREAMLIT_PID
