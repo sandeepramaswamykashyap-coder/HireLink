@@ -3017,8 +3017,33 @@ else:
                         else:
                             st.session_state['pilot_running'] = True
                 else:
-                    st.warning("⚠️ Setup Required")
-                    st.caption("Add portal credentials in 'Pilot Profile' to enable flight.")
+                    st.warning("⚠️ Setup Required: Missing Credentials")
+                    with st.expander("🔑 Quick Add Credentials", expanded=True):
+                        st.caption("You must configure at least one portal to fly.")
+                        qa_portal = st.selectbox("Select Portal", ["LinkedIn", "Naukri", "Indeed"])
+                        qa_user = st.text_input("Username/Email", key="qa_u")
+                        qa_pass = st.text_input("Password", type="password", key="qa_p")
+                        
+                        if st.button("Save & Unlock", type="primary"):
+                            if qa_user and qa_pass:
+                                try:
+                                    with SessionLocal() as db_q:
+                                        # Update or Insert
+                                        existing_c = db_q.query(PortalCredential).filter_by(user_id=user.id, portal_name=qa_portal).first()
+                                        if existing_c:
+                                            existing_c.username = qa_user
+                                            existing_c.password = qa_pass
+                                        else:
+                                            new_c = PortalCredential(user_id=user.id, portal_name=qa_portal, username=qa_user, password=qa_pass)
+                                            db_q.add(new_c)
+                                        db_q.commit()
+                                    st.success("Saved! Reloading...")
+                                    time.sleep(1)
+                                    st.rerun()
+                                except Exception as e:
+                                    st.error(f"Error: {e}")
+                            else:
+                                st.error("Please enter both username and password.")
             
             with c_pause:
                 if is_paused:
