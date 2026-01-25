@@ -1493,6 +1493,11 @@ def render_onboarding():
                          try:
                              # DEBUG TRACE
                              st.toast("Starting Parser...")
+                             if ResumeParser is None:
+                                 st.error("⚠️ Resume Parser unavailable. 'pymupdf' dependency missing.")
+                                 st.info("Please install: pip install pymupdf")
+                                 st.stop()
+                             
                              parser = ResumeParser()
                              st.toast("Reading File...")
                              resume = parser.parse_and_save(file_path) # Saves Resume to DB

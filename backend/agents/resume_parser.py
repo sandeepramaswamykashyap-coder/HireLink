@@ -232,3 +232,6 @@ class ResumeParserV2:
             return None
         finally:
             db.close()
+
+# Alias for compatibility
+ResumeParser = ResumeParserV2

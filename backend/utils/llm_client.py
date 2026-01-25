@@ -16,7 +16,8 @@ class LLMClient:
                 db = SessionLocal()
                 cred = db.query(PortalCredential).filter_by(portal_name="GEMINI_API_KEY").first()
                 if cred and cred.password:
-                    self.api_key = cred.password
+                    from backend.utils.security import decrypt_value
+                    self.api_key = decrypt_value(cred.password)
                     logger.info("Found GEMINI_API_KEY in Database.")
                 db.close()
             except Exception as e:
