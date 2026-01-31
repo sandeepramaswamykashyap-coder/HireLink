@@ -31,9 +31,8 @@ def run_scraper(portals, keywords, location):
     if not kw_list: kw_list = ["Software Engineer"]
     if not loc_list: loc_list = ["Remote"]
 
-    db = SessionLocal()
-    initial_count = db.query(Job).count()
-    db.close()
+    with SessionLocal() as db:
+        initial_count = db.query(Job).count()
     
     # Combinatorial Loop: Role x Location x Portal
     for kw in kw_list:
@@ -63,49 +62,47 @@ def run_scraper(portals, keywords, location):
                 except Exception as e:
                     logger.error(f"Scraper initialization failed for {p_name}: {e}")
     
-    db = SessionLocal()
-    final_count = db.query(Job).count()
-    new_jobs = max(0, final_count - initial_count)
-    
-    # --- DEMO FALLBACK ---
-    if new_jobs == 0:
-        logger.warning(f"Hyper-Automation: No jobs found. Generating DEMO jobs for '{kw_list[0]}' in '{loc_list[0]}'.")
-        try:
-            # Just generate for the first combination to avoid flooding DB with demos
-            demo_kw = kw_list[0]
-            demo_loc = loc_list[0]
-            demo_jobs = [
-                {
-                    "title": f"Senior {demo_kw} (Demo)",
-                    "company": "TechGlobal Inc.",
-                    "location": demo_loc,
-                    "url": "https://www.example.com/job/1",
-                    "description": f"Expert in {demo_kw} required. Keywords: {', '.join(kw_list)}.",
-                    "source": "Demo"
-                },
-                {
-                    "title": f"Lead {demo_kw} Engineer (Demo)",
-                    "company": "StartupX",
-                    "location": demo_loc,
-                    "url": "https://www.example.com/job/2",
-                    "description": f"Join our team as a {demo_kw}. Remote friendly.\nLocations: {', '.join(loc_list)}.",
-                    "source": "Demo"
-                }
-            ]
-            
-            added = 0
-            for d in demo_jobs:
-                if not db.query(Job).filter_by(url=d['url']).first():
-                    job = Job(**d)
-                    db.add(job)
-                    added += 1
-            
-            db.commit()
-            new_jobs = added
-            logger.info(f"Generated {added} DEMO jobs.")
-            
-        except Exception as e:
-            logger.error(f"Failed to generate demo jobs: {e}")
-    
-    db.close()
+    with SessionLocal() as db:
+        final_count = db.query(Job).count()
+        new_jobs = max(0, final_count - initial_count)
+        
+        # --- DEMO FALLBACK ---
+        if new_jobs == 0:
+            logger.warning(f"Hyper-Automation: No jobs found. Generating DEMO jobs for '{kw_list[0]}' in '{loc_list[0]}'.")
+            try:
+                # Just generate for the first combination to avoid flooding DB with demos
+                demo_kw = kw_list[0]
+                demo_loc = loc_list[0]
+                demo_jobs = [
+                    {
+                        "title": f"Senior {demo_kw} (Demo)",
+                        "company": "TechGlobal Inc.",
+                        "location": demo_loc,
+                        "url": "https://www.example.com/job/1",
+                        "description": f"Expert in {demo_kw} required. Keywords: {', '.join(kw_list)}.",
+                        "source": "Demo"
+                    },
+                    {
+                        "title": f"Lead {demo_kw} Engineer (Demo)",
+                        "company": "StartupX",
+                        "location": demo_loc,
+                        "url": "https://www.example.com/job/2",
+                        "description": f"Join our team as a {demo_kw}. Remote friendly.\nLocations: {', '.join(loc_list)}.",
+                        "source": "Demo"
+                    }
+                ]
+                
+                added = 0
+                for d in demo_jobs:
+                    if not db.query(Job).filter_by(url=d['url']).first():
+                        job = Job(**d)
+                        db.add(job)
+                        added += 1
+                
+                db.commit()
+                new_jobs = added
+                logger.info(f"Generated {added} DEMO jobs.")
+                
+            except Exception as e:
+                logger.error(f"Failed to generate demo jobs: {e}")
     return new_jobs

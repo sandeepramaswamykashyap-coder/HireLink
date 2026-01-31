@@ -1,0 +1,945 @@
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8520
+  Network URL: http://192.168.0.106:8520
+  External URL: http://103.253.169.56:8520
+
+  For better performance, install the Watchdog module:
+
+  $ xcode-select --install
+  $ pip install watchdog
+            
+2026-01-25 12:14:33,506 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:14:33,609 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:14:33,619 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:14:33,619 - HireLink - INFO - Database initialized successfully.
+2026-01-25 12:14:33,655 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:14:33,659 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:14:35,723 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:14:35,765 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:14:35,771 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:14:35,771 - HireLink - INFO - Database initialized successfully.
+2026-01-25 12:14:39.158 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:14:55,530 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:14:55,591 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:14:55,609 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:14:55,609 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:14:55,789 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:14:55,850 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:14:55,860 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:14:55,861 - HireLink - INFO - Database initialized successfully.
+2026-01-25 12:14:56.007 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:15:15,165 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:15:15,233 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:15:15,243 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:15:15,243 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:15:15,528 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:15:15,597 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:15:15,606 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:15:15,607 - HireLink - INFO - Database initialized successfully.
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py:2768: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  j = db.query(Job).get(a.job_id)
+2026-01-25 12:15:15.915 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:15:47,821 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:15:47,893 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:15:47,922 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:15:47,923 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:16:03,871 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:16:03,942 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:16:03,957 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:16:03,957 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:16:04,646 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:16:04,739 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:16:04,769 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:16:04,770 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:16:18,129 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:16:18,230 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:16:18,315 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:16:18,315 - HireLink - INFO - Database initialized successfully.
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/venv/lib/python3.9/site-packages/google/api_core/_python_version_support.py:246: FutureWarning: You are using a non-supported Python version (3.9.6). Google will not post any further updates to google.api_core supporting this Python version. Please upgrade to the latest Python version, or at least Python 3.10, and then update google.api_core.
+  warnings.warn(message, FutureWarning)
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/venv/lib/python3.9/site-packages/google/auth/__init__.py:54: FutureWarning: 
+    You are using a Python version 3.9 past its end of life. Google will update
+    google-auth with critical bug fixes on a best-effort basis, but not
+    with any other fixes or features. Please upgrade your Python version,
+    and then update google-auth.
+    
+  warnings.warn(eol_message.format("3.9"), FutureWarning)
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/venv/lib/python3.9/site-packages/google/oauth2/__init__.py:40: FutureWarning: 
+    You are using a Python version 3.9 past its end of life. Google will update
+    google-auth with critical bug fixes on a best-effort basis, but not
+    with any other fixes or features. Please upgrade your Python version,
+    and then update google-auth.
+    
+  warnings.warn(eol_message.format("3.9"), FutureWarning)
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/backend/utils/llm_client.py:30: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:16:21,492 - HireLink - INFO - LLM Client (Gemini Flash Latest) initialized successfully.
+DEBUG: Pilot Step: Initiating - Status: Hyper-Drive Engines Spooling Up...
+DEBUG: Pilot Step: Login Verification - Status: Checking Portal Access...
+2026-01-25 12:16:21,521 - HireLink - INFO - Starting AutoApplier browser session (Headless=False)...
+2026-01-25 12:16:21,522 - HireLink - INFO - Using Chrome Profile: /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/data/chrome_profile
+2026-01-25 12:16:21,522 - HireLink - INFO - Attempting to start Chrome Driver (Attempt 1/3)...
+2026-01-25 12:16:26,799 - HireLink - INFO - Chrome Driver initialized successfully.
+2026-01-25 12:16:31,718 - HireLink - INFO - Cookies saved to /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/data/cookies/session_cookies.pkl
+DEBUG: Pilot Step: Auto-Login - Status: Session expired for LinkedIn. Attempting Auto-Login...
+2026-01-25 12:16:31,751 - HireLink - INFO - Attempting auto-login for LinkedIn with user sandeepramaswamykashyap@gmail.com
+2026-01-25 12:17:05,870 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:17:06,278 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:17:06,424 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:17:06,434 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:17:07,177 - HireLink - ERROR - Seeding failed for user 8: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(8, 'Full legal name (first, middle, last)', '', 'personal'), (8, 'Preferred name or nickname', '', 'personal'), (8, 'Date of birth', '', 'personal'), (8, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (8, 'Nationality / Country of citizenship', '', 'personal'), (8, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (8, 'Marital status', '', 'personal'), (8, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (8, 'Describe your work style in three adjectives.', '', 'creative'), (8, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:17:10,336 - HireLink - INFO - Cookies saved to /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/data/cookies/session_cookies.pkl
+2026-01-25 12:17:10.483 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+DEBUG: Pilot Step: Auto-Login - Status: Successfully logged into LinkedIn! ✅
+2026-01-25 12:20:24,019 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:20:24,443 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:20:24,517 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:20:24,519 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:20:24,926 - HireLink - ERROR - Seeding failed for user 8: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(8, 'Full legal name (first, middle, last)', '', 'personal'), (8, 'Preferred name or nickname', '', 'personal'), (8, 'Date of birth', '', 'personal'), (8, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (8, 'Nationality / Country of citizenship', '', 'personal'), (8, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (8, 'Marital status', '', 'personal'), (8, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (8, 'Describe your work style in three adjectives.', '', 'creative'), (8, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:20:27,977 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:20:28,029 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:20:28,042 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:20:28,042 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:20:28,154 - HireLink - ERROR - Seeding failed for user 8: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(8, 'Full legal name (first, middle, last)', '', 'personal'), (8, 'Preferred name or nickname', '', 'personal'), (8, 'Date of birth', '', 'personal'), (8, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (8, 'Nationality / Country of citizenship', '', 'personal'), (8, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (8, 'Marital status', '', 'personal'), (8, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (8, 'Describe your work style in three adjectives.', '', 'creative'), (8, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:21:06,199 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:21:06,250 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:21:06,261 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:21:06,261 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:21:06,348 - HireLink - ERROR - Seeding failed for user 8: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(8, 'Full legal name (first, middle, last)', '', 'personal'), (8, 'Preferred name or nickname', '', 'personal'), (8, 'Date of birth', '', 'personal'), (8, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (8, 'Nationality / Country of citizenship', '', 'personal'), (8, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (8, 'Marital status', '', 'personal'), (8, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (8, 'Describe your work style in three adjectives.', '', 'creative'), (8, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:21:08,840 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:21:08,890 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:21:08,899 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:21:08,899 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:21:08,995 - HireLink - ERROR - Seeding failed for user 8: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(8, 'Full legal name (first, middle, last)', '', 'personal'), (8, 'Preferred name or nickname', '', 'personal'), (8, 'Date of birth', '', 'personal'), (8, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (8, 'Nationality / Country of citizenship', '', 'personal'), (8, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (8, 'Marital status', '', 'personal'), (8, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (8, 'Describe your work style in three adjectives.', '', 'creative'), (8, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:21:16,925 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:21:17,006 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:21:17,050 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:21:17,050 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:21:17,144 - HireLink - INFO - LLM Client (Gemini Flash Latest) initialized successfully.
+DEBUG: Pilot Step: Initiating - Status: Hyper-Drive Engines Spooling Up...
+DEBUG: Pilot Step: Login Verification - Status: Checking Portal Access...
+2026-01-25 12:21:17,165 - HireLink - INFO - Starting AutoApplier browser session (Headless=False)...
+2026-01-25 12:21:17,166 - HireLink - INFO - Using Chrome Profile: /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/data/chrome_profile
+2026-01-25 12:21:17,166 - HireLink - INFO - Attempting to start Chrome Driver (Attempt 1/3)...
+2026-01-25 12:21:23,107 - HireLink - INFO - Chrome Driver initialized successfully.
+2026-01-25 12:21:23,223 - HireLink - INFO - Cookies loaded from /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/data/cookies/session_cookies.pkl
+2026-01-25 12:21:23,223 - HireLink - INFO - Restored session cookies.
+2026-01-25 12:21:34,598 - HireLink - INFO - Cookies saved to /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/data/cookies/session_cookies.pkl
+DEBUG: Pilot Step: Login Success - Status: Active Sessions: LinkedIn
+2026-01-25 12:21:34,763 - HireLink - INFO - Cookies saved to /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/data/cookies/session_cookies.pkl
+2026-01-25 12:21:34,764 - HireLink - INFO - Closing AutoApplier browser session...
+DEBUG: Pilot Step: Scraping Jobs - Status: Scraping LinkedIn...
+2026-01-25 12:21:35,665 - HireLink - INFO - Hyper-Automation: Scraping LinkedIn for 'Python' in 'Remote'...
+2026-01-25 12:21:35,666 - HireLink - INFO - Using Chrome Profile: /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/data/chrome_profile
+2026-01-25 12:21:35,666 - HireLink - INFO - Attempting to start Chrome Driver (Attempt 1/3)...
+2026-01-25 12:21:38,108 - HireLink - INFO - Chrome Driver initialized successfully.
+2026-01-25 12:21:38,115 - HireLink - INFO - Navigating to https://www.linkedin.com/jobs/search?keywords=Python&location=Remote
+2026-01-25 12:21:52,925 - HireLink - INFO - LinkedIn Logic: Detected job cards via selector: .job-card-container
+2026-01-25 12:21:52,930 - HireLink - INFO - Found 7 job cards (Selector used: job-card-container)
+2026-01-25 12:21:53,236 - HireLink - INFO - LinkedIn scrape complete. Found 0 new jobs.
+2026-01-25 12:21:54,229 - HireLink - WARNING - Hyper-Automation: No jobs found. Generating DEMO jobs for 'Python' in 'Remote'.
+2026-01-25 12:21:54,275 - HireLink - INFO - Generated 0 DEMO jobs.
+DEBUG: Pilot Step: Enrichment - Status: Verifying job data quality...
+2026-01-25 12:21:54,394 - HireLink - INFO - Found 40 jobs requiring data enrichment.
+2026-01-25 12:21:54,415 - HireLink - INFO - Using Chrome Profile: /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/data/chrome_profile
+2026-01-25 12:21:54,417 - HireLink - INFO - Attempting to start Chrome Driver (Attempt 1/3)...
+2026-01-25 12:21:57,160 - HireLink - INFO - Chrome Driver initialized successfully.
+2026-01-25 12:21:57,161 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-developer-at-infosys-4323369504?position=1&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=1scm%2FaJzviv1TzCdvv2loQ%3D%3D
+2026-01-25 12:22:06,582 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:22:06,708 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:22:06,731 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:22:06,731 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:22:10,020 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-developer-at-infosys-4323369504?position=1&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=1scm%2FaJzviv1TzCdvv2loQ%3D%3D
+2026-01-25 12:22:10,022 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-developer-at-persistent-systems-4294598179?position=2&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=eHzi1r0s7Qv5XHss0NH50g%3D%3D
+2026-01-25 12:22:18,747 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-developer-at-persistent-systems-4294598179?position=2&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=eHzi1r0s7Qv5XHss0NH50g%3D%3D
+2026-01-25 12:22:18,760 - HireLink - INFO - Scraping detailed description for: https://www.linkedin.com/jobs/view/jr-python-developer-at-earthcam-4364654484?position=3&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=SEy79XT0%2BPvcHmO0Pnoqlw%3D%3D
+2026-01-25 12:22:26,375 - HireLink - WARNING - Could not find description text for https://www.linkedin.com/jobs/view/jr-python-developer-at-earthcam-4364654484?position=3&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=SEy79XT0%2BPvcHmO0Pnoqlw%3D%3D
+2026-01-25 12:22:26,390 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-application-developers-bofa-at-ey-4344015459?position=4&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=LMJrwLoXFT73blElxq3g2g%3D%3D
+2026-01-25 12:22:43,047 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-application-developers-bofa-at-ey-4344015459?position=4&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=LMJrwLoXFT73blElxq3g2g%3D%3D
+2026-01-25 12:22:43,080 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-developer-at-infosys-4360410869?position=5&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=tjPiIGnvYr48LO6crg1cew%3D%3D
+2026-01-25 12:23:07,152 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-developer-at-infosys-4360410869?position=5&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=tjPiIGnvYr48LO6crg1cew%3D%3D
+2026-01-25 12:23:07,176 - HireLink - INFO - Scraping detailed description for: https://es.linkedin.com/jobs/view/software-engineer-python-at-lookiero-4364802138?position=6&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=wa3ltQqSMq%2BSYt0BjYSGiA%3D%3D
+2026-01-25 12:23:18,620 - HireLink - WARNING - Could not find description text for https://es.linkedin.com/jobs/view/software-engineer-python-at-lookiero-4364802138?position=6&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=wa3ltQqSMq%2BSYt0BjYSGiA%3D%3D
+2026-01-25 12:23:18,627 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-developer-at-persistent-systems-4296548148?position=7&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=wd8iZWR5JT0g6M%2FouevCFg%3D%3D
+2026-01-25 12:23:26,856 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-developer-at-persistent-systems-4296548148?position=7&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=wd8iZWR5JT0g6M%2FouevCFg%3D%3D
+2026-01-25 12:23:26,880 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-developer-at-infosys-4322807316?position=8&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=TuYl%2B6%2BMooanex7G9rMj1w%3D%3D
+2026-01-25 12:23:37,790 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-developer-at-infosys-4322807316?position=8&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=TuYl%2B6%2BMooanex7G9rMj1w%3D%3D
+2026-01-25 12:23:37,800 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-developer-at-capgemini-4365322289?position=9&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=FqwT4Vm66p%2FK%2Fj%2F6uf%2BFlQ%3D%3D
+2026-01-25 12:23:49,864 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-developer-at-capgemini-4365322289?position=9&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=FqwT4Vm66p%2FK%2Fj%2F6uf%2BFlQ%3D%3D
+2026-01-25 12:23:49,912 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-developer-at-wipro-4361110558?position=10&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=YyLEP85aXGSloqzDaZAOcA%3D%3D
+2026-01-25 12:23:55,894 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-developer-at-wipro-4361110558?position=10&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=YyLEP85aXGSloqzDaZAOcA%3D%3D
+2026-01-25 12:23:55,898 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-developer-at-pwc-india-4327635170?position=11&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=5IKCuweASMNYKPSrLqdkvg%3D%3D
+2026-01-25 12:24:03,631 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-developer-at-pwc-india-4327635170?position=11&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=5IKCuweASMNYKPSrLqdkvg%3D%3D
+2026-01-25 12:24:03,640 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-%2B-fastapi-developer-at-deloitte-4354101363?position=12&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=vYcSFZ62Ko5qQWrS1XHenQ%3D%3D
+2026-01-25 12:24:17,780 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-%2B-fastapi-developer-at-deloitte-4354101363?position=12&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=vYcSFZ62Ko5qQWrS1XHenQ%3D%3D
+2026-01-25 12:24:17,790 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/associate-python-data-engineer-gdc-at-pwc-india-4291069034?position=13&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=sBZsUdz5zyZQFkMEktIpOw%3D%3D
+2026-01-25 12:24:22,472 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/associate-python-data-engineer-gdc-at-pwc-india-4291069034?position=13&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=sBZsUdz5zyZQFkMEktIpOw%3D%3D
+2026-01-25 12:24:22,475 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-developer-at-infosys-4330790441?position=14&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=QoZysPlF7v9B1KMCjrhmKw%3D%3D
+2026-01-25 12:24:27,099 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-developer-at-infosys-4330790441?position=14&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=QoZysPlF7v9B1KMCjrhmKw%3D%3D
+2026-01-25 12:24:27,101 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-developer-at-persistent-systems-4330044173?position=15&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=tl9NWXalrtABPEkO6tHgvw%3D%3D
+2026-01-25 12:24:36,197 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-developer-at-persistent-systems-4330044173?position=15&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=tl9NWXalrtABPEkO6tHgvw%3D%3D
+2026-01-25 12:24:36,209 - HireLink - INFO - Scraping detailed description for: https://il.linkedin.com/jobs/view/python-developer-infrastructure-development-team-at-infinidat-4364219111?position=16&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=ByTFDH8v8vT1VNnzPWNbLg%3D%3D
+2026-01-25 12:24:42,669 - HireLink - WARNING - Could not find description text for https://il.linkedin.com/jobs/view/python-developer-infrastructure-development-team-at-infinidat-4364219111?position=16&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=ByTFDH8v8vT1VNnzPWNbLg%3D%3D
+2026-01-25 12:24:42,673 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-genai-developer-at-infosys-4357607086?position=17&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=zCodrEaT5hDTZ1DVMPyE7Q%3D%3D
+2026-01-25 12:24:47,386 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-genai-developer-at-infosys-4357607086?position=17&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=zCodrEaT5hDTZ1DVMPyE7Q%3D%3D
+2026-01-25 12:24:47,388 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-developer-at-capgemini-engineering-4354117450?position=18&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=OL3ogjAKNMjJZKmFsGftiQ%3D%3D
+2026-01-25 12:24:52,703 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-developer-at-capgemini-engineering-4354117450?position=18&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=OL3ogjAKNMjJZKmFsGftiQ%3D%3D
+2026-01-25 12:24:52,712 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/python-fullstack-developer-at-kpmg-india-4359764229?position=19&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=rqaJWyPXoa919A4qBgewWA%3D%3D
+2026-01-25 12:24:57,248 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/python-fullstack-developer-at-kpmg-india-4359764229?position=19&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=rqaJWyPXoa919A4qBgewWA%3D%3D
+2026-01-25 12:24:57,248 - HireLink - INFO - Scraping detailed description for: https://in.linkedin.com/jobs/view/full-stack-python-developer-at-deloitte-4354034887?position=20&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=3es5td0oQTbVTkFRRBs7Rg%3D%3D
+2026-01-25 12:25:01,563 - HireLink - WARNING - Could not find description text for https://in.linkedin.com/jobs/view/full-stack-python-developer-at-deloitte-4354034887?position=20&pageNum=0&refId=bwXh%2F0vApn4hF6BW8Pg9%2BA%3D%3D&trackingId=3es5td0oQTbVTkFRRBs7Rg%3D%3D
+2026-01-25 12:25:01,568 - HireLink - INFO - Scraping detailed description for: https://mock-portal.com/job/7715
+2026-01-25 12:25:01,966 - HireLink - ERROR - Failed to scrape details for https://mock-portal.com/job/7715: Message: unknown error: net::ERR_NAME_NOT_RESOLVED
+  (Session info: chrome=144.0.7559.97)
+Stacktrace:
+0   chromedriver                        0x0000000103238640 cxxbridge1$str$ptr + 3087720
+1   chromedriver                        0x00000001032308b4 cxxbridge1$str$ptr + 3055580
+2   chromedriver                        0x0000000102d16890 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75272
+3   chromedriver                        0x0000000102d0ea54 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 42956
+4   chromedriver                        0x0000000102d01068 cxxbridge1$string$len + 5152
+5   chromedriver                        0x0000000102d02b70 cxxbridge1$string$len + 12072
+6   chromedriver                        0x0000000102d014d4 cxxbridge1$string$len + 6284
+7   chromedriver                        0x0000000102d00cbc cxxbridge1$string$len + 4212
+8   chromedriver                        0x0000000102d009a8 cxxbridge1$string$len + 3424
+9   chromedriver                        0x0000000102cfe56c chromedriver + 222572
+10  chromedriver                        0x0000000102cff038 chromedriver + 225336
+11  chromedriver                        0x0000000102d19d84 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 88828
+12  chromedriver                        0x0000000102d9fb50 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 637128
+13  chromedriver                        0x0000000102d9f064 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 634332
+14  chromedriver                        0x0000000102d540e4 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 327260
+15  chromedriver                        0x00000001031f7620 cxxbridge1$str$ptr + 2821448
+16  chromedriver                        0x00000001031fad5c cxxbridge1$str$ptr + 2835588
+17  chromedriver                        0x00000001031dc9c4 cxxbridge1$str$ptr + 2711788
+18  chromedriver                        0x00000001031fb5e0 cxxbridge1$str$ptr + 2837768
+19  chromedriver                        0x00000001031cc990 cxxbridge1$str$ptr + 2646200
+20  chromedriver                        0x000000010321f9bc cxxbridge1$str$ptr + 2986212
+21  chromedriver                        0x000000010321fb38 cxxbridge1$str$ptr + 2986592
+22  chromedriver                        0x000000010323050c cxxbridge1$str$ptr + 3054644
+23  libsystem_pthread.dylib             0x000000019f3a9c08 _pthread_start + 136
+24  libsystem_pthread.dylib             0x000000019f3a4ba8 thread_start + 8
+
+2026-01-25 12:25:01,968 - HireLink - INFO - Scraping detailed description for: https://mock-portal.com/job/4198
+2026-01-25 12:25:02,068 - HireLink - ERROR - Failed to scrape details for https://mock-portal.com/job/4198: Message: unknown error: net::ERR_NAME_NOT_RESOLVED
+  (Session info: chrome=144.0.7559.97)
+Stacktrace:
+0   chromedriver                        0x0000000103238640 cxxbridge1$str$ptr + 3087720
+1   chromedriver                        0x00000001032308b4 cxxbridge1$str$ptr + 3055580
+2   chromedriver                        0x0000000102d16890 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75272
+3   chromedriver                        0x0000000102d0ea54 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 42956
+4   chromedriver                        0x0000000102d01068 cxxbridge1$string$len + 5152
+5   chromedriver                        0x0000000102d02b70 cxxbridge1$string$len + 12072
+6   chromedriver                        0x0000000102d014d4 cxxbridge1$string$len + 6284
+7   chromedriver                        0x0000000102d00cbc cxxbridge1$string$len + 4212
+8   chromedriver                        0x0000000102d009a8 cxxbridge1$string$len + 3424
+9   chromedriver                        0x0000000102cfe56c chromedriver + 222572
+10  chromedriver                        0x0000000102cff038 chromedriver + 225336
+11  chromedriver                        0x0000000102d19d84 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 88828
+12  chromedriver                        0x0000000102d9fb50 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 637128
+13  chromedriver                        0x0000000102d9f064 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 634332
+14  chromedriver                        0x0000000102d540e4 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 327260
+15  chromedriver                        0x00000001031f7620 cxxbridge1$str$ptr + 2821448
+16  chromedriver                        0x00000001031fad5c cxxbridge1$str$ptr + 2835588
+17  chromedriver                        0x00000001031dc9c4 cxxbridge1$str$ptr + 2711788
+18  chromedriver                        0x00000001031fb5e0 cxxbridge1$str$ptr + 2837768
+19  chromedriver                        0x00000001031cc990 cxxbridge1$str$ptr + 2646200
+20  chromedriver                        0x000000010321f9bc cxxbridge1$str$ptr + 2986212
+21  chromedriver                        0x000000010321fb38 cxxbridge1$str$ptr + 2986592
+22  chromedriver                        0x000000010323050c cxxbridge1$str$ptr + 3054644
+23  libsystem_pthread.dylib             0x000000019f3a9c08 _pthread_start + 136
+24  libsystem_pthread.dylib             0x000000019f3a4ba8 thread_start + 8
+
+2026-01-25 12:25:02,068 - HireLink - INFO - Scraping detailed description for: https://mock-portal.com/job/7918
+2026-01-25 12:25:02,171 - HireLink - ERROR - Failed to scrape details for https://mock-portal.com/job/7918: Message: unknown error: net::ERR_NAME_NOT_RESOLVED
+  (Session info: chrome=144.0.7559.97)
+Stacktrace:
+0   chromedriver                        0x0000000103238640 cxxbridge1$str$ptr + 3087720
+1   chromedriver                        0x00000001032308b4 cxxbridge1$str$ptr + 3055580
+2   chromedriver                        0x0000000102d16890 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75272
+3   chromedriver                        0x0000000102d0ea54 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 42956
+4   chromedriver                        0x0000000102d01068 cxxbridge1$string$len + 5152
+5   chromedriver                        0x0000000102d02b70 cxxbridge1$string$len + 12072
+6   chromedriver                        0x0000000102d014d4 cxxbridge1$string$len + 6284
+7   chromedriver                        0x0000000102d00cbc cxxbridge1$string$len + 4212
+8   chromedriver                        0x0000000102d009a8 cxxbridge1$string$len + 3424
+9   chromedriver                        0x0000000102cfe56c chromedriver + 222572
+10  chromedriver                        0x0000000102cff038 chromedriver + 225336
+11  chromedriver                        0x0000000102d19d84 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 88828
+12  chromedriver                        0x0000000102d9fb50 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 637128
+13  chromedriver                        0x0000000102d9f064 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 634332
+14  chromedriver                        0x0000000102d540e4 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 327260
+15  chromedriver                        0x00000001031f7620 cxxbridge1$str$ptr + 2821448
+16  chromedriver                        0x00000001031fad5c cxxbridge1$str$ptr + 2835588
+17  chromedriver                        0x00000001031dc9c4 cxxbridge1$str$ptr + 2711788
+18  chromedriver                        0x00000001031fb5e0 cxxbridge1$str$ptr + 2837768
+19  chromedriver                        0x00000001031cc990 cxxbridge1$str$ptr + 2646200
+20  chromedriver                        0x000000010321f9bc cxxbridge1$str$ptr + 2986212
+21  chromedriver                        0x000000010321fb38 cxxbridge1$str$ptr + 2986592
+22  chromedriver                        0x000000010323050c cxxbridge1$str$ptr + 3054644
+23  libsystem_pthread.dylib             0x000000019f3a9c08 _pthread_start + 136
+24  libsystem_pthread.dylib             0x000000019f3a4ba8 thread_start + 8
+
+2026-01-25 12:25:02,171 - HireLink - INFO - Scraping detailed description for: https://mock-portal.com/job/1986
+2026-01-25 12:25:02,317 - HireLink - ERROR - Failed to scrape details for https://mock-portal.com/job/1986: Message: unknown error: net::ERR_NAME_NOT_RESOLVED
+  (Session info: chrome=144.0.7559.97)
+Stacktrace:
+0   chromedriver                        0x0000000103238640 cxxbridge1$str$ptr + 3087720
+1   chromedriver                        0x00000001032308b4 cxxbridge1$str$ptr + 3055580
+2   chromedriver                        0x0000000102d16890 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75272
+3   chromedriver                        0x0000000102d0ea54 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 42956
+4   chromedriver                        0x0000000102d01068 cxxbridge1$string$len + 5152
+5   chromedriver                        0x0000000102d02b70 cxxbridge1$string$len + 12072
+6   chromedriver                        0x0000000102d014d4 cxxbridge1$string$len + 6284
+7   chromedriver                        0x0000000102d00cbc cxxbridge1$string$len + 4212
+8   chromedriver                        0x0000000102d009a8 cxxbridge1$string$len + 3424
+9   chromedriver                        0x0000000102cfe56c chromedriver + 222572
+10  chromedriver                        0x0000000102cff038 chromedriver + 225336
+11  chromedriver                        0x0000000102d19d84 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 88828
+12  chromedriver                        0x0000000102d9fb50 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 637128
+13  chromedriver                        0x0000000102d9f064 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 634332
+14  chromedriver                        0x0000000102d540e4 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 327260
+15  chromedriver                        0x00000001031f7620 cxxbridge1$str$ptr + 2821448
+16  chromedriver                        0x00000001031fad5c cxxbridge1$str$ptr + 2835588
+17  chromedriver                        0x00000001031dc9c4 cxxbridge1$str$ptr + 2711788
+18  chromedriver                        0x00000001031fb5e0 cxxbridge1$str$ptr + 2837768
+19  chromedriver                        0x00000001031cc990 cxxbridge1$str$ptr + 2646200
+20  chromedriver                        0x000000010321f9bc cxxbridge1$str$ptr + 2986212
+21  chromedriver                        0x000000010321fb38 cxxbridge1$str$ptr + 2986592
+22  chromedriver                        0x000000010323050c cxxbridge1$str$ptr + 3054644
+23  libsystem_pthread.dylib             0x000000019f3a9c08 _pthread_start + 136
+24  libsystem_pthread.dylib             0x000000019f3a4ba8 thread_start + 8
+
+2026-01-25 12:25:02,317 - HireLink - INFO - Scraping detailed description for: https://mock-portal.com/job/5869
+2026-01-25 12:25:02,406 - HireLink - ERROR - Failed to scrape details for https://mock-portal.com/job/5869: Message: unknown error: net::ERR_NAME_NOT_RESOLVED
+  (Session info: chrome=144.0.7559.97)
+Stacktrace:
+0   chromedriver                        0x0000000103238640 cxxbridge1$str$ptr + 3087720
+1   chromedriver                        0x00000001032308b4 cxxbridge1$str$ptr + 3055580
+2   chromedriver                        0x0000000102d16890 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75272
+3   chromedriver                        0x0000000102d0ea54 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 42956
+4   chromedriver                        0x0000000102d01068 cxxbridge1$string$len + 5152
+5   chromedriver                        0x0000000102d02b70 cxxbridge1$string$len + 12072
+6   chromedriver                        0x0000000102d014d4 cxxbridge1$string$len + 6284
+7   chromedriver                        0x0000000102d00cbc cxxbridge1$string$len + 4212
+8   chromedriver                        0x0000000102d009a8 cxxbridge1$string$len + 3424
+9   chromedriver                        0x0000000102cfe56c chromedriver + 222572
+10  chromedriver                        0x0000000102cff038 chromedriver + 225336
+11  chromedriver                        0x0000000102d19d84 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 88828
+12  chromedriver                        0x0000000102d9fb50 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 637128
+13  chromedriver                        0x0000000102d9f064 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 634332
+14  chromedriver                        0x0000000102d540e4 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 327260
+15  chromedriver                        0x00000001031f7620 cxxbridge1$str$ptr + 2821448
+16  chromedriver                        0x00000001031fad5c cxxbridge1$str$ptr + 2835588
+17  chromedriver                        0x00000001031dc9c4 cxxbridge1$str$ptr + 2711788
+18  chromedriver                        0x00000001031fb5e0 cxxbridge1$str$ptr + 2837768
+19  chromedriver                        0x00000001031cc990 cxxbridge1$str$ptr + 2646200
+20  chromedriver                        0x000000010321f9bc cxxbridge1$str$ptr + 2986212
+21  chromedriver                        0x000000010321fb38 cxxbridge1$str$ptr + 2986592
+22  chromedriver                        0x000000010323050c cxxbridge1$str$ptr + 3054644
+23  libsystem_pthread.dylib             0x000000019f3a9c08 _pthread_start + 136
+24  libsystem_pthread.dylib             0x000000019f3a4ba8 thread_start + 8
+
+2026-01-25 12:25:02,406 - HireLink - INFO - Scraping detailed description for: https://mock-portal.com/job/4573
+2026-01-25 12:25:02,496 - HireLink - ERROR - Failed to scrape details for https://mock-portal.com/job/4573: Message: unknown error: net::ERR_NAME_NOT_RESOLVED
+  (Session info: chrome=144.0.7559.97)
+Stacktrace:
+0   chromedriver                        0x0000000103238640 cxxbridge1$str$ptr + 3087720
+1   chromedriver                        0x00000001032308b4 cxxbridge1$str$ptr + 3055580
+2   chromedriver                        0x0000000102d16890 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75272
+3   chromedriver                        0x0000000102d0ea54 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 42956
+4   chromedriver                        0x0000000102d01068 cxxbridge1$string$len + 5152
+5   chromedriver                        0x0000000102d02b70 cxxbridge1$string$len + 12072
+6   chromedriver                        0x0000000102d014d4 cxxbridge1$string$len + 6284
+7   chromedriver                        0x0000000102d00cbc cxxbridge1$string$len + 4212
+8   chromedriver                        0x0000000102d009a8 cxxbridge1$string$len + 3424
+9   chromedriver                        0x0000000102cfe56c chromedriver + 222572
+10  chromedriver                        0x0000000102cff038 chromedriver + 225336
+11  chromedriver                        0x0000000102d19d84 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 88828
+12  chromedriver                        0x0000000102d9fb50 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 637128
+13  chromedriver                        0x0000000102d9f064 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 634332
+14  chromedriver                        0x0000000102d540e4 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 327260
+15  chromedriver                        0x00000001031f7620 cxxbridge1$str$ptr + 2821448
+16  chromedriver                        0x00000001031fad5c cxxbridge1$str$ptr + 2835588
+17  chromedriver                        0x00000001031dc9c4 cxxbridge1$str$ptr + 2711788
+18  chromedriver                        0x00000001031fb5e0 cxxbridge1$str$ptr + 2837768
+19  chromedriver                        0x00000001031cc990 cxxbridge1$str$ptr + 2646200
+20  chromedriver                        0x000000010321f9bc cxxbridge1$str$ptr + 2986212
+21  chromedriver                        0x000000010321fb38 cxxbridge1$str$ptr + 2986592
+22  chromedriver                        0x000000010323050c cxxbridge1$str$ptr + 3054644
+23  libsystem_pthread.dylib             0x000000019f3a9c08 _pthread_start + 136
+24  libsystem_pthread.dylib             0x000000019f3a4ba8 thread_start + 8
+
+2026-01-25 12:25:02,496 - HireLink - INFO - Scraping detailed description for: https://mock-portal.com/job/3554
+2026-01-25 12:25:02,588 - HireLink - ERROR - Failed to scrape details for https://mock-portal.com/job/3554: Message: unknown error: net::ERR_NAME_NOT_RESOLVED
+  (Session info: chrome=144.0.7559.97)
+Stacktrace:
+0   chromedriver                        0x0000000103238640 cxxbridge1$str$ptr + 3087720
+1   chromedriver                        0x00000001032308b4 cxxbridge1$str$ptr + 3055580
+2   chromedriver                        0x0000000102d16890 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75272
+3   chromedriver                        0x0000000102d0ea54 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 42956
+4   chromedriver                        0x0000000102d01068 cxxbridge1$string$len + 5152
+5   chromedriver                        0x0000000102d02b70 cxxbridge1$string$len + 12072
+6   chromedriver                        0x0000000102d014d4 cxxbridge1$string$len + 6284
+7   chromedriver                        0x0000000102d00cbc cxxbridge1$string$len + 4212
+8   chromedriver                        0x0000000102d009a8 cxxbridge1$string$len + 3424
+9   chromedriver                        0x0000000102cfe56c chromedriver + 222572
+10  chromedriver                        0x0000000102cff038 chromedriver + 225336
+11  chromedriver                        0x0000000102d19d84 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 88828
+12  chromedriver                        0x0000000102d9fb50 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 637128
+13  chromedriver                        0x0000000102d9f064 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 634332
+14  chromedriver                        0x0000000102d540e4 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 327260
+15  chromedriver                        0x00000001031f7620 cxxbridge1$str$ptr + 2821448
+16  chromedriver                        0x00000001031fad5c cxxbridge1$str$ptr + 2835588
+17  chromedriver                        0x00000001031dc9c4 cxxbridge1$str$ptr + 2711788
+18  chromedriver                        0x00000001031fb5e0 cxxbridge1$str$ptr + 2837768
+19  chromedriver                        0x00000001031cc990 cxxbridge1$str$ptr + 2646200
+20  chromedriver                        0x000000010321f9bc cxxbridge1$str$ptr + 2986212
+21  chromedriver                        0x000000010321fb38 cxxbridge1$str$ptr + 2986592
+22  chromedriver                        0x000000010323050c cxxbridge1$str$ptr + 3054644
+23  libsystem_pthread.dylib             0x000000019f3a9c08 _pthread_start + 136
+24  libsystem_pthread.dylib             0x000000019f3a4ba8 thread_start + 8
+
+2026-01-25 12:25:02,588 - HireLink - INFO - Scraping detailed description for: https://mock-portal.com/job/7523
+2026-01-25 12:25:02,897 - HireLink - ERROR - Failed to scrape details for https://mock-portal.com/job/7523: Message: unknown error: net::ERR_NAME_NOT_RESOLVED
+  (Session info: chrome=144.0.7559.97)
+Stacktrace:
+0   chromedriver                        0x0000000103238640 cxxbridge1$str$ptr + 3087720
+1   chromedriver                        0x00000001032308b4 cxxbridge1$str$ptr + 3055580
+2   chromedriver                        0x0000000102d16890 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 75272
+3   chromedriver                        0x0000000102d0ea54 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 42956
+4   chromedriver                        0x0000000102d01068 cxxbridge1$string$len + 5152
+5   chromedriver                        0x0000000102d02b70 cxxbridge1$string$len + 12072
+6   chromedriver                        0x0000000102d014d4 cxxbridge1$string$len + 6284
+7   chromedriver                        0x0000000102d00cbc cxxbridge1$string$len + 4212
+8   chromedriver                        0x0000000102d009a8 cxxbridge1$string$len + 3424
+9   chromedriver                        0x0000000102cfe56c chromedriver + 222572
+10  chromedriver                        0x0000000102cff038 chromedriver + 225336
+11  chromedriver                        0x0000000102d19d84 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 88828
+12  chromedriver                        0x0000000102d9fb50 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 637128
+13  chromedriver                        0x0000000102d9f064 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 634332
+14  chromedriver                        0x0000000102d540e4 _RNvCs5DBLTqoOdVp_7___rustc35___rust_no_alloc_shim_is_unstable_v2 + 327260
+15  chromedriver                        0x00000001031f7620 cxxbridge1$str$ptr + 2821448
+16  chromedriver                        0x00000001031fad5c cxxbridge1$str$ptr + 2835588
+17  chromedriver                        0x00000001031dc9c4 cxxbridge1$str$ptr + 2711788
+18  chromedriver                        0x00000001031fb5e0 cxxbridge1$str$ptr + 2837768
+19  chromedriver                        0x00000001031cc990 cxxbridge1$str$ptr + 2646200
+20  chromedriver                        0x000000010321f9bc cxxbridge1$str$ptr + 2986212
+21  chromedriver                        0x000000010321fb38 cxxbridge1$str$ptr + 2986592
+22  chromedriver                        0x000000010323050c cxxbridge1$str$ptr + 3054644
+23  libsystem_pthread.dylib             0x000000019f3a9c08 _pthread_start + 136
+24  libsystem_pthread.dylib             0x000000019f3a4ba8 thread_start + 8
+
+DEBUG: Pilot Step: Matching Jobs - Status: Found 0 new. Calculating match scores...
+2026-01-25 12:30:35,192 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:30:35,286 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:30:35,323 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:30:35,326 - HireLink - INFO - Database initialized successfully.
+2026-01-25 12:30:36.519 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:30:48,983 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:30:49,044 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:30:49,057 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:30:49,057 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:30:49,289 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:30:49,333 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:30:49,352 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:30:49,352 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:31:05,630 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:31:05,726 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:31:05,736 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:31:05,736 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:31:06,241 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:31:06,300 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:31:06,308 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:31:06,309 - HireLink - INFO - Database initialized successfully.
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py:2768: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  j = db.query(Job).get(a.job_id)
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:31:52,562 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:31:52,663 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:31:52,682 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:31:52,682 - HireLink - INFO - Database initialized successfully.
+2026-01-25 12:31:53.956 Uncaught app exception
+Traceback (most recent call last):
+  File "/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/venv/lib/python3.9/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 600, in _run_script
+    exec(code, module.__dict__)
+  File "/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py", line 2331, in <module>
+    "Score": f"{app.match_score:.2f}"
+TypeError: unsupported format string passed to NoneType.__format__
+2026-01-25 12:31:54.366 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:32:41,183 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:32:41,486 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:32:41,570 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:32:41,570 - HireLink - INFO - Database initialized successfully.
+2026-01-25 12:32:45.425 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:33:03,486 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:33:03,639 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:33:03,672 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:33:03,673 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:33:04,461 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:33:04,545 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:33:04,555 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:33:04,555 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:33:45,930 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:33:46,125 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:33:46,246 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:33:46,248 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:33:50,159 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:33:50,265 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:33:50,275 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:33:50,275 - HireLink - INFO - Database initialized successfully.
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py:2768: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  j = db.query(Job).get(a.job_id)
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:34:32,284 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:34:32,426 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:34:32,468 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:34:32,469 - HireLink - INFO - Database initialized successfully.
+2026-01-25 12:34:33.641 Uncaught app exception
+Traceback (most recent call last):
+  File "/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/venv/lib/python3.9/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 600, in _run_script
+    exec(code, module.__dict__)
+  File "/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py", line 2331, in <module>
+    "Score": f"{app.match_score:.2f}"
+TypeError: unsupported format string passed to NoneType.__format__
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:35:21,009 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:35:21,363 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:35:21,409 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:35:21,410 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:35:39,279 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:35:39,467 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:35:39,495 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:35:39,496 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:35:39,729 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:36:35,768 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:36:35,972 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:36:36,074 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:36:36,078 - HireLink - INFO - Database initialized successfully.
+2026-01-25 12:36:37.038 Uncaught app exception
+Traceback (most recent call last):
+  File "/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/venv/lib/python3.9/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 600, in _run_script
+    exec(code, module.__dict__)
+  File "/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py", line 2331, in <module>
+    "Score": f"{app.match_score:.2f}"
+TypeError: unsupported format string passed to NoneType.__format__
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:47:14,704 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:47:14,823 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:47:14,845 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:47:14,845 - HireLink - INFO - Database initialized successfully.
+2026-01-25 12:47:17.288 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:47:26,059 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:47:26,149 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:47:26,182 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:47:26,182 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:47:26,444 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:47:26,501 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:47:26,518 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:47:26,518 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:47:46,625 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:47:46,861 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:47:46,877 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:47:46,880 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:47:47,517 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:47:47,575 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:47:47,584 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:47:47,584 - HireLink - INFO - Database initialized successfully.
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py:2778: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  j = db.query(Job).get(a.job_id)
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:49:51,110 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:49:51,255 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:49:51,291 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:49:51,291 - HireLink - INFO - Database initialized successfully.
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py:2611: FutureWarning: 'H' is deprecated and will be removed in a future version, please use 'h' instead.
+  st.bar_chart(df_chart["RawAction"].resample("H").count(), color="#6366f1")
+2026-01-25 12:49:53.370 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:50:30,386 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 12:50:30,506 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 12:50:30,523 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 12:50:30,523 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 12:50:30,648 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 13:33:37,123 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 13:33:37,283 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 13:33:37,301 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 13:33:37,301 - HireLink - INFO - Database initialized successfully.
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py:2611: FutureWarning: 'H' is deprecated and will be removed in a future version, please use 'h' instead.
+  st.bar_chart(df_chart["RawAction"].resample("H").count(), color="#6366f1")
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 13:45:56,248 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 13:45:56,363 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 13:45:56,383 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 13:45:56,383 - HireLink - INFO - Database initialized successfully.
+2026-01-25 13:45:58.209 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 13:46:08,440 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 13:46:08,511 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 13:46:08,525 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 13:46:08,525 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 13:46:08,835 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 13:46:08,879 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 13:46:08,887 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 13:46:08,887 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 13:46:27,952 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 13:46:28,020 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 13:46:28,033 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 13:46:28,033 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 13:46:28,491 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 13:46:28,553 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 13:46:28,561 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 13:46:28,561 - HireLink - INFO - Database initialized successfully.
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py:2791: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  j = db.query(Job).get(a.job_id)
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 13:46:53,132 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 13:46:53,186 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 13:46:53,248 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 13:46:53,249 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 13:47:25,976 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 13:47:26,086 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 13:47:26,142 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 13:47:26,142 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 13:47:26,730 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 13:47:26,976 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 13:47:26,989 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 13:47:26,989 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 14:01:58,729 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 14:01:58,801 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 14:01:58,819 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 14:01:58,819 - HireLink - INFO - Database initialized successfully.
+2026-01-25 14:02:00.267 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 14:03:11,232 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 14:03:11,288 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 14:03:11,307 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 14:03:11,308 - HireLink - INFO - Database initialized successfully.
+2026-01-25 14:03:11.949 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 14:03:21,755 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 14:03:21,852 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 14:03:21,867 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 14:03:21,867 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 14:03:22,136 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 14:03:22,198 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 14:03:22,209 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 14:03:22,209 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 14:03:37,173 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 14:03:37,250 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 14:03:37,279 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 14:03:37,279 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 14:03:37,589 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 14:03:37,633 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 14:03:37,641 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 14:03:37,641 - HireLink - INFO - Database initialized successfully.
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py:2791: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  j = db.query(Job).get(a.job_id)
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 14:07:33,406 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 14:07:33,662 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 14:07:33,683 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 14:07:33,683 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 14:10:30,323 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 14:10:30,406 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 14:10:30,422 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 14:10:30,423 - HireLink - INFO - Database initialized successfully.
+2026-01-25 14:10:31.699 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 14:10:37,742 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 14:10:37,817 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 14:10:37,834 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 14:10:37,835 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 14:10:38,107 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 14:10:38,153 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 14:10:38,160 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 14:10:38,160 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 14:10:51,135 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 14:10:51,229 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 14:10:51,280 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 14:10:51,281 - HireLink - INFO - Database initialized successfully.
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 14:10:52,069 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 14:10:52,131 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 14:10:52,144 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 14:10:52,144 - HireLink - INFO - Database initialized successfully.
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py:2791: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  j = db.query(Job).get(a.job_id)
+--- APPLICATION STARTUP: v2.16 (Admin Tab Fix) ---
+2026-01-25 14:11:19,601 - HireLink - INFO - Initializing database at /Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/data/sqlite/local.db
+2026-01-25 14:11:19,711 - HireLink - INFO - Updated Admin permissions and password.
+2026-01-25 14:11:19,726 - HireLink - ERROR - Seeding failed for user 4: (sqlite3.IntegrityError) UNIQUE constraint failed: question_answers.question
+[SQL: INSERT INTO question_answers (user_id, question, answer, category) VALUES (?, ?, ?, ?)]
+[parameters: [(4, 'Full legal name (first, middle, last)', '', 'personal'), (4, 'Preferred name or nickname', '', 'personal'), (4, 'Date of birth', '', 'personal'), (4, 'Gender (options: Male, Female, Non-binary, Prefer not to say)', '', 'personal'), (4, 'Nationality / Country of citizenship', '', 'personal'), (4, 'Visa/work authorization status (e.g., eligible to work in US without sponsorship?)', '', 'personal'), (4, 'Marital status', '', 'personal'), (4, 'Home address (street, city, state, ZIP/postal code, country)', '', 'personal')  ... displaying 10 of 87 total bound parameter sets ...  (4, 'Describe your work style in three adjectives.', '', 'creative'), (4, 'What’s an unusual hobby/skill you have?', '', 'creative')]]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-01-25 14:11:19,727 - HireLink - INFO - Database initialized successfully.
+2026-01-25 14:19:10.090 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+2026-01-25 16:21:28.125 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py:2791: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  # 3. Applications (PRIVATE)
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py:2791: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  # 3. Applications (PRIVATE)
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py:2791: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  # 3. Applications (PRIVATE)
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py:2791: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  # 3. Applications (PRIVATE)
+2026-01-25 16:24:36.032 Examining the path of torch.classes raised: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+/Users/sandeepramaswamykashyap/.gemini/antigravity/scratch/HireLink/app.py:2791: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  # 3. Applications (PRIVATE)

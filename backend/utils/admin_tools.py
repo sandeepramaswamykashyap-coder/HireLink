@@ -53,22 +53,21 @@ def factory_reset():
     """
     try:
         from backend.database import SessionLocal, AppUser, Resume, Application, Job, PortalCredential, QuestionAnswer, PortalStatus, Coupon, ReferralTransaction
-        db = SessionLocal()
         
-        # 1. SQL Truncate/Delete
-        # Order matters for foreign keys slightly, but sqlite usually lenient unless enforced
-        db.query(PortalCredential).delete()
-        db.query(QuestionAnswer).delete()
-        db.query(Application).delete()
-        db.query(Resume).delete()
-        db.query(Job).delete()
-        db.query(PortalStatus).delete()
-        db.query(Coupon).delete()
-        db.query(ReferralTransaction).delete()
-        db.query(AppUser).delete()
-        
-        db.commit()
-        db.close()
+        with SessionLocal() as db:
+            # 1. SQL Truncate/Delete
+            # Order matters for foreign keys slightly, but sqlite usually lenient unless enforced
+            db.query(PortalCredential).delete()
+            db.query(QuestionAnswer).delete()
+            db.query(Application).delete()
+            db.query(Resume).delete()
+            db.query(Job).delete()
+            db.query(PortalStatus).delete()
+            db.query(Coupon).delete()
+            db.query(ReferralTransaction).delete()
+            db.query(AppUser).delete()
+            
+            db.commit()
         
         # 2. Try file deletion as bonus (optional)
         if os.path.exists(DB_PATH):

@@ -404,31 +404,29 @@ def seed_user_questions(user_id):
     Seeds the default smart answers for a specific user.
     """
     try:
-        db = SessionLocal()
-        
-        # 1. Bulk Select Existing Questions
-        existing_qs = db.query(QuestionAnswer.question).filter_by(user_id=user_id).all()
-        existing_set = {r[0] for r in existing_qs}
-        
-        # 2. Filter New Questions
-        new_records = []
-        for q in DEFAULT_SMART_ANSWERS:
-            if q['question'] not in existing_set:
-                new_records.append(QuestionAnswer(
-                    user_id=user_id,
-                    question=q['question'],
-                    answer=q['answer'],
-                    category=q['category']
-                ))
-        
-        # 3. Bulk Insert
-        if new_records:
-            db.bulk_save_objects(new_records)
-            db.commit()
-            return True, f"Seeded {len(new_records)} new questions."
+        with SessionLocal() as db:
+            # 1. Bulk Select Existing Questions
+            existing_qs = db.query(QuestionAnswer.question).filter_by(user_id=user_id).all()
+            existing_set = {r[0] for r in existing_qs}
             
-        db.close()
-        return True, "Questions already up to date."
+            # 2. Filter New Questions
+            new_records = []
+            for q in DEFAULT_SMART_ANSWERS:
+                if q['question'] not in existing_set:
+                    new_records.append(QuestionAnswer(
+                        user_id=user_id,
+                        question=q['question'],
+                        answer=q['answer'],
+                        category=q['category']
+                    ))
+            
+            # 3. Bulk Insert
+            if new_records:
+                db.bulk_save_objects(new_records)
+                db.commit()
+                return True, f"Seeded {len(new_records)} new questions."
+                
+            return True, "Questions already up to date."
     except Exception as e:
         logger.error(f"Seeding failed for user {user_id}: {e}")
         return False, str(e)
@@ -440,38 +438,36 @@ def seed_admin():
     Ensures the default admin user exists and has the correct password.
     """
     try:
-        db = SessionLocal()
-        # Changed to .tech as per user preference (Permanent Admin)
-        admin_email = "admin@hirelink.tech"
-        admin = db.query(AppUser).filter_by(email=admin_email).first()
-        
-        if not admin:
-            logger.info("Seeding Admin User...")
-            admin = AppUser(
-                name="System Admin", 
-                email=admin_email, 
-                is_admin=True, 
-                is_onboarded=True,
-                subscription_plan="PRO_PLUS"
-            )
-            admin.set_password("admin123") # Slightly stronger default default
-            db.add(admin)
-            db.commit() # Commit to get ID
+        with SessionLocal() as db:
+            # Changed to .tech as per user preference (Permanent Admin)
+            admin_email = "admin@hirelink.tech"
+            admin = db.query(AppUser).filter_by(email=admin_email).first()
             
-            # Seed Questions for Admin specifically
-            seed_user_questions(admin.id)
-        else:
-            # Force update permissions and password
-            admin.is_admin = True
-            admin.set_password("admin123") # Standardize default
-            admin.subscription_plan = "PRO_PLUS"
-            logger.info("Updated Admin permissions and password.")
-            db.commit()
-            
-            # Ensure Admin has questions even if existing
-            seed_user_questions(admin.id)
-            
-        db.close()
+            if not admin:
+                logger.info("Seeding Admin User...")
+                admin = AppUser(
+                    name="System Admin", 
+                    email=admin_email, 
+                    is_admin=True, 
+                    is_onboarded=True,
+                    subscription_plan="PRO_PLUS"
+                )
+                admin.set_password("admin123") # Slightly stronger default default
+                db.add(admin)
+                db.commit() # Commit to get ID
+                
+                # Seed Questions for Admin specifically
+                seed_user_questions(admin.id)
+            else:
+                # Force update permissions and password
+                admin.is_admin = True
+                admin.set_password("admin123") # Standardize default
+                admin.subscription_plan = "PRO_PLUS"
+                logger.info("Updated Admin permissions and password.")
+                db.commit()
+                
+                # Ensure Admin has questions even if existing
+                seed_user_questions(admin.id)
     except Exception as e:
         logger.error(f"Failed to seed admin: {e}")
 

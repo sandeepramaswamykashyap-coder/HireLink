@@ -854,18 +854,19 @@ def save_smart_answer(qid_key):
             q_id = int(qid_key.replace("sa_qa_", ""))
             
             # New Session for atomic update
+            # New Session for atomic update
             # Use global SessionLocal definition
-            db_local = SessionLocal()
             try:
-                q = db_local.query(QuestionAnswer).filter(QuestionAnswer.id == q_id).first()
-                if q:
-                    # Dirty write - optimize later if needed
-                    clean_val = str(new_val).strip()
-                    if q.answer != clean_val:
-                        q.answer = clean_val
-                        db_local.add(q)
-                        db_local.commit()
-                        st.toast(f"Saved: {clean_val[:10]}...", icon="💾")
+                with SessionLocal() as db_local:
+                    q = db_local.query(QuestionAnswer).filter(QuestionAnswer.id == q_id).first()
+                    if q:
+                        # Dirty write - optimize later if needed
+                        clean_val = str(new_val).strip()
+                        if q.answer != clean_val:
+                            q.answer = clean_val
+                            db_local.add(q)
+                            db_local.commit()
+                            st.toast(f"Saved: {clean_val[:10]}...", icon="💾")
             except Exception as e:
                 st.error(f"DB Error Q{q_id}: {e}")
                 print(f"Save Error Q{q_id}: {e}")
@@ -1698,41 +1699,42 @@ if st.query_params.get("reset_token"):
     from backend.database import SessionLocal, AppUser
     from datetime import datetime
     
-    db_rst_chk = SessionLocal()
-    u_rst_Target = db_rst_chk.query(AppUser).filter_by(reset_token=reset_token).first()
-    
-    if u_rst_Target and u_rst_Target.reset_token_expiry and u_rst_Target.reset_token_expiry > datetime.utcnow():
-        # Valid Token found
-        @st.dialog("🔐 Set New Password")
-        def reset_pwd_modal():
-            st.warning(f"Resetting password for: {u_rst_Target.email}")
-            new_p = st.text_input("Enter New Password", type="password")
-            confirm_p = st.text_input("Confirm Password", type="password")
+    try:
+        with SessionLocal() as db_rst_chk:
+            u_rst_Target = db_rst_chk.query(AppUser).filter_by(reset_token=reset_token).first()
             
-            if st.button("Update Password", type="primary"):
-                if new_p != confirm_p:
-                    st.error("Passwords do not match.")
-                elif len(new_p) < 4:
-                    st.error("Too short.")
-                else:
-                    u_rst_Target.set_password(new_p)
-                    u_rst_Target.reset_token = None # Invalidate token
-                    u_rst_Target.reset_token_expiry = None
-                    db_rst_chk.commit()
-                    st.success("Password Updated! Redirecting to login...")
-                    st.query_params.clear() # Prepare to clear
-                    time.sleep(2)
+            if u_rst_Target and u_rst_Target.reset_token_expiry and u_rst_Target.reset_token_expiry > datetime.utcnow():
+                # Valid Token found
+                @st.dialog("🔐 Set New Password")
+                def reset_pwd_modal():
+                    st.warning(f"Resetting password for: {u_rst_Target.email}")
+                    new_p = st.text_input("Enter New Password", type="password")
+                    confirm_p = st.text_input("Confirm Password", type="password")
+                    
+                    if st.button("Update Password", type="primary"):
+                        if new_p != confirm_p:
+                            st.error("Passwords do not match.")
+                        elif len(new_p) < 4:
+                            st.error("Too short.")
+                        else:
+                            u_rst_Target.set_password(new_p)
+                            u_rst_Target.reset_token = None # Invalidate token
+                            u_rst_Target.reset_token_expiry = None
+                            db_rst_chk.commit()
+                            st.success("Password Updated! Redirecting to login...")
+                            st.query_params.clear() # Prepare to clear
+                            time.sleep(2)
+                            st.rerun()
+                
+                reset_pwd_modal()
+                
+            else:
+                st.error("Invalid or Expired Reset Link.")
+                if st.button("Go Home"):
+                    st.query_params.clear()
                     st.rerun()
-        
-        reset_pwd_modal()
-        
-    else:
-        st.error("Invalid or Expired Reset Link.")
-        if st.button("Go Home"):
-            st.query_params.clear()
-            st.rerun()
-            
-    db_rst_chk.close()
+    except Exception as e:
+        st.error(f"Reset Error: {e}")
     st.stop() # Stop normal rendering if in reset mode
 
 from backend.utils.scraper_utils import run_scraper
@@ -2030,13 +2032,12 @@ else:
     # LOGOUT
     if st.sidebar.button("Log Out"):
          # Log Activity
-         try:
-             from backend.database import SessionLocal, ActivityLog
-             db_log = SessionLocal()
-             db_log.add(ActivityLog(user_id=user.id, action="Logout", details="User initiated logout"))
-             db_log.commit()
-             db_log.close()
-         except: pass
+             try:
+                 from backend.database import SessionLocal, ActivityLog
+                 with SessionLocal() as db_log:
+                     db_log.add(ActivityLog(user_id=user.id, action="Logout", details="User initiated logout"))
+                     db_log.commit()
+             except: pass
 
          # Clear impersonation on logout too
          if 'impersonating_user_id' in st.session_state:
@@ -2063,11 +2064,10 @@ else:
             if not sb_key_exists:
                  # Check DB if not in env
                  from backend.database import SessionLocal, PortalCredential
-                 db_cred = SessionLocal()
-                 existing = db_cred.query(PortalCredential).filter_by(portal_name="GEMINI_API_KEY").first()
-                 if existing:
-                     sb_key_exists = True
-                 db_cred.close()
+                 with SessionLocal() as db_cred:
+                     existing = db_cred.query(PortalCredential).filter_by(portal_name="GEMINI_API_KEY").first()
+                     if existing:
+                         sb_key_exists = True
             
             sb_placeholder = "********" if sb_key_exists else ""
             
@@ -2107,26 +2107,25 @@ else:
     # This fixes the issue of "stale session state" showing old plan
     try:
         from backend.database import SessionLocal, AppUser, Application
-        db_usage = SessionLocal()
-        fresh_user = db_usage.query(AppUser).filter_by(id=user.id).first()
-        if fresh_user:
-            plan = fresh_user.subscription_plan or 'FREE'
-            is_admin_check = fresh_user.is_admin
-        else:
-            plan = getattr(user, 'subscription_plan', 'FREE')
-            is_admin_check = getattr(user, 'is_admin', False)
-            
-        if is_admin_check:
-            limit = 999999
-            plan_display = f"{plan} (ADMIN)"
-        else:
-            limit_map = {'TRIAL': 20, 'FREE': 20, 'STARTER': 150, 'PRO': 1000, 'PRO_PLUS': 10000}
-            limit = limit_map.get(plan, 20)
-            plan_display = plan
+        with SessionLocal() as db_usage:
+            fresh_user = db_usage.query(AppUser).filter_by(id=user.id).first()
+            if fresh_user:
+                plan = fresh_user.subscription_plan or 'FREE'
+                is_admin_check = fresh_user.is_admin
+            else:
+                plan = getattr(user, 'subscription_plan', 'FREE')
+                is_admin_check = getattr(user, 'is_admin', False)
+                
+            if is_admin_check:
+                limit = 999999
+                plan_display = f"{plan} (ADMIN)"
+            else:
+                limit_map = {'TRIAL': 20, 'FREE': 20, 'STARTER': 150, 'PRO': 1000, 'PRO_PLUS': 10000}
+                limit = limit_map.get(plan, 20)
+                plan_display = plan
 
-        # Count apps (FILTERED BY USER)
-        apps_used = db_usage.query(Application).filter_by(user_id=user.id).count()
-        db_usage.close()
+            # Count apps (FILTERED BY USER)
+            apps_used = db_usage.query(Application).filter_by(user_id=user.id).count()
     except Exception as e:
         logger.error(f"Usage check failed: {e}")
         apps_used = 0
