@@ -2456,11 +2456,27 @@ else:
                             if u.id == user.id:
                                 st.error("Cannot delete yourself.")
                             else:
-                                db.delete(u)
-                                db.commit()
-                                st.success("User Deleted.")
-                                del st.session_state[del_key]
-                                st.rerun()
+                                # MANUALLY CASCADE DELETE RELATED RECORDS
+                                try:
+                                    # 1. Portal Credentials (The cause of IntegrityError)
+                                    db.query(backend.database.PortalCredential).filter_by(user_id=u.id).delete()
+                                    # 2. Smart Answers
+                                    db.query(backend.database.QuestionAnswer).filter_by(user_id=u.id).delete()
+                                    # 3. Activity Logs
+                                    db.query(backend.database.ActivityLog).filter_by(user_id=u.id).delete()
+                                    # 4. Campaign Status
+                                    db.query(backend.database.UserCampaignStatus).filter_by(user_id=u.id).delete()
+                                    # 5. Applications (If tied to user)
+                                    db.query(backend.database.Application).filter_by(user_id=u.id).delete()
+
+                                    db.delete(u)
+                                    db.commit()
+                                    st.success("User and all related data deleted.")
+                                    del st.session_state[del_key]
+                                    st.rerun()
+                                except Exception as e:
+                                    db.rollback()
+                                    st.error(f"Delete Failed: {e}")
                         
                         if col_cancel.button("Cancel", key=f"conf_no_{u.id}"):
                             del st.session_state[del_key]
