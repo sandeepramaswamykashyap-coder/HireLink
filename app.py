@@ -2031,19 +2031,19 @@ else:
     
     # LOGOUT
     if st.sidebar.button("Log Out"):
-         # Log Activity
-             try:
-                 from backend.database import SessionLocal, ActivityLog
-                 with SessionLocal() as db_log:
-                     db_log.add(ActivityLog(user_id=user.id, action="Logout", details="User initiated logout"))
-                     db_log.commit()
-             except: pass
+        # Log Activity
+        try:
+            from backend.database import SessionLocal, ActivityLog
+            with SessionLocal() as db_log:
+                db_log.add(ActivityLog(user_id=user.id, action="Logout", details="User initiated logout"))
+                db_log.commit()
+        except: pass
 
-         # Clear impersonation on logout too
-         if 'impersonating_user_id' in st.session_state:
-             del st.session_state['impersonating_user_id']
-         st.session_state['force_landing'] = True
-         st.rerun()
+        # Clear impersonation on logout too
+        if 'impersonating_user_id' in st.session_state:
+            del st.session_state['impersonating_user_id']
+        st.session_state['force_landing'] = True
+        st.rerun()
 
     # IMPERSONATION EXIT
     if st.session_state.get('impersonating_user_id'):
